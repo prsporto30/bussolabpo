@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Estressores de Caixa — Marmoraria Nobre 2025</title>
+<style>
+/* ── RESET & TOKENS ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:        #1a1f2e;
+  --panel:     #252b3b;
+  --panel2:    #2d3447;
+  --border:    #3a4258;
+  --amber:     #f59e0b;
+  --amber2:    #fbbf24;
+  --amber-dim: #78490a;
+  --red:       #ef4444;
+  --green:     #22c55e;
+  --gray:      #9ca3af;
+  --gray2:     #6b7280;
+  --white:     #f1f5f9;
+  --past-bg:   #1e2333;
+  --past-text: #8896a8;
+  --font:      'Inter', system-ui, -apple-system, sans-serif;
+}
+html { font-size: 14px; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+.app-header {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 1rem;
+}
+.app-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--amber);
+  white-space: nowrap;
+}
+.app-title span { color: var(--gray); font-weight: 400; font-size: 0.8rem; }
+.header-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.btn {
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  color: var(--white);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--border); color: var(--amber); }
+.btn-primary { background: var(--amber); color: #1a1f2e; border-color: var(--amber); }
+.btn-primary:hover { background: var(--amber2); color: #1a1f2e; }
+
+/* ── LAYOUT ── */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - 50px);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 320px;
+  min-width: 320px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding-bottom: 2rem;
+}
+.sidebar::-webkit-scrollbar { width: 5px; }
+.sidebar::-webkit-scrollbar-track { background: var(--panel); }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.sidebar-title {
+  padding: 1rem 1rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+/* ── STRESSOR GROUPS ── */
+.group {
+  border-bottom: 1px solid var(--border);
+}
+.group-header {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.group-header:hover { background: var(--panel2); }
+.group-header-left { display: flex; align-items: center; gap: 0.5rem; }
+.group-num {
+  width: 20px;
+  height: 20px;
+  background: var(--amber-dim);
+  color: var(--amber);
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.group-name { font-size: 0.8rem; font-weight: 600; }
+.group-chevron { color: var(--gray2); font-size: 0.75rem; transition: transform 0.2s; }
+.group.open .group-chevron { transform: rotate(180deg); }
+.group-body { display: none; padding: 0.5rem 1rem 1rem; }
+.group.open .group-body { display: block; }
+.group-badge {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-weight: 700;
+}
+.badge-neutral { background: #1e2636; color: var(--gray); }
+.badge-warn    { background: #3d2e0a; color: #f59e0b; }
+.badge-danger  { background: #3b1212; color: var(--red); }
+.badge-good    { background: #0f2e1a; color: var(--green); }
+
+/* ── CONTROLS ── */
+.ctrl { margin-bottom: 1rem; }
+.ctrl:last-child { margin-bottom: 0; }
+.ctrl-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gray);
+  margin-bottom: 0.35rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ctrl-val {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--amber);
+}
+.ctrl-desc {
+  font-size: 0.65rem;
+  color: var(--gray2);
+  margin-top: 0.2rem;
+  line-height: 1.4;
+}
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--amber);
+  cursor: pointer;
+}
+input[type=number], select {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--white);
+  padding: 0.35rem 0.6rem;
+  font-size: 0.78rem;
+  width: 100%;
+  outline: none;
+  margin-top: 0.25rem;
+}
+input[type=number]:focus, select:focus { border-color: var(--amber); }
+.ctrl-row { display: flex; gap: 0.5rem; }
+.ctrl-row > * { flex: 1; }
+
+/* Toggle */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+.toggle-label { font-size: 0.78rem; font-weight: 600; }
+.toggle {
+  position: relative;
+  width: 36px;
+  height: 20px;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 14px;
+  height: 14px;
+  background: var(--gray);
+  border-radius: 50%;
+  transition: 0.2s;
+}
+.toggle input:checked + .toggle-slider { background: var(--amber-dim); }
+.toggle input:checked + .toggle-slider::before {
+  background: var(--amber);
+  transform: translateX(16px);
+}
+.toggle-body { display: none; }
+.toggle-body.on { display: block; }
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  gap: 0;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1rem;
+}
+.tab {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--gray);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--white); }
+.tab.active { color: var(--amber); border-bottom-color: var(--amber); }
+
+/* ── CONTENT ── */
+.tab-content { flex: 1; overflow: auto; padding: 1.25rem; }
+.tab-content::-webkit-scrollbar { width: 6px; height: 6px; }
+.tab-content::-webkit-scrollbar-track { background: var(--bg); }
+.tab-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ── TABLES ── */
+.tbl-wrap {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+.tbl-wrap::-webkit-scrollbar { height: 5px; }
+.tbl-wrap::-webkit-scrollbar-thumb { background: var(--border); }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  min-width: 900px;
+}
+thead th {
+  background: var(--panel2);
+  padding: 0.6rem 0.75rem;
+  text-align: right;
+  font-weight: 700;
+  color: var(--gray);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+}
+thead th:first-child { text-align: left; min-width: 200px; }
+tbody tr:hover { background: rgba(245,158,11,0.03); }
+tbody td {
+  padding: 0.45rem 0.75rem;
+  text-align: right;
+  border-bottom: 1px solid rgba(58,66,88,0.4);
+  color: var(--white);
+}
+tbody td:first-child {
+  text-align: left;
+  color: var(--gray);
+  font-weight: 500;
+}
+.row-section td {
+  background: var(--panel2);
+  color: var(--amber) !important;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.75rem;
+}
+.row-total td {
+  font-weight: 700;
+  color: var(--white) !important;
+  border-top: 1px solid var(--border);
+  background: rgba(37,43,59,0.6);
+}
+.row-result td {
+  font-weight: 800;
+  font-size: 0.82rem;
+}
+.row-indent td:first-child { padding-left: 1.5rem; color: var(--gray2); }
+.row-pct td { color: var(--gray) !important; font-size: 0.7rem; font-style: italic; }
+
+/* Month columns */
+.col-past { color: var(--past-text) !important; background: var(--past-bg) !important; }
+.col-proj { }
+.col-total {
+  background: rgba(245,158,11,0.06) !important;
+  color: var(--amber2) !important;
+  font-weight: 700 !important;
+}
+
+/* Value colors */
+.v-neg { color: var(--red) !important; font-weight: 700; }
+.v-pos { color: var(--green) !important; }
+.v-warn { color: var(--amber) !important; }
+
+/* ── DIAG PANEL ── */
+.diag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.diag-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.diag-card-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray);
+  margin-bottom: 0.5rem;
+}
+.diag-card-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.diag-card-sub {
+  font-size: 0.7rem;
+  color: var(--gray2);
+  margin-top: 0.35rem;
+}
+.diag-card.danger { border-color: var(--red); }
+.diag-card.danger .diag-card-val { color: var(--red); }
+.diag-card.ok { border-color: var(--green); }
+.diag-card.ok .diag-card-val { color: var(--green); }
+.diag-card.warn { border-color: var(--amber); }
+.diag-card.warn .diag-card-val { color: var(--amber); }
+
+.diag-table {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.diag-table-title {
+  padding: 0.75rem 1rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--amber);
+  border-bottom: 1px solid var(--border);
+  background: var(--panel2);
+}
+.diag-table table {
+  min-width: unset;
+}
+.diag-table td, .diag-table th { font-size: 0.78rem; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.68rem;
+  color: var(--gray2);
+  text-align: center;
+  line-height: 1.5;
+}
+footer em { color: var(--gray); }
+
+/* ── PRINT ── */
+@media print {
+  .sidebar, .app-header, .tabs, .header-actions, footer { display: none !important; }
+  .app-body { display: block !important; }
+  .main { overflow: visible !important; }
+  .tab-content { overflow: visible !important; padding: 0 !important; }
+  .tab-pane { display: block !important; page-break-inside: avoid; margin-bottom: 2rem; }
+  table { min-width: unset; font-size: 0.65rem; }
+  .tbl-wrap { overflow: visible; border: none; }
+  body { background: white; color: black; font-size: 11px; }
+  table, th, td { border-color: #ccc !important; }
+  .v-neg { color: red !important; }
+  .v-pos { color: green !important; }
+  .col-past, .col-proj, .col-total { background: transparent !important; color: black !important; }
+  .row-section td { background: #eee !important; color: #333 !important; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .sidebar { position: fixed; left: -320px; top: 50px; height: calc(100vh - 50px); z-index: 200; transition: left 0.25s; }
+  .sidebar.open { left: 0; box-shadow: 4px 0 20px rgba(0,0,0,0.5); }
+  .app-body { height: calc(100vh - 50px); }
+  .menu-btn { display: flex !important; }
+  .app-title span { display: none; }
+}
+.menu-btn { display: none; align-items: center; justify-content: center; }
+
+/* Scrollbar for main */
+.main::-webkit-scrollbar { width: 0; }
+
+/* Section heading in content */
+.section-heading {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--amber);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.section-heading::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <button class="btn menu-btn" id="menuBtn" style="padding:0.4rem 0.6rem;">☰</button>
+    <div class="app-title">
+      Marmoraria Nobre — Simulador de Estressores de Caixa
+      <span> | 2025</span>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn" onclick="resetAll()">↺ Resetar</button>
+    <button class="btn" onclick="exportScenario()">⬇ Exportar</button>
+    <button class="btn" onclick="importScenario()">⬆ Importar</button>
+    <button class="btn btn-primary" onclick="window.print()">🖨 Imprimir</button>
+  </div>
+</header>
+
+<!-- BODY -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-title">Painel de Estressores</div>
+
+    <!-- GROUP 1: VENDAS -->
+    <div class="group open" id="g1">
+      <div class="group-header" onclick="toggleGroup('g1')">
+        <div class="group-header-left">
+          <span class="group-num">1</span>
+          <span class="group-name">Vendas e Faturamento</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span class="group-badge badge-neutral" id="badge-g1">base</span>
+          <span class="group-chevron">▼</span>
+        </div>
+      </div>
+      <div class="group-body">
+        <!-- 1.1 Volume -->
+        <div class="ctrl">
+          <div class="ctrl-label">1.1 Variação de Volume de Vendas
+            <span class="ctrl-val" id="v-volVendas">0%</span>
+          </div>
+          <input type="range" id="s-volVendas" min="-40" max="60" value="0" step="1" oninput="syncSlider('volVendas',this.value,'%'); recalc()">
+          <div class="ctrl-desc">Aplica em Mai–Dez. +30% = contrato grande fechado.</div>
+        </div>
+        <!-- 1.2 Frustração -->
+        <div class="ctrl">
+          <div class="ctrl-label">1.2 Frustração de Vendas</div>
+          <div class="ctrl-row" style="margin-bottom:0.35rem;">
+            <div>
+              <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Mês</div>
+              <select id="s-frustraMes" onchange="recalc()">
+                <option value="-1">Nenhum</option>
+                <option value="4">Mai</option>
+                <option value="5">Jun</option>
+                <option value="6">Jul</option>
+                <option value="7">Ago</option>
+                <option value="8">Set</option>
+                <option value="9">Out</option>
+                <option value="10">Nov</option>
+                <option value="11">Dez</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Impacto</div>
+              <select id="s-frustraImp" onchange="recalc()">
+                <option value="0">0%</option>
+                <option value="-10">-10%</option>
+                <option value="-20">-20%</option>
+                <option value="-30">-30%</option>
+                <option value="-40">-40%</option>
+                <option value="-50">-50%</option>
+                <option value="-60">-60%</option>
+              </select>
+            </div>
+          </div>
+          <div class="ctrl-desc">Redução pontual em um mês específico.</div>
+        </div>
+        <!-- 1.3 Desconto -->
+        <div class="ctrl">
+          <div class="ctrl-label">1.3 Política de Desconto
+            <span class="ctrl-val" id="v-desconto">0%</span>
+          </div>
+          <input type="range" id="s-desconto" min="0" max="15" value="0" step="0.5" oninput="syncSlider('desconto',this.value,'%'); recalc()">
+          <div class="ctrl-desc">Reduz receita líquida sem reduzir custos. Comprime margem.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GROUP 2: PRAZOS -->
+    <div class="group open" id="g2">
+      <div class="group-header" onclick="toggleGroup('g2')">
+        <div class="group-header-left">
+          <span class="group-num">2</span>
+          <span class="group-name">Prazos e Recebimento</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span class="group-badge badge-neutral" id="badge-g2">base</span>
+          <span class="group-chevron">▼</span>
+        </div>
+      </div>
+      <div class="group-body">
+        <!-- 2.1 PMR -->
+        <div class="ctrl">
+          <div class="ctrl-label">2.1 Prazo Médio de Recebimento
+            <span class="ctrl-val" id="v-pmr">30 dias</span>
+          </div>
+          <input type="range" id="s-pmr" min="0" max="90" value="30" step="5" oninput="syncSlider('pmr',this.value,' dias'); recalc()">
+          <div class="ctrl-desc">Base = 30 dias. Afeta DFC, não o DRE.</div>
+        </div>
+        <!-- 2.2 Parcelamento -->
+        <div class="ctrl">
+          <div class="ctrl-label">2.2 Parcelamento de Vendas
+            <span class="ctrl-val" id="v-parcPct">0%</span>
+          </div>
+          <input type="range" id="s-parcPct" min="0" max="80" value="0" step="5" oninput="syncSlider('parcPct',this.value,'%'); recalc()">
+          <div class="ctrl-row" style="margin-top:0.4rem;">
+            <div>
+              <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Parcelas</div>
+              <select id="s-parcVezes" onchange="recalc()">
+                <option value="2">2x</option>
+                <option value="3">3x</option>
+                <option value="4" selected>4x</option>
+                <option value="6">6x</option>
+                <option value="12">12x</option>
+              </select>
+            </div>
+          </div>
+          <div class="ctrl-desc">Dilui recebimento. DRE reconhece na venda; DFC recebe em parcelas.</div>
+        </div>
+        <!-- 2.3 Inadimplência -->
+        <div class="ctrl">
+          <div class="ctrl-label">2.3 Taxa de Inadimplência
+            <span class="ctrl-val" id="v-inadimp">2%</span>
+          </div>
+          <input type="range" id="s-inadimp" min="0" max="15" value="2" step="0.5" oninput="syncSlider('inadimp',this.value,'%'); recalc()">
+          <div class="ctrl-desc">Base = 2%. Afeta DRE (perda) e DFC (não entra caixa).</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GROUP 3: CUSTOS -->
+    <div class="group" id="g3">
+      <div class="group-header" onclick="toggleGroup('g3')">
+        <div class="group-header-left">
+          <span class="group-num">3</span>
+          <span class="group-name">Custos e Fornecedores</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span class="group-badge badge-neutral" id="badge-g3">base</span>
+          <span class="group-chevron">▼</span>
+        </div>
+      </div>
+      <div class="group-body">
+        <!-- 3.1 PMP -->
+        <div class="ctrl">
+          <div class="ctrl-label">3.1 Prazo Médio de Pagto Fornecedores
+            <span class="ctrl-val" id="v-pmp">30 dias</span>
+          </div>
+          <input type="range" id="s-pmp" min="0" max="60" value="30" step="5" oninput="syncSlider('pmp',this.value,' dias'); recalc()">
+          <div class="ctrl-desc">Base = 30 dias. Aumentar melhora caixa no curto prazo.</div>
+        </div>
+        <!-- 3.2 Margem Bruta -->
+        <div class="ctrl">
+          <div class="ctrl-label">3.2 Variação de Margem Bruta
+            <span class="ctrl-val" id="v-margem">0pp</span>
+          </div>
+          <input type="range" id="s-margem" min="-15" max="10" value="0" step="0.5" oninput="syncSlider('margem',this.value,'pp'); recalc()">
+          <div class="ctrl-desc">Base = 51%. Simula aumento/redução de custo de insumos.</div>
+        </div>
+        <!-- 3.3 Estoque -->
+        <div class="ctrl">
+          <div class="ctrl-label">3.3 Compra Antecipada de Estoque</div>
+          <div class="ctrl-row" style="margin-bottom:0.35rem;">
+            <div>
+              <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Mês</div>
+              <select id="s-estoMes" onchange="recalc()">
+                <option value="-1">Nenhum</option>
+                <option value="4">Mai</option>
+                <option value="5">Jun</option>
+                <option value="6">Jul</option>
+                <option value="7">Ago</option>
+                <option value="8">Set</option>
+                <option value="9">Out</option>
+                <option value="10">Nov</option>
+                <option value="11">Dez</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Valor (R$)</div>
+              <input type="number" id="s-estoVal" value="0" min="0" max="80000" step="5000" oninput="recalc()">
+            </div>
+          </div>
+          <div class="ctrl-desc">Saída de caixa no mês. DRE impacta no mês seguinte (CMV).</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GROUP 4: DESPESAS -->
+    <div class="group" id="g4">
+      <div class="group-header" onclick="toggleGroup('g4')">
+        <div class="group-header-left">
+          <span class="group-num">4</span>
+          <span class="group-name">Despesas Fixas</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span class="group-badge badge-neutral" id="badge-g4">base</span>
+          <span class="group-chevron">▼</span>
+        </div>
+      </div>
+      <div class="group-body">
+        <!-- 4.1 Desp Fixas -->
+        <div class="ctrl">
+          <div class="ctrl-label">4.1 Variação de Despesas Fixas
+            <span class="ctrl-val" id="v-despFixed">0%</span>
+          </div>
+          <input type="range" id="s-despFixed" min="-20" max="50" value="0" step="1" oninput="syncSlider('despFixed',this.value,'%'); recalc()">
+          <div class="ctrl-desc">Base = R$ 43.000/mês. Aplica em Mai–Dez.</div>
+        </div>
+        <!-- 4.2 Capex -->
+        <div class="ctrl">
+          <div class="ctrl-label">4.2 Investimento Pontual (Capex)</div>
+          <div class="ctrl-row" style="margin-bottom:0.35rem;">
+            <div>
+              <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Mês</div>
+              <select id="s-capexMes" onchange="recalc()">
+                <option value="-1">Nenhum</option>
+                <option value="4">Mai</option>
+                <option value="5">Jun</option>
+                <option value="6">Jul</option>
+                <option value="7">Ago</option>
+                <option value="8">Set</option>
+                <option value="9">Out</option>
+                <option value="10">Nov</option>
+                <option value="11">Dez</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Valor (R$)</div>
+              <input type="number" id="s-capexVal" value="0" min="0" max="150000" step="5000" oninput="recalc()">
+            </div>
+          </div>
+          <div class="ctrl-desc">Saída de caixa no mês. Sem impacto no DRE (depreciação omitida).</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GROUP 5: DÍVIDAS -->
+    <div class="group" id="g5">
+      <div class="group-header" onclick="toggleGroup('g5')">
+        <div class="group-header-left">
+          <span class="group-num">5</span>
+          <span class="group-name">Dívidas e Financiamentos</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span class="group-badge badge-neutral" id="badge-g5">base</span>
+          <span class="group-chevron">▼</span>
+        </div>
+      </div>
+      <div class="group-body">
+        <!-- 5.1 Empréstimo -->
+        <div class="ctrl">
+          <div class="toggle-row">
+            <label class="toggle"><input type="checkbox" id="t-emprest" onchange="toggleCtrl('emprest'); recalc()"><span class="toggle-slider"></span></label>
+            <span class="toggle-label">5.1 Novo Empréstimo de Capital de Giro</span>
+          </div>
+          <div class="toggle-body" id="tb-emprest">
+            <div class="ctrl-row">
+              <div>
+                <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Mês Contratação</div>
+                <select id="s-emprestMes">
+                  <option value="4">Mai</option>
+                  <option value="5">Jun</option>
+                  <option value="6">Jul</option>
+                  <option value="7">Ago</option>
+                </select>
+              </div>
+              <div>
+                <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Valor (R$)</div>
+                <input type="number" id="s-emprestVal" value="80000" min="20000" max="200000" step="5000" oninput="recalc()">
+              </div>
+            </div>
+            <div class="ctrl-row" style="margin-top:0.5rem;">
+              <div>
+                <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Prazo (meses)</div>
+                <input type="number" id="s-emprestPrazo" value="18" min="6" max="36" step="1" oninput="recalc()">
+              </div>
+              <div>
+                <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Taxa (% a.m.)</div>
+                <input type="number" id="s-emprestTaxa" value="2.5" min="0.8" max="4" step="0.1" oninput="recalc()">
+              </div>
+            </div>
+            <div class="ctrl-desc" style="margin-top:0.4rem;">Parcela estimada calculada automaticamente.</div>
+          </div>
+        </div>
+        <!-- 5.2 Antecipação -->
+        <div class="ctrl">
+          <div class="toggle-row">
+            <label class="toggle"><input type="checkbox" id="t-antecip" onchange="toggleCtrl('antecip'); recalc()"><span class="toggle-slider"></span></label>
+            <span class="toggle-label">5.2 Antecipação de Recebíveis</span>
+          </div>
+          <div class="toggle-body" id="tb-antecip">
+            <div class="ctrl-label">% do Faturamento Antecipado
+              <span class="ctrl-val" id="v-antecipPct">20%</span>
+            </div>
+            <input type="range" id="s-antecipPct" min="10" max="60" value="20" step="5" oninput="syncSlider('antecipPct',this.value,'%'); recalc()">
+            <div class="ctrl-row" style="margin-top:0.5rem;">
+              <div>
+                <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Taxa desc. (% a.m.)</div>
+                <input type="number" id="s-antecipTaxa" value="1.5" min="0.8" max="2.5" step="0.1" oninput="recalc()">
+              </div>
+              <div>
+                <div style="font-size:0.68rem;color:var(--gray2);margin-bottom:0.2rem;">Prazo antecipado (dias)</div>
+                <input type="number" id="s-antecipDias" value="30" min="10" max="90" step="5" oninput="recalc()">
+              </div>
+            </div>
+            <div class="ctrl-desc" style="margin-top:0.4rem;">Antecipa entrada com desconto. Custo = desp. financeira.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('dre')">DRE Gerencial</div>
+      <div class="tab" onclick="switchTab('dfc')">Fluxo de Caixa</div>
+      <div class="tab" onclick="switchTab('diag')">Diagnóstico</div>
+    </div>
+
+    <!-- DRE TAB -->
+    <div class="tab-content">
+      <div class="tab-pane active" id="tab-dre">
+        <div class="section-heading">Demonstrativo de Resultado — Regime de Competência</div>
+        <div class="tbl-wrap">
+          <table id="tbl-dre">
+            <thead id="thead-dre"></thead>
+            <tbody id="tbody-dre"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DFC TAB -->
+      <div class="tab-pane" id="tab-dfc">
+        <div class="section-heading">Fluxo de Caixa — Regime de Caixa</div>
+        <div class="tbl-wrap">
+          <table id="tbl-dfc">
+            <thead id="thead-dfc"></thead>
+            <tbody id="tbody-dfc"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DIAG TAB -->
+      <div class="tab-pane" id="tab-diag">
+        <div class="section-heading">Painel de Diagnóstico Automático</div>
+        <div class="diag-grid" id="diag-cards"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="diag-table" id="diag-neg-months">
+            <div class="diag-table-title">Meses com Caixa Negativo</div>
+            <table><tbody id="diag-neg-body"></tbody></table>
+          </div>
+          <div class="diag-table" id="diag-stressor-impact">
+            <div class="diag-table-title">Impacto dos Estressores vs Cenário Base</div>
+            <table><tbody id="diag-impact-body"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer>
+  <em>Este simulador é uma ferramenta didática. Os valores são fictícios e as simplificações foram feitas intencionalmente para fins educacionais.
+  Depreciação e impostos sobre o lucro não estão incluídos no modelo. Os resultados não substituem uma análise financeira profissional.</em>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════
+// BASE DATA
+// ══════════════════════════════════════════════════════
+const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const PAST_COUNT = 4; // Jan-Abr are past
+
+const BASE_FATURAMENTO = [138000,108000,102000,128000,145000,155000,162000,165000,168000,172000,178000,188000];
+
+// Cost structure (% of faturamento)
+const COST_MP   = 0.32; // matéria-prima
+const COST_MOD  = 0.14; // mão de obra direta
+const COST_FRET = 0.03; // fretes
+const BASE_MARGEM_BRUTA = 1 - COST_MP - COST_MOD - COST_FRET; // ~0.51
+
+// Fixed expenses
+const BASE_DESP_FIXED = {
+  pessoal: 18500,
+  prolabore: 8000,
+  aluguel: 6500,
+  energia: 3200,
+  ti: 800,
+  contab: 1200,
+  manut: 1500,
+  mktg: 1800,
+  seguros: 900,
+  banc: 600
+};
+const BASE_DESP_TOTAL = Object.values(BASE_DESP_FIXED).reduce((a,b)=>a+b,0); // 43000
+
+// Financial
+const FINANC_PARCELA = 2800;
+const FINANC_JUROS   = 480; // ~juros embutidos na parcela
+const RENDIMENTO_APLIC = 350;
+
+// Base PMR/PMP/Inadimplência
+const BASE_PMR    = 30;
+const BASE_PMP    = 30;
+const BASE_INADIMP = 0.02;
+
+const SALDO_INICIAL = 48000;
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let S = getDefaultState();
+
+function getDefaultState() {
+  return {
+    volVendas: 0,
+    frustraMes: -1,
+    frustraImp: 0,
+    desconto: 0,
+    pmr: 30,
+    parcPct: 0,
+    parcVezes: 4,
+    inadimp: 2,
+    pmp: 30,
+    margem: 0,
+    estoMes: -1,
+    estoVal: 0,
+    despFixed: 0,
+    capexMes: -1,
+    capexVal: 0,
+    emprest: false,
+    emprestMes: 4,
+    emprestVal: 80000,
+    emprestPrazo: 18,
+    emprestTaxa: 2.5,
+    antecip: false,
+    antecipPct: 20,
+    antecipTaxa: 1.5,
+    antecipDias: 30
+  };
+}
+
+// ══════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════
+function fmt(v, dec=0) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  const neg = v < 0;
+  const s = Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+  return (neg ? '-' : '') + 'R$ ' + s;
+}
+function pct(v, dec=1) {
+  if (isNaN(v)) return '—';
+  return v.toFixed(dec) + '%';
+}
+function cls(v) {
+  if (v < 0) return 'v-neg';
+  if (v > 0) return 'v-pos';
+  return '';
+}
+
+function pmrToMonthOffset(days) {
+  // returns how many months ahead the cash arrives
+  return Math.round(days / 30);
+}
+
+// PMT calculation (Price table)
+function calcPMT(pv, taxa, n) {
+  if (taxa === 0) return pv / n;
+  return pv * taxa / (1 - Math.pow(1 + taxa, -n));
+}
+
+// ══════════════════════════════════════════════════════
+// MAIN CALCULATION ENGINE
+// ══════════════════════════════════════════════════════
+function calcAll() {
+  const pmr    = S.pmr;
+  const pmp    = S.pmp;
+  const inadimp = S.inadimp / 100;
+  const margDelta = S.margem / 100;
+  const margemBruta = BASE_MARGEM_BRUTA + margDelta;
+
+  // Effective cost ratios adjusted for margem change
+  // We keep the ratio structure but scale total variable cost
+  const totalVarBase = COST_MP + COST_MOD + COST_FRET;
+  const totalVarNew  = 1 - margemBruta;
+  const varScale = totalVarNew / totalVarBase;
+  const costMP   = COST_MP   * varScale;
+  const costMOD  = COST_MOD  * varScale;
+  const costFRET = COST_FRET * varScale;
+
+  // Loan calculations
+  let emprestParcela = 0;
+  let emprestJuros   = 0;
+  if (S.emprest) {
+    const taxa = S.emprestTaxa / 100;
+    const pmt  = calcPMT(S.emprestVal, taxa, S.emprestPrazo);
+    emprestParcela = pmt;
+    // approximate interest portion: total paid - principal / n
+    emprestJuros = pmt - (S.emprestVal / S.emprestPrazo);
+  }
+
+  // Build DRE and DFC month by month
+  const dre = [];
+  const dfc = [];
+
+  // Track receivables schedule for parcelamento
+  // receiv[month][n] = amount to receive in month n from sales in month
+  const receivSchedule = Array(12).fill(0).map(() => 0);
+  // DFC supplier payment delay
+  const supplierSchedule = Array(14).fill(0).map(() => 0); // extended for PMP
+
+  // We need to pre-compute faturamento for all months first
+  const fatBruto = [];
+  for (let m = 0; m < 12; m++) {
+    let fat = BASE_FATURAMENTO[m];
+    if (m >= PAST_COUNT) {
+      fat = fat * (1 + S.volVendas / 100);
+      if (m === S.frustraMes) fat = fat * (1 + S.frustraImp / 100);
+    }
+    fatBruto.push(fat);
+  }
+
+  // DFC cash tracking
+  let saldo = SALDO_INICIAL;
+  const dfcSaldoInicial = [];
+  const dfcEntradas = [];
+  const dfcSaidasOp  = [];
+  const dfcInvest    = [];
+  const dfcFinanc    = [];
+  const dfcSaldoFinal = [];
+
+  // Build receivables: for each month's sales, compute when cash arrives
+  // We need to spread across months based on PMR and parcelamento
+  // Parcelamento: parcPct% of sales split over parcVezes months
+  // Remaining (1-parcPct%) collected based on PMR offset
+  // Inadimplência applies as a loss (never received)
+
+  const cashReceivable = Array(14).fill(0); // index 0..13 (months 0..11 + overflow)
+
+  for (let m = 0; m < 12; m++) {
+    const fat = fatBruto[m];
+    const desc = m >= PAST_COUNT ? S.desconto / 100 : 0;
+    const recLiq = fat * (1 - desc);
+    const perda  = recLiq * inadimp; // never received
+
+    // Antecipação de recebíveis: only for projected months
+    let antecipEntrada = 0;
+    let antecipCusto   = 0;
+    if (S.antecip && m >= PAST_COUNT) {
+      const antPct   = S.antecipPct / 100;
+      const antTaxa  = S.antecipTaxa / 100;
+      const antDias  = S.antecipDias;
+      const antMonths = antDias / 30;
+      // Amount antecipated from future receivables
+      const antVal   = recLiq * (1 - inadimp) * antPct;
+      antecipCusto   = antVal * antTaxa * antMonths;
+      antecipEntrada = antVal - antecipCusto; // net received this month (instead of future)
+      // reduce future receivables proportionally (handled below)
+      cashReceivable[m] += antecipEntrada;
+
+      // The remaining (non-antecipated) receivable
+      const remaining = recLiq * (1 - inadimp) * (1 - antPct);
+      // Apply PMR to remaining
+      const pmrOffset = pmrToMonthOffset(pmr);
+      const targetM = m + pmrOffset;
+      if (targetM < 14) cashReceivable[targetM] += remaining;
+    } else {
+      // Normal receivables with PMR and parcelamento
+      const parcPct  = m >= PAST_COUNT ? S.parcPct / 100 : 0;
+      const parcN    = S.parcVezes;
+      const totalCollectable = recLiq * (1 - inadimp);
+
+      // Parcelamento portion
+      const parcVal = totalCollectable * parcPct;
+      for (let p = 0; p < parcN; p++) {
+        const tgt = m + p + 1; // first parcel next month
+        if (tgt < 14) cashReceivable[tgt] += parcVal / parcN;
+      }
+
+      // Non-parcelamento portion (based on PMR)
+      const normalVal = totalCollectable * (1 - parcPct);
+      const pmrOffset = pmrToMonthOffset(pmr);
+      const targetM = m + pmrOffset;
+      if (targetM < 14) cashReceivable[targetM] += normalVal;
+    }
+  }
+
+  // Build supplier payments schedule based on PMP
+  // Variable costs are paid based on PMP offset from month they're incurred
+  const cashSupplier = Array(14).fill(0);
+  for (let m = 0; m < 12; m++) {
+    const fat = fatBruto[m];
+    const varCost = fat * totalVarNew; // total variable cost
+    const pmpOffset = Math.round(pmp / 30);
+    const tgt = m + pmpOffset;
+    if (tgt < 14) cashSupplier[tgt] += varCost;
+  }
+
+  // Now build month data
+  let saldoCaixa = SALDO_INICIAL;
+
+  for (let m = 0; m < 12; m++) {
+    const isPast = m < PAST_COUNT;
+    const fat = fatBruto[m];
+    const desc = (!isPast) ? S.desconto / 100 : 0;
+    const recLiq = fat * (1 - desc);
+
+    // Var costs
+    const cMP   = fat * costMP;
+    const cMOD  = fat * costMOD;
+    const cFRET = fat * costFRET;
+    const totalVar = cMP + cMOD + cFRET;
+    const lucroBruto = recLiq - totalVar;
+    const margBrPct  = recLiq > 0 ? lucroBruto / recLiq * 100 : 0;
+
+    // Fixed expenses
+    const despMult   = (!isPast) ? (1 + S.despFixed / 100) : 1;
+    const despPessoal = BASE_DESP_FIXED.pessoal * despMult;
+    const despProlabore = BASE_DESP_FIXED.prolabore * despMult;
+    const despAluguel   = BASE_DESP_FIXED.aluguel  * despMult;
+    const despOutras    = (BASE_DESP_FIXED.energia + BASE_DESP_FIXED.ti + BASE_DESP_FIXED.contab +
+                           BASE_DESP_FIXED.manut + BASE_DESP_FIXED.mktg + BASE_DESP_FIXED.seguros +
+                           BASE_DESP_FIXED.banc) * despMult;
+    const totalDesp = despPessoal + despProlabore + despAluguel + despOutras;
+    const ebitda     = lucroBruto - totalDesp;
+    const margEbitda = recLiq > 0 ? ebitda / recLiq * 100 : 0;
+
+    // Financial result
+    const rendimento = RENDIMENTO_APLIC;
+    const jurosVeic  = FINANC_JUROS;
+
+    // Antecipação custo (DRE)
+    let antecipCustoDRE = 0;
+    if (S.antecip && !isPast) {
+      const antPct  = S.antecipPct / 100;
+      const antTaxa = S.antecipTaxa / 100;
+      const antDias = S.antecipDias;
+      const antMonths = antDias / 30;
+      const antVal  = recLiq * (1 - inadimp) * antPct;
+      antecipCustoDRE = antVal * antTaxa * antMonths;
+    }
+
+    // Loan interest (DRE)
+    let jurosEmprest = 0;
+    if (S.emprest && m >= S.emprestMes) {
+      jurosEmprest = emprestJuros;
+    }
+
+    const totalJuros = jurosVeic + jurosEmprest + antecipCustoDRE;
+    const resultFinanc = rendimento - totalJuros;
+
+    // Inadimplência perda
+    const perda = recLiq * inadimp;
+
+    // Estoque DRE impact: estoque comprado no mês M vai como CMV no mês M+1
+    let cmvEstoque = 0;
+    if (!isPast && S.estoMes >= 0 && m === S.estoMes + 1 && S.estoVal > 0) {
+      cmvEstoque = S.estoVal;
+    }
+
+    const resultAnteIR = ebitda + resultFinanc;
+    const lucroLiq     = resultAnteIR - perda - cmvEstoque;
+    const margLiq      = recLiq > 0 ? lucroLiq / recLiq * 100 : 0;
+
+    dre.push({
+      fat, recLiq, desc: fat * desc,
+      cMP, cMOD, cFRET, totalVar, lucroBruto, margBrPct,
+      despPessoal, despProlabore, despAluguel, despOutras, totalDesp,
+      ebitda, margEbitda,
+      rendimento, jurosVeic, jurosEmprest, antecipCustoDRE, totalJuros, resultFinanc,
+      perda, cmvEstoque,
+      resultAnteIR, lucroLiq, margLiq
+    });
+
+    // ── DFC ──
+    const dfcSaldoIni = saldoCaixa;
+
+    // Entradas
+    const recebClientes = cashReceivable[m] || 0;
+
+    // Saídas operacionais
+    const pagFornec  = cashSupplier[m] || 0;
+    const pagDesp    = totalDesp; // fixed expenses paid same month
+    const pagVeic    = FINANC_PARCELA; // vehicle loan installment (principal + interest)
+
+    const totalSaidas = pagFornec + pagDesp + pagVeic;
+    const fluxoOp     = recebClientes - totalSaidas;
+
+    // Investimentos
+    let capexSaida = 0;
+    if (!isPast && m === S.capexMes && S.capexVal > 0) capexSaida = S.capexVal;
+    let estoSaida = 0;
+    if (!isPast && m === S.estoMes && S.estoVal > 0) estoSaida = S.estoVal;
+    const fluxoInvest = -(capexSaida + estoSaida);
+
+    // Financiamentos
+    let emprestEntrada = 0;
+    let emprestParcSaida = 0;
+    if (S.emprest) {
+      if (m === S.emprestMes) emprestEntrada = S.emprestVal;
+      if (m > S.emprestMes && m <= S.emprestMes + S.emprestPrazo) emprestParcSaida = emprestParcela;
+    }
+    // Antecipação already handled in cashReceivable (already reduced future)
+    const fluxoFinanc = emprestEntrada - emprestParcSaida;
+
+    const varMes = fluxoOp + fluxoInvest + fluxoFinanc;
+    saldoCaixa  += varMes;
+
+    dfc.push({
+      saldoIni: dfcSaldoIni,
+      recebClientes,
+      pagFornec, pagDesp, pagVeic,
+      totalSaidas, fluxoOp,
+      capexSaida, estoSaida, fluxoInvest,
+      emprestEntrada, emprestParcSaida, fluxoFinanc,
+      varMes,
+      saldoFinal: saldoCaixa
+    });
+  }
+
+  return { dre, dfc };
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER DRE
+// ══════════════════════════════════════════════════════
+function renderDRE(dre) {
+  const th = document.getElementById('thead-dre');
+  const tb = document.getElementById('tbody-dre');
+
+  // Header
+  let hdr = '<tr><th>Linha</th>';
+  MONTHS.forEach((m,i) => {
+    hdr += `<th class="${i < PAST_COUNT ? 'col-past' : ''}">${m}${i >= PAST_COUNT ? '*' : ''}</th>`;
+  });
+  hdr += '<th class="col-total">Total</th></tr>';
+  th.innerHTML = hdr;
+
+  // Helper to render row
+  function row(label, vals, opts={}) {
+    const {indent, section, total, result, pctRow, bold} = opts;
+    let cls = '';
+    if (section) cls = 'row-section';
+    else if (total) cls = 'row-total';
+    else if (result) cls = 'row-result';
+    else if (pctRow) cls = 'row-pct';
+    else if (indent) cls = 'row-indent';
+
+    let r = `<tr class="${cls}"><td>${label}</td>`;
+    let sum = 0;
+    vals.forEach((v, i) => {
+      const colCls = i < PAST_COUNT ? 'col-past' : '';
+      if (pctRow) {
+        r += `<td class="${colCls}">${pct(v)}</td>`;
+      } else {
+        const vCls = v < -0.01 ? 'v-neg' : (v > 0.01 && (total||result) ? 'v-pos' : '');
+        r += `<td class="${colCls} ${vCls}">${fmt(v)}</td>`;
+        sum += v;
+      }
+      if (!pctRow) {} // sum already done
+    });
+    if (pctRow) {
+      const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+      r += `<td class="col-total">${pct(avg)}</td>`;
+    } else {
+      const vCls = sum < -0.01 ? 'v-neg' : (sum > 0.01 && (total||result) ? 'v-pos' : '');
+      r += `<td class="col-total ${vCls}">${fmt(sum)}</td>`;
+    }
+    r += '</tr>';
+    return r;
+  }
+
+  let html = '';
+  html += row('FATURAMENTO BRUTO', dre.map(d=>d.fat), {section:true});
+  html += row('Faturamento Bruto', dre.map(d=>d.fat));
+  html += row('(-) Descontos', dre.map(d=>-d.desc));
+  html += row('= Receita Líquida', dre.map(d=>d.recLiq), {total:true});
+  html += row('CUSTOS VARIÁVEIS', dre.map(()=>0), {section:true});
+  html += row('Matéria-prima', dre.map(d=>-d.cMP), {indent:true});
+  html += row('Mão de obra direta', dre.map(d=>-d.cMOD), {indent:true});
+  html += row('Fretes e logística', dre.map(d=>-d.cFRET), {indent:true});
+  html += row('= LUCRO BRUTO', dre.map(d=>d.lucroBruto), {result:true});
+  html += row('Margem Bruta', dre.map(d=>d.margBrPct), {pctRow:true});
+  html += row('DESPESAS FIXAS', dre.map(()=>0), {section:true});
+  html += row('Pessoal + encargos', dre.map(d=>-d.despPessoal), {indent:true});
+  html += row('Pró-labore', dre.map(d=>-d.despProlabore), {indent:true});
+  html += row('Aluguel', dre.map(d=>-d.despAluguel), {indent:true});
+  html += row('Outras despesas fixas', dre.map(d=>-d.despOutras), {indent:true});
+  html += row('= EBITDA', dre.map(d=>d.ebitda), {result:true});
+  html += row('Margem EBITDA', dre.map(d=>d.margEbitda), {pctRow:true});
+  html += row('RESULTADO FINANCEIRO', dre.map(()=>0), {section:true});
+  html += row('Rendimento aplicação', dre.map(d=>d.rendimento), {indent:true});
+  html += row('(-) Juros financ. veículo', dre.map(d=>-d.jurosVeic), {indent:true});
+  html += row('(-) Juros empréstimo', dre.map(d=>-d.jurosEmprest), {indent:true});
+  html += row('(-) Custo antecipação', dre.map(d=>-d.antecipCustoDRE), {indent:true});
+  html += row('= Resultado Financeiro', dre.map(d=>d.resultFinanc), {total:true});
+  html += row('= Resultado Antes IR', dre.map(d=>d.resultAnteIR), {total:true});
+  html += row('(-) Inadimplência (perda)', dre.map(d=>-d.perda), {indent:true});
+  html += row('(-) CMV estoque antecipado', dre.map(d=>-d.cmvEstoque), {indent:true});
+  html += row('= LUCRO LÍQUIDO', dre.map(d=>d.lucroLiq), {result:true});
+  html += row('Margem Líquida', dre.map(d=>d.margLiq), {pctRow:true});
+
+  tb.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER DFC
+// ══════════════════════════════════════════════════════
+function renderDFC(dfc) {
+  const th = document.getElementById('thead-dfc');
+  const tb = document.getElementById('tbody-dfc');
+
+  let hdr = '<tr><th>Linha</th>';
+  MONTHS.forEach((m,i) => {
+    hdr += `<th class="${i < PAST_COUNT ? 'col-past' : ''}">${m}${i >= PAST_COUNT ? '*' : ''}</th>`;
+  });
+  hdr += '<th class="col-total">Total/Final</th></tr>';
+  th.innerHTML = hdr;
+
+  function row(label, vals, opts={}) {
+    const {indent, section, total, result} = opts;
+    let cls2 = '';
+    if (section) cls2 = 'row-section';
+    else if (total) cls2 = 'row-total';
+    else if (result) cls2 = 'row-result';
+    else if (indent) cls2 = 'row-indent';
+
+    let r = `<tr class="${cls2}"><td>${label}</td>`;
+    let sum = 0;
+    vals.forEach((v, i) => {
+      const colCls = i < PAST_COUNT ? 'col-past' : '';
+      const vCls = v < -0.01 ? 'v-neg' : '';
+      r += `<td class="${colCls} ${vCls}">${fmt(v)}</td>`;
+      sum += v;
+    });
+    const vCls = sum < -0.01 ? 'v-neg' : (sum > 0.01 && (total||result) ? 'v-pos' : '');
+    r += `<td class="col-total ${vCls}">${fmt(sum)}</td>`;
+    r += '</tr>';
+    return r;
+  }
+
+  function rowSaldo(label, vals) {
+    let r = `<tr class="row-result"><td>${label}</td>`;
+    vals.forEach((v, i) => {
+      const colCls = i < PAST_COUNT ? 'col-past' : '';
+      const vCls = v < -0.01 ? 'v-neg' : 'v-pos';
+      r += `<td class="${colCls} ${vCls}">${fmt(v)}</td>`;
+    });
+    // Last = final saldo (not sum)
+    const last = vals[vals.length - 1];
+    const vCls = last < 0 ? 'v-neg' : 'v-pos';
+    r += `<td class="col-total ${vCls}">${fmt(last)}</td>`;
+    r += '</tr>';
+    return r;
+  }
+
+  let html = '';
+  html += rowSaldo('SALDO INICIAL', dfc.map(d=>d.saldoIni));
+  html += row('ENTRADAS OPERACIONAIS', dfc.map(()=>0), {section:true});
+  html += row('Recebimento de clientes', dfc.map(d=>d.recebClientes), {indent:true});
+  html += row('SAÍDAS OPERACIONAIS', dfc.map(()=>0), {section:true});
+  html += row('Pagamento a fornecedores', dfc.map(d=>-d.pagFornec), {indent:true});
+  html += row('Despesas fixas pagas', dfc.map(d=>-d.pagDesp), {indent:true});
+  html += row('Parcela financ. veículo', dfc.map(d=>-d.pagVeic), {indent:true});
+  html += row('= FLUXO OPERACIONAL', dfc.map(d=>d.fluxoOp), {total:true});
+  html += row('FLUXO DE INVESTIMENTOS', dfc.map(()=>0), {section:true});
+  html += row('Compra de equipamentos (Capex)', dfc.map(d=>-d.capexSaida), {indent:true});
+  html += row('Compra de estoque antecipado', dfc.map(d=>-d.estoSaida), {indent:true});
+  html += row('= FLUXO DE INVESTIMENTOS', dfc.map(d=>d.fluxoInvest), {total:true});
+  html += row('FLUXO DE FINANCIAMENTOS', dfc.map(()=>0), {section:true});
+  html += row('Empréstimo recebido', dfc.map(d=>d.emprestEntrada), {indent:true});
+  html += row('(-) Parcelas empréstimo', dfc.map(d=>-d.emprestParcSaida), {indent:true});
+  html += row('= FLUXO DE FINANCIAMENTOS', dfc.map(d=>d.fluxoFinanc), {total:true});
+  html += row('= VARIAÇÃO DE CAIXA DO MÊS', dfc.map(d=>d.varMes), {result:true});
+  html += rowSaldo('SALDO FINAL', dfc.map(d=>d.saldoFinal));
+
+  tb.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER DIAGNOSTICS
+// ══════════════════════════════════════════════════════
+function renderDiag(dre, dfc) {
+  // Base scenario (no stressors)
+  const baseState = Object.assign({}, S);
+  const savedS = Object.assign({}, S);
+  S = getDefaultState();
+  const baseCalc = calcAll();
+  S = savedS;
+
+  const baseLucroAnual = baseCalc.dre.reduce((a,d)=>a+d.lucroLiq,0);
+  const currLucroAnual = dre.reduce((a,d)=>a+d.lucroLiq,0);
+  const impactoLucro   = currLucroAnual - baseLucroAnual;
+
+  const negMonths = dfc.filter(d=>d.saldoFinal < 0);
+  const minSaldo  = Math.min(...dfc.map(d=>d.saldoFinal));
+  const minMonth  = dfc.findIndex(d=>d.saldoFinal === minSaldo);
+  const finalSaldo = dfc[11].saldoFinal;
+
+  // Recovery: from first negative month, find when it goes positive
+  let firstNeg = dfc.findIndex(d=>d.saldoFinal < 0);
+  let recovery = null;
+  if (firstNeg >= 0) {
+    for (let i = firstNeg; i < 12; i++) {
+      if (dfc[i].saldoFinal > 0) { recovery = i - firstNeg; break; }
+    }
+  }
+
+  // Cards
+  const cards = document.getElementById('diag-cards');
+  const negCard = negMonths.length > 0;
+  cards.innerHTML = `
+    <div class="diag-card ${negCard ? 'danger' : 'ok'}">
+      <div class="diag-card-title">Meses com Caixa Negativo</div>
+      <div class="diag-card-val">${negMonths.length}</div>
+      <div class="diag-card-sub">${negCard ? 'Atenção: risco de insolvência' : 'Caixa positivo em todos os meses'}</div>
+    </div>
+    <div class="diag-card ${minSaldo < 0 ? 'danger' : minSaldo < 20000 ? 'warn' : 'ok'}">
+      <div class="diag-card-title">Pior Saldo de Caixa</div>
+      <div class="diag-card-val" style="font-size:1.1rem">${fmt(minSaldo)}</div>
+      <div class="diag-card-sub">em ${MONTHS[minMonth]}</div>
+    </div>
+    <div class="diag-card ${impactoLucro < -10000 ? 'danger' : impactoLucro < 0 ? 'warn' : 'ok'}">
+      <div class="diag-card-title">Impacto no Lucro Líquido (vs Base)</div>
+      <div class="diag-card-val" style="font-size:1.1rem">${fmt(impactoLucro)}</div>
+      <div class="diag-card-sub">Base: ${fmt(baseLucroAnual)} → Atual: ${fmt(currLucroAnual)}</div>
+    </div>
+    <div class="diag-card ${negCard ? 'danger' : 'ok'}">
+      <div class="diag-card-title">Necessidade de Capital de Giro</div>
+      <div class="diag-card-val" style="font-size:1.1rem">${negCard ? fmt(Math.abs(minSaldo) * 1.15) : 'R$ 0'}</div>
+      <div class="diag-card-sub">${negCard ? 'Estimativa mínima para cobrir o déficit' : 'Sem necessidade identificada'}</div>
+    </div>
+    <div class="diag-card ${recovery !== null ? 'warn' : negCard ? 'danger' : 'ok'}">
+      <div class="diag-card-title">Prazo de Recuperação do Caixa</div>
+      <div class="diag-card-val">${recovery !== null ? recovery + ' meses' : negCard ? 'Não recupera' : '—'}</div>
+      <div class="diag-card-sub">${recovery !== null ? `Caixa volta ao positivo em ${MONTHS[firstNeg + recovery]}` : negCard ? 'Caixa permanece negativo até Dez' : 'Caixa nunca ficou negativo'}</div>
+    </div>
+    <div class="diag-card ${finalSaldo < 0 ? 'danger' : finalSaldo < 30000 ? 'warn' : 'ok'}">
+      <div class="diag-card-title">Saldo Final (Dez)</div>
+      <div class="diag-card-val" style="font-size:1.1rem">${fmt(finalSaldo)}</div>
+      <div class="diag-card-sub">Posição de caixa ao final do ano</div>
+    </div>
+  `;
+
+  // Negative months table
+  const negBody = document.getElementById('diag-neg-body');
+  if (negMonths.length === 0) {
+    negBody.innerHTML = '<tr><td colspan="2" style="padding:1rem;color:var(--green);text-align:center;">✓ Nenhum mês com caixa negativo</td></tr>';
+  } else {
+    negBody.innerHTML = negMonths.map((d, idx) => {
+      const mi = dfc.findIndex(x=>x===d);
+      return `<tr>
+        <td style="padding:0.5rem 0.75rem;color:var(--gray)">${MONTHS[mi]}</td>
+        <td style="padding:0.5rem 0.75rem;color:var(--red);font-weight:700;text-align:right">${fmt(d.saldoFinal)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Impact table
+  const impactBody = document.getElementById('diag-impact-body');
+  const rows = [
+    ['Lucro Líquido', baseLucroAnual, currLucroAnual],
+    ['Lucro Bruto', baseCalc.dre.reduce((a,d)=>a+d.lucroBruto,0), dre.reduce((a,d)=>a+d.lucroBruto,0)],
+    ['EBITDA', baseCalc.dre.reduce((a,d)=>a+d.ebitda,0), dre.reduce((a,d)=>a+d.ebitda,0)],
+    ['Saldo Final Caixa', baseCalc.dfc[11].saldoFinal, dfc[11].saldoFinal],
+    ['Faturamento Total', baseCalc.dre.reduce((a,d)=>a+d.fat,0), dre.reduce((a,d)=>a+d.fat,0)],
+  ];
+  impactBody.innerHTML = rows.map(([label, base, curr]) => {
+    const delta = curr - base;
+    const dCls = delta < 0 ? 'color:var(--red);font-weight:700' : delta > 0 ? 'color:var(--green)' : 'color:var(--gray)';
+    return `<tr>
+      <td style="padding:0.5rem 0.75rem;color:var(--gray)">${label}</td>
+      <td style="padding:0.5rem 0.75rem;text-align:right;color:var(--past-text)">${fmt(base)}</td>
+      <td style="padding:0.5rem 0.75rem;text-align:right">${fmt(curr)}</td>
+      <td style="padding:0.5rem 0.75rem;text-align:right;${dCls}">${delta >= 0 ? '+' : ''}${fmt(delta)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// UPDATE BADGES
+// ══════════════════════════════════════════════════════
+function updateBadges() {
+  // Group 1
+  const g1Dev = Math.abs(S.volVendas) + Math.abs(S.desconto) + (S.frustraMes >= 0 ? Math.abs(S.frustraImp) : 0);
+  setBadge('g1', g1Dev);
+  // Group 2
+  const g2Dev = Math.abs(S.pmr - 30)/30*20 + S.parcPct + Math.abs(S.inadimp - 2)*5;
+  setBadge('g2', g2Dev);
+  // Group 3
+  const g3Dev = Math.abs(S.pmp - 30)/30*20 + Math.abs(S.margem)*3 + (S.estoMes >= 0 ? 20 : 0);
+  setBadge('g3', g3Dev);
+  // Group 4
+  const g4Dev = Math.abs(S.despFixed) + (S.capexMes >= 0 ? 20 : 0);
+  setBadge('g4', g4Dev);
+  // Group 5
+  const g5Dev = (S.emprest ? 30 : 0) + (S.antecip ? 20 : 0);
+  setBadge('g5', g5Dev);
+}
+
+function setBadge(gid, dev) {
+  const el = document.getElementById('badge-' + gid);
+  if (dev === 0) { el.className = 'group-badge badge-neutral'; el.textContent = 'base'; }
+  else if (dev < 15) { el.className = 'group-badge badge-warn'; el.textContent = '⚠ médio'; }
+  else if (dev < 40) { el.className = 'group-badge badge-warn'; el.textContent = '⚠ alto'; }
+  else { el.className = 'group-badge badge-danger'; el.textContent = '⛔ crítico'; }
+}
+
+// ══════════════════════════════════════════════════════
+// MAIN RECALC
+// ══════════════════════════════════════════════════════
+function recalc() {
+  readState();
+  const {dre, dfc} = calcAll();
+  renderDRE(dre);
+  renderDFC(dfc);
+  renderDiag(dre, dfc);
+  updateBadges();
+}
+
+function readState() {
+  S.volVendas    = +document.getElementById('s-volVendas').value;
+  S.frustraMes   = +document.getElementById('s-frustraMes').value;
+  S.frustraImp   = +document.getElementById('s-frustraImp').value;
+  S.desconto     = +document.getElementById('s-desconto').value;
+  S.pmr          = +document.getElementById('s-pmr').value;
+  S.parcPct      = +document.getElementById('s-parcPct').value;
+  S.parcVezes    = +document.getElementById('s-parcVezes').value;
+  S.inadimp      = +document.getElementById('s-inadimp').value;
+  S.pmp          = +document.getElementById('s-pmp').value;
+  S.margem       = +document.getElementById('s-margem').value;
+  S.estoMes      = +document.getElementById('s-estoMes').value;
+  S.estoVal      = +document.getElementById('s-estoVal').value || 0;
+  S.despFixed    = +document.getElementById('s-despFixed').value;
+  S.capexMes     = +document.getElementById('s-capexMes').value;
+  S.capexVal     = +document.getElementById('s-capexVal').value || 0;
+  S.emprest      = document.getElementById('t-emprest').checked;
+  S.emprestMes   = +document.getElementById('s-emprestMes').value;
+  S.emprestVal   = +document.getElementById('s-emprestVal').value || 80000;
+  S.emprestPrazo = +document.getElementById('s-emprestPrazo').value || 18;
+  S.emprestTaxa  = +document.getElementById('s-emprestTaxa').value || 2.5;
+  S.antecip      = document.getElementById('t-antecip').checked;
+  S.antecipPct   = +document.getElementById('s-antecipPct').value;
+  S.antecipTaxa  = +document.getElementById('s-antecipTaxa').value || 1.5;
+  S.antecipDias  = +document.getElementById('s-antecipDias').value || 30;
+}
+
+// ══════════════════════════════════════════════════════
+// UI HELPERS
+// ══════════════════════════════════════════════════════
+function syncSlider(id, val, unit) {
+  document.getElementById('v-' + id).textContent = val + unit;
+}
+
+function toggleGroup(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+function toggleCtrl(id) {
+  const on = document.getElementById('t-' + id).checked;
+  const body = document.getElementById('tb-' + id);
+  body.classList.toggle('on', on);
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const names = ['dre','dfc','diag'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-pane').forEach(p => {
+    p.classList.toggle('active', p.id === 'tab-' + name);
+  });
+}
+
+function resetAll() {
+  S = getDefaultState();
+  // Reset UI
+  document.getElementById('s-volVendas').value = 0; document.getElementById('v-volVendas').textContent = '0%';
+  document.getElementById('s-frustraMes').value = -1;
+  document.getElementById('s-frustraImp').value = 0;
+  document.getElementById('s-desconto').value = 0; document.getElementById('v-desconto').textContent = '0%';
+  document.getElementById('s-pmr').value = 30; document.getElementById('v-pmr').textContent = '30 dias';
+  document.getElementById('s-parcPct').value = 0; document.getElementById('v-parcPct').textContent = '0%';
+  document.getElementById('s-parcVezes').value = 4;
+  document.getElementById('s-inadimp').value = 2; document.getElementById('v-inadimp').textContent = '2%';
+  document.getElementById('s-pmp').value = 30; document.getElementById('v-pmp').textContent = '30 dias';
+  document.getElementById('s-margem').value = 0; document.getElementById('v-margem').textContent = '0pp';
+  document.getElementById('s-estoMes').value = -1;
+  document.getElementById('s-estoVal').value = 0;
+  document.getElementById('s-despFixed').value = 0; document.getElementById('v-despFixed').textContent = '0%';
+  document.getElementById('s-capexMes').value = -1;
+  document.getElementById('s-capexVal').value = 0;
+  document.getElementById('t-emprest').checked = false;
+  document.getElementById('tb-emprest').classList.remove('on');
+  document.getElementById('t-antecip').checked = false;
+  document.getElementById('tb-antecip').classList.remove('on');
+  document.getElementById('s-antecipPct').value = 20; document.getElementById('v-antecipPct').textContent = '20%';
+  recalc();
+}
+
+function exportScenario() {
+  readState();
+  const json = JSON.stringify(S, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'cenario-marmoraria.json';
+  a.click();
+  // Also save to localStorage
+  localStorage.setItem('marmoraria-scenario', json);
+}
+
+function importScenario() {
+  const saved = localStorage.getItem('marmoraria-scenario');
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const loaded = JSON.parse(ev.target.result);
+        S = Object.assign(getDefaultState(), loaded);
+        applyStateToUI();
+        recalc();
+      } catch(err) {
+        alert('Erro ao carregar o arquivo JSON.');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function applyStateToUI() {
+  document.getElementById('s-volVendas').value = S.volVendas; document.getElementById('v-volVendas').textContent = S.volVendas + '%';
+  document.getElementById('s-frustraMes').value = S.frustraMes;
+  document.getElementById('s-frustraImp').value = S.frustraImp;
+  document.getElementById('s-desconto').value = S.desconto; document.getElementById('v-desconto').textContent = S.desconto + '%';
+  document.getElementById('s-pmr').value = S.pmr; document.getElementById('v-pmr').textContent = S.pmr + ' dias';
+  document.getElementById('s-parcPct').value = S.parcPct; document.getElementById('v-parcPct').textContent = S.parcPct + '%';
+  document.getElementById('s-parcVezes').value = S.parcVezes;
+  document.getElementById('s-inadimp').value = S.inadimp; document.getElementById('v-inadimp').textContent = S.inadimp + '%';
+  document.getElementById('s-pmp').value = S.pmp; document.getElementById('v-pmp').textContent = S.pmp + ' dias';
+  document.getElementById('s-margem').value = S.margem; document.getElementById('v-margem').textContent = S.margem + 'pp';
+  document.getElementById('s-estoMes').value = S.estoMes;
+  document.getElementById('s-estoVal').value = S.estoVal;
+  document.getElementById('s-despFixed').value = S.despFixed; document.getElementById('v-despFixed').textContent = S.despFixed + '%';
+  document.getElementById('s-capexMes').value = S.capexMes;
+  document.getElementById('s-capexVal').value = S.capexVal;
+  document.getElementById('t-emprest').checked = S.emprest;
+  document.getElementById('tb-emprest').classList.toggle('on', S.emprest);
+  document.getElementById('s-emprestMes').value = S.emprestMes;
+  document.getElementById('s-emprestVal').value = S.emprestVal;
+  document.getElementById('s-emprestPrazo').value = S.emprestPrazo;
+  document.getElementById('s-emprestTaxa').value = S.emprestTaxa;
+  document.getElementById('t-antecip').checked = S.antecip;
+  document.getElementById('tb-antecip').classList.toggle('on', S.antecip);
+  document.getElementById('s-antecipPct').value = S.antecipPct; document.getElementById('v-antecipPct').textContent = S.antecipPct + '%';
+  document.getElementById('s-antecipTaxa').value = S.antecipTaxa;
+  document.getElementById('s-antecipDias').value = S.antecipDias;
+}
+
+// Mobile menu
+document.getElementById('menuBtn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+// Init
+recalc();
+
+// Try to load last saved scenario from localStorage
+const saved = localStorage.getItem('marmoraria-scenario');
+if (saved) {
+  try {
+    // Don't auto-load, just offer via import button
+  } catch(e) {}
+}
+</script>
+</body>
+</html>
