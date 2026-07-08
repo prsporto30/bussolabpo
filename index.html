@@ -231,35 +231,39 @@
 
     <div class="leadgen__form-card">
       <!--
-        FORMULÁRIO DE CAPTURA — action="#" é placeholder.
-        Substituir pelo endpoint real de captura (Kiwify, ferramenta de e-mail marketing
-        ou webhook próprio) assim que estiver definido. Ver validação client-side em js/calculator.js (leadForm()).
+        FORMULÁRIO DE CAPTURA — envio via fetch() para o Web App do Google Apps Script
+        (ver SCRIPT_URL em js/calculator.js, dentro de leadForm()). O atributo action="#"
+        fica apenas como fallback estático (não é usado — o submit é interceptado em JS).
       -->
       <form id="lead-form" x-data="leadForm()" @submit="onSubmit" action="#" method="POST" novalidate>
         <h3>Baixar Guia Rápido de Precificação</h3>
 
-        <div class="field">
-          <label for="nome">Nome</label>
-          <input type="text" id="nome" name="nome" autocomplete="name" x-model="nome">
-        </div>
+        <div x-show="!enviado">
+          <div class="field">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" autocomplete="name" x-model="nome">
+          </div>
 
-        <div class="field">
-          <label for="telefone">Telefone <span class="req">*</span></label>
-          <input type="tel" id="telefone" name="telefone" autocomplete="tel" inputmode="tel" placeholder="(11) 91234-5678" required x-model="telefone" @input="maskPhone()" :class="{ 'is-invalid': touched.telefone && !telefoneValido }" @blur="touched.telefone = true">
-          <p class="field__error" x-show="touched.telefone && !telefoneValido" x-cloak>Informe um telefone válido com DDD.</p>
-        </div>
+          <div class="field">
+            <label for="telefone">Telefone <span class="req">*</span></label>
+            <input type="tel" id="telefone" name="telefone" autocomplete="tel" inputmode="tel" placeholder="(11) 91234-5678" required x-model="telefone" @input="maskPhone()" :class="{ 'is-invalid': touched.telefone && !telefoneValido }" @blur="touched.telefone = true">
+            <p class="field__error" x-show="touched.telefone && !telefoneValido" x-cloak>Informe um telefone válido com DDD.</p>
+          </div>
 
-        <div class="field">
-          <label for="email">E-mail <span class="req">*</span></label>
-          <input type="email" id="email" name="email" autocomplete="email" required x-model="email" :class="{ 'is-invalid': touched.email && !emailValido }" @blur="touched.email = true">
-          <p class="field__error" x-show="touched.email && !emailValido" x-cloak>Informe um e-mail válido.</p>
-        </div>
+          <div class="field">
+            <label for="email">E-mail <span class="req">*</span></label>
+            <input type="email" id="email" name="email" autocomplete="email" required x-model="email" :class="{ 'is-invalid': touched.email && !emailValido }" @blur="touched.email = true">
+            <p class="field__error" x-show="touched.email && !emailValido" x-cloak>Informe um e-mail válido.</p>
+          </div>
 
-        <button type="submit" class="btn btn--cta btn--block" :disabled="!formValido">Quero o Guia Rápido</button>
-        <p class="leadgen__privacy">Seus dados são usados apenas para envio do material. Sem spam.</p>
+          <button type="submit" class="btn btn--cta btn--block" :disabled="!formValido || enviando" x-text="enviando ? 'Enviando...' : 'Quero o Guia Rápido'"></button>
+          <p class="leadgen__privacy">Seus dados são usados apenas para envio do material. Sem spam.</p>
+
+          <p class="leadgen__error" role="alert" x-show="erroEnvio" x-cloak>Não foi possível enviar agora. Tente de novo em instantes.</p>
+        </div>
 
         <template x-if="enviado">
-          <p class="leadgen__success" role="status">Recebido. O Guia Rápido chega no seu e-mail em instantes.</p>
+          <p class="leadgen__success" role="status">Prontinho! Confere seu e-mail — o Guia Rápido chegou por lá.</p>
         </template>
       </form>
     </div>
