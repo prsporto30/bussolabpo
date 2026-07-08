@@ -4,624 +4,580 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Estruturação Financeira na Prática — Volume 1: Precificação | Bússola BPO Financeiro</title>
-<meta name="description" content="Pare de precificar no escuro. Planilha automatizada + ebook + curso para donos de empresas de serviço do Simples Nacional calcularem o preço certo de cada contrato.">
+<meta name="description" content="Descubra o preço mínimo real de cada contrato de serviço. Planilha automatizada + ebook + curso para donos de empresas de serviço do Simples Nacional (Anexo III) precificarem com fórmula, não com feeling.">
 
 <!--
   ============================================================
-  META PIXEL — instalar aqui (dentro do <head>, o mais alto possível)
-  Cole o código-base do Meta Pixel (Gerenciador de Eventos > Pixels > Configurar Pixel > Código Manual).
-  Depois de instalar, adicionar também o evento de conversão (ex: Lead no envio do form da isca,
-  Purchase na página de obrigado do Kiwify) — ver comentários mais abaixo nos pontos exatos.
+  META PIXEL — instalar aqui, dentro do <head>, o mais alto possível.
+  Colar o código-base do Meta Pixel (Gerenciador de Eventos > Pixels > Configurar Pixel > Código Manual).
+  Eventos recomendados: "Lead" no envio do formulário de captura (#lead-form, ver js/calculator.js)
+  e "Purchase" na página de obrigado do Kiwify (fora deste arquivo).
+  ============================================================
+  <script>
+    !function(f,b,e,v,n,t,s){...}(window, document,'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'SEU_PIXEL_ID');
+    fbq('track', 'PageView');
+  </script>
   ============================================================
 -->
 
 <!--
   ============================================================
-  GOOGLE ADS (gtag.js) — instalar aqui (dentro do <head>)
-  Cole a tag de conversão do Google Ads (Ferramentas > Conversões > Nova ação de conversão > Site > Instalar manualmente).
-  Se já usa Google Analytics/GA4, o gtag.js pode ser compartilhado entre os dois — não duplicar o script base.
+  GOOGLE ADS — TAG DE CONVERSÃO (gtag.js) — instalar aqui, dentro do <head>.
+  Cole a tag gerada em Google Ads > Ferramentas > Conversões > Nova ação de conversão > Site.
+  Se a conta já usa GA4, o script base gtag.js pode ser compartilhado — não duplicar o carregamento.
+  ============================================================
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-XXXXXXXXX');
+  </script>
   ============================================================
 -->
 
 <!--
   ============================================================
   CONVERSIONS API (CAPI) — NÃO é instalada aqui no front-end.
-  CAPI roda no servidor (ex: webhook do Kiwify -> endpoint que envia o evento de Purchase para a Meta
-  em paralelo ao Pixel). Mencionado no briefing como recomendado para não perder eventos por
-  bloqueador de anúncio / restrições de cookie. Avaliar depois que o Pixel básico estiver validado.
+  A CAPI roda no servidor (ex: webhook do Kiwify → endpoint próprio → envio do evento de Purchase
+  para a Meta em paralelo ao Pixel do navegador). Existe para recuperar conversões perdidas por
+  bloqueador de anúncios ou restrição de cookies de terceiros. Implementar depois que o Pixel
+  básico do front-end estiver validado em produção.
   ============================================================
 -->
 
-<style>
-  :root {
-    --navy: #0F2557;
-    --navy-2: #16345F;
-    --amber: #F59E0B;
-    --amber-dark: #B45309;
-    --green: #16A34A;
-    --green-dark: #15803D;
-    --text: #1F2937;
-    --muted: #5B6577;
-    --bg-soft: #F3F6FC;
-    --border: #E2E8F0;
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin: 0;
-    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
-    color: var(--text);
-    line-height: 1.6;
-    background: #fff;
-  }
-  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
-  a { color: inherit; }
-  img, svg { display: block; }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  /* ---------- Top bar ---------- */
-  .topbar {
-    background: var(--navy);
-    color: #fff;
-    padding: 14px 0;
-  }
-  .topbar .wrap { display: flex; align-items: center; gap: 10px; }
-  .topbar .brand { font-weight: 800; letter-spacing: 0.5px; font-size: 15px; }
-  .topbar .brand .accent { color: var(--amber); }
-
-  /* ---------- Hero ---------- */
-  .hero {
-    background: linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 60%, var(--navy) 100%);
-    color: #fff;
-    padding: 70px 0 60px;
-    text-align: center;
-  }
-  .hero .eyebrow {
-    text-transform: uppercase;
-    letter-spacing: 2.5px;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--amber);
-    margin-bottom: 18px;
-  }
-  .hero h1 {
-    font-size: clamp(28px, 4.2vw, 42px);
-    font-weight: 800;
-    margin: 0 0 20px;
-    max-width: 820px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.25;
-  }
-  .hero .sub {
-    font-size: 18px;
-    color: #C9D6EC;
-    max-width: 680px;
-    margin: 0 auto 34px;
-  }
-  .btn {
-    display: inline-block;
-    padding: 16px 34px;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 16px;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-  }
-  .btn-primary {
-    background: var(--amber);
-    color: var(--navy);
-  }
-  .btn-primary:hover { background: #ffb020; }
-  .hero .microcopy {
-    margin-top: 14px;
-    font-size: 13px;
-    color: #8FA3C7;
-  }
-
-  /* ---------- Sections ---------- */
-  section { padding: 64px 0; }
-  .section-alt { background: var(--bg-soft); }
-  .kicker {
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 12.5px;
-    font-weight: 700;
-    color: var(--amber-dark);
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  h2.h-title {
-    font-size: clamp(24px, 3vw, 32px);
-    font-weight: 800;
-    color: var(--navy);
-    text-align: center;
-    max-width: 760px;
-    margin: 0 auto 16px;
-  }
-  .lede {
-    text-align: center;
-    max-width: 680px;
-    margin: 0 auto 40px;
-    color: var(--muted);
-    font-size: 16.5px;
-  }
-
-  /* ---------- Oferta ---------- */
-  .offer-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-top: 10px;
-  }
-  .offer-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-top: 4px solid var(--navy);
-    border-radius: 10px;
-    padding: 28px 24px;
-  }
-  .offer-card:nth-child(2) { border-top-color: var(--amber); }
-  .offer-card:nth-child(3) { border-top-color: var(--green); }
-  .offer-card .num {
-    display: inline-flex;
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    background: var(--navy);
-    color: #fff;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    margin-bottom: 14px;
-  }
-  .offer-card:nth-child(2) .num { background: var(--amber-dark); }
-  .offer-card:nth-child(3) .num { background: var(--green-dark); }
-  .offer-card h3 { margin: 0 0 8px; font-size: 18px; color: var(--navy); }
-  .offer-card p { margin: 0; color: var(--muted); font-size: 15px; }
-
-  /* ---------- Autoridade ---------- */
-  .authority {
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 40px;
-    align-items: start;
-  }
-  .authority-points { list-style: none; margin: 20px 0 0; padding: 0; }
-  .authority-points li {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-    font-size: 15.5px;
-    color: var(--text);
-  }
-  .authority-points li .dot {
-    flex: 0 0 8px;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--amber);
-    margin-top: 8px;
-  }
-  .case-box {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 24px;
-  }
-  .case-box .tag {
-    display: inline-block;
-    background: var(--navy);
-    color: #fff;
-    font-size: 11.5px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 20px;
-    margin-bottom: 12px;
-  }
-  .case-box h4 { margin: 0 0 8px; color: var(--navy); font-size: 17px; }
-  .case-box p { margin: 0; color: var(--muted); font-size: 14.5px; }
-
-  .testimonial-slot {
-    margin-top: 24px;
-    border: 1.5px dashed #C7D2E0;
-    border-radius: 10px;
-    padding: 20px;
-    color: #8896AC;
-    font-size: 13.5px;
-    text-align: center;
-  }
-
-  /* ---------- Detalhamento ---------- */
-  .detail-block {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: center;
-    margin-bottom: 50px;
-  }
-  .detail-block:nth-child(odd) .detail-text { order: 1; }
-  .detail-block:nth-child(odd) .detail-visual { order: 2; }
-  .detail-block:nth-child(even) .detail-text { order: 2; }
-  .detail-block:nth-child(even) .detail-visual { order: 1; }
-  .detail-text .tag-line {
-    font-size: 12.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--amber-dark);
-    margin-bottom: 8px;
-  }
-  .detail-text h3 { margin: 0 0 10px; font-size: 21px; color: var(--navy); }
-  .detail-text ul { margin: 12px 0 0; padding-left: 18px; color: var(--muted); font-size: 15px; }
-  .detail-text li { margin-bottom: 6px; }
-  .detail-visual {
-    background: var(--navy);
-    border-radius: 12px;
-    min-height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #C9D6EC;
-    font-size: 13px;
-    text-align: center;
-    padding: 24px;
-  }
-
-  /* ---------- Preço / CTA ---------- */
-  .pricing-card {
-    max-width: 520px;
-    margin: 0 auto;
-    background: linear-gradient(135deg, var(--navy), var(--navy-2));
-    color: #fff;
-    border-radius: 16px;
-    padding: 40px 36px;
-    text-align: center;
-  }
-  .pricing-card .badge {
-    display: inline-block;
-    background: var(--amber);
-    color: var(--navy);
-    font-weight: 800;
-    font-size: 12px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    padding: 5px 14px;
-    border-radius: 20px;
-    margin-bottom: 18px;
-  }
-  .pricing-card .price {
-    font-size: 42px;
-    font-weight: 800;
-    margin: 6px 0 4px;
-  }
-  .pricing-card .price small { font-size: 16px; font-weight: 500; color: #C9D6EC; }
-  .pricing-card .price-note { font-size: 13.5px; color: #A9BAD9; margin-bottom: 26px; }
-  .pricing-card .btn-primary { width: 100%; }
-  .pricing-card .guarantee {
-    margin-top: 18px;
-    font-size: 13px;
-    color: #A9BAD9;
-  }
-
-  /* ---------- Captura de e-mail (isca) ---------- */
-  .lead-box {
-    max-width: 620px;
-    margin: 0 auto;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 36px;
-    text-align: center;
-  }
-  .lead-box .compass-mini { margin: 0 auto 14px; }
-  .lead-form {
-    display: flex;
-    gap: 10px;
-    margin-top: 22px;
-    flex-wrap: wrap;
-  }
-  .lead-form input[type="text"],
-  .lead-form input[type="email"] {
-    flex: 1 1 200px;
-    padding: 13px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 15px;
-  }
-  .lead-form button {
-    flex: 0 0 auto;
-    background: var(--navy);
-    color: #fff;
-    font-weight: 700;
-    padding: 13px 22px;
-    border-radius: 8px;
-  }
-  .lead-form button:hover { background: var(--navy-2); }
-  .lead-microcopy { margin-top: 12px; font-size: 12.5px; color: var(--muted); }
-
-  /* ---------- FAQ ---------- */
-  .faq-item {
-    border-bottom: 1px solid var(--border);
-    padding: 18px 0;
-  }
-  .faq-item summary {
-    cursor: pointer;
-    font-weight: 700;
-    color: var(--navy);
-    font-size: 16px;
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .faq-item summary::-webkit-details-marker { display: none; }
-  .faq-item summary::after {
-    content: "+";
-    font-size: 22px;
-    color: var(--amber-dark);
-    font-weight: 800;
-  }
-  .faq-item[open] summary::after { content: "–"; }
-  .faq-item p { margin: 12px 0 0; color: var(--muted); font-size: 15px; }
-
-  /* ---------- Footer ---------- */
-  footer {
-    background: var(--navy);
-    color: #A9BAD9;
-    padding: 34px 0;
-    text-align: center;
-    font-size: 13px;
-  }
-  footer .brand { color: #fff; font-weight: 700; margin-bottom: 6px; }
-  footer .contact {
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid rgba(255,255,255,0.12);
-    display: flex;
-    justify-content: center;
-    gap: 22px;
-    flex-wrap: wrap;
-  }
-  footer .contact a { color: #C9D6EC; text-decoration: none; }
-  footer .contact a:hover { color: #fff; }
-
-  @media (max-width: 760px) {
-    .offer-grid { grid-template-columns: 1fr; }
-    .authority { grid-template-columns: 1fr; }
-    .detail-block { grid-template-columns: 1fr; }
-    .detail-block:nth-child(odd) .detail-text,
-    .detail-block:nth-child(even) .detail-text { order: 1 !important; }
-    .detail-block:nth-child(odd) .detail-visual,
-    .detail-block:nth-child(even) .detail-visual { order: 2 !important; }
-  }
-</style>
+<link rel="stylesheet" href="css/styles.css">
+<noscript><style>[data-reveal]{opacity:1!important;transform:none!important;}</style></noscript>
 </head>
 <body>
 
-<!--
-  ============================================================
-  META PIXEL — evento "PageView" (padrão) já vem no código-base colado no <head>.
-  Se quiser, pode adicionar aqui um <noscript> de fallback (opcional, o Gerenciador de Eventos
-  fornece esse trecho junto com o código-base).
-  ============================================================
--->
-
-<div class="topbar">
-  <div class="wrap">
-    <span class="brand">🧭 BÚSSOLA <span class="accent">BPO</span> FINANCEIRO</span>
-  </div>
-</div>
-
-<!-- 1. HEADLINE — dor específica -->
-<section class="hero">
-  <div class="wrap">
-    <div class="eyebrow">Estruturação Financeira na Prática · Volume 1</div>
-    <h1>Sua empresa de serviço fatura bem e, mesmo assim, sobra pouco no fim do mês?</h1>
-    <p class="sub">Na maioria das PME de serviço do Simples Nacional, o preço de cada contrato nunca foi calculado — foi estimado. O resultado aparece só depois: margem apertada, contrato que "dá trabalho mas não paga" e a sensação de que crescer não está resolvendo o problema de caixa.</p>
-    <a href="#oferta" class="btn btn-primary">Quero estruturar minha precificação</a>
-    <div class="microcopy">Planilha + ebook + curso — método aplicado a empresas de serviço com funcionários e contratos.</div>
-  </div>
-</section>
-
-<!-- 2. Apresentação da oferta -->
-<section id="oferta">
-  <div class="wrap">
-    <div class="kicker">A oferta</div>
-    <h2 class="h-title">Um pacote único para sair do "achismo" e entrar no cálculo</h2>
-    <p class="lede">Três componentes que se completam: a ferramenta que calcula, o material que explica o porquê, e o curso que mostra a aplicação na prática.</p>
-
-    <div class="offer-grid">
-      <div class="offer-card">
-        <div class="num">1</div>
-        <h3>Planilha Bússola de Precificação</h3>
-        <p>Google Sheets + Apps Script. Calcula o preço mínimo de cada contrato, o corredor de mercado e o diagnóstico de saúde de margem — automaticamente, a partir dos seus dados de custo.</p>
+<!-- ============================================================
+     HERO — split screen. Sem menu de navegação: foco total na proposta.
+     ============================================================ -->
+<header class="hero" id="topo">
+  <div class="hero__inner wrap">
+    <div class="hero__text" data-reveal>
+      <div class="brandmark">
+        <svg class="brandmark__icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="2.5"/>
+          <circle cx="24" cy="24" r="2.5" fill="currentColor"/>
+          <path d="M31 17L20.5 20.5L17 31L27.5 27.5L31 17Z" fill="var(--amber)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <span>BÚSSOLA <strong>BPO FINANCEIRO</strong></span>
       </div>
-      <div class="offer-card">
-        <div class="num">2</div>
-        <h3>Ebook completo — 16 capítulos</h3>
-        <p>Do custo à política de reajuste de preço. Cada modelo (custo, valor, mercado) explicado e aplicado passo a passo a um caso real de empresa de serviço.</p>
-      </div>
-      <div class="offer-card">
-        <div class="num">3</div>
-        <h3>Curso em vídeo — 13 aulas</h3>
-        <p>Narrado, com a tela da planilha sendo usada de verdade. Sem enrolação teórica: você acompanha exatamente onde clicar e o que preencher.</p>
-      </div>
+
+      <p class="hero__kicker">Estruturação Financeira na Prática — Volume 1: Precificação</p>
+      <h1 class="hero__headline">Seu preço é chute ou é cálculo?</h1>
+      <p class="hero__sub">Descubra o preço mínimo real de cada contrato de serviço — antes que a margem desapareça no fim do mês. Feito para empresas de serviço do Simples Nacional, Anexo III.</p>
+
+      <a href="#calculadora" class="btn btn--cta btn--lg">
+        Calcular meu preço mínimo agora
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5V19M12 19L6 13M12 19L18 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <p class="hero__microcopy">Leva menos de 1 minuto. Sem cadastro para ver o resultado.</p>
     </div>
-  </div>
-</section>
 
-<!-- 3. Prova de autoridade -->
-<section class="section-alt">
-  <div class="wrap">
-    <div class="kicker">Quem está por trás</div>
-    <h2 class="h-title">Método estruturado por quem trabalha com números de empresa de serviço todo dia</h2>
-
-    <div class="authority">
-      <div>
-        <p class="lede" style="margin-bottom:0; text-align:left; max-width:none;">A Bússola BPO Financeiro nasce da rotina de estruturação financeira de empresas de serviço — não de um curso genérico de precificação montado para vender online.</p>
-        <ul class="authority-points">
-          <li><span class="dot"></span> Conteúdo desenvolvido por equipe técnica com formação em Contabilidade e Finanças Corporativas, incluindo atuação como CFO fracionário em empresas de serviço do Simples Nacional.</li>
-          <li><span class="dot"></span> Método testado na estruturação financeira real de contratos com funcionários, encargos e regime tributário Anexo III — não em planilhas teóricas de curso.</li>
-          <li><span class="dot"></span> Terminologia e cálculo alinhados ao que qualquer contador ou consultor financeiro reconheceria como tecnicamente correto — sem atalhos de "fórmula mágica".</li>
-        </ul>
-      </div>
-
-      <div>
-        <div class="case-box">
-          <span class="tag">Caso aplicado</span>
-          <h4>Vértice Serviços LTDA</h4>
-          <p>Empresa de facilities e apoio operacional, Simples Nacional (Anexo III), usada como estudo de caso completo em todo o material — nome fictício, números e estrutura de contrato representativos de uma empresa real de serviço com funcionários e múltiplos contratos.</p>
+    <div class="hero__visual" data-reveal>
+      <div class="dash-card" id="heroDashCard">
+        <div class="dash-card__bar">
+          <span></span><span></span><span></span>
+          <p>bússola-precificação.xlsx</p>
         </div>
+        <div class="dash-card__body">
+          <p class="dash-card__tag">Exemplo ilustrativo — caso Vértice Serviços LTDA</p>
 
-        <div class="testimonial-slot">
-          [ Espaço reservado para depoimentos reais de clientes da Bússola BPO — inserir aqui ]
+          <div class="dash-row">
+            <span>Custo direto do contrato</span>
+            <strong>R$ 6.200,00</strong>
+          </div>
+          <div class="dash-row">
+            <span>Impostos efetivos</span>
+            <strong>8%</strong>
+          </div>
+          <div class="dash-row">
+            <span>Despesas fixas rateadas</span>
+            <strong>18%</strong>
+          </div>
+          <div class="dash-row">
+            <span>Margem desejada</span>
+            <strong>15%</strong>
+          </div>
+
+          <div class="dash-bar-track" aria-hidden="true">
+            <div class="dash-bar-fill" id="heroBarFill"></div>
+          </div>
+
+          <div class="dash-result">
+            <span>Preço mínimo do contrato</span>
+            <strong id="heroDemoNumber">R$ 0,00</strong>
+          </div>
+          <span class="dash-badge">Corredor de mercado: saudável</span>
         </div>
       </div>
     </div>
   </div>
-</section>
+</header>
 
-<!-- 4. Detalhamento dos 3 componentes -->
-<section>
-  <div class="wrap">
-    <div class="kicker">O que está incluso</div>
-    <h2 class="h-title">Cada componente resolve uma parte do problema</h2>
-
-    <div class="detail-block">
-      <div class="detail-text">
-        <div class="tag-line">Componente 1</div>
-        <h3>Planilha Bússola de Precificação</h3>
-        <ul>
-          <li>Cadastro de funcionários, insumos e serviços com fórmulas prontas.</li>
-          <li>Cálculo automático do preço mínimo por contrato (custo, impostos, despesas fixas, margem).</li>
-          <li>Diagnóstico de carteira em 4 níveis: Saudável, Ajuste Necessário, Crítico, Inviável.</li>
-          <li>Painel de indicadores com visão consolidada da margem da empresa.</li>
-        </ul>
-      </div>
-      <div class="detail-visual">🧭 Painel Bússola de Precificação — captura de tela real na versão completa</div>
+<!-- ============================================================
+     BARRA DE CONFIANÇA
+     ============================================================ -->
+<section class="trustbar" aria-label="Credenciais">
+  <div class="wrap trustbar__grid" data-reveal>
+    <div class="trustbar__item">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2L3 6V11C3 16 6.7 20.6 12 22C17.3 20.6 21 16 21 11V6L12 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12L11 14L15.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Equipe técnica em Contabilidade e Finanças Corporativas</span>
     </div>
-
-    <div class="detail-block">
-      <div class="detail-text">
-        <div class="tag-line">Componente 2</div>
-        <h3>Ebook — Estruturação Financeira na Prática, Vol. 1</h3>
-        <ul>
-          <li>16 capítulos: da estrutura de custo à precificação estratégica.</li>
-          <li>Os três modelos (custo, valor, mercado) explicados e aplicados ao caso Vértice.</li>
-          <li>Framework de 4 perguntas para escolher o modelo certo em cada contrato.</li>
-          <li>Diagnóstico de precificação em 6 passos, com exercício prático a cada capítulo.</li>
-        </ul>
-      </div>
-      <div class="detail-visual">📘 Capa e sumário do ebook — versão completa, 16 capítulos</div>
+    <div class="trustbar__item">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 20V10L9 6L15 10V4L21 8V20H3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 20H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>Atuação como CFO fracionário em empresas de serviço</span>
     </div>
-
-    <div class="detail-block">
-      <div class="detail-text">
-        <div class="tag-line">Componente 3</div>
-        <h3>Curso em vídeo — 13 aulas</h3>
-        <ul>
-          <li>Aulas curtas, uma por tópico específico da planilha.</li>
-          <li>Narração real (não é locução de IA), tela mostrando a ferramenta sendo usada de verdade.</li>
-          <li>Cobre cadastro, precificação, relatórios e diagnóstico de carteira.</li>
-        </ul>
-      </div>
-      <div class="detail-visual">🎬 Tela de aula — gravação real da planilha em uso</div>
+    <div class="trustbar__item">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 9H17M7 13H14M7 17H11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>Método aplicado a empresas reais do Simples Nacional, Anexo III</span>
+    </div>
+    <div class="trustbar__item">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L14.5 9L21 9.5L16 14L17.5 21L12 17.5L6.5 21L8 14L3 9.5L9.5 9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span>Baseado no caso real de precificação Vértice Serviços LTDA</span>
     </div>
   </div>
 </section>
 
-<!-- 5. Preço e CTA de compra -->
-<section class="section-alt" id="comprar">
+<!-- ============================================================
+     CALCULADORA INTERATIVA — peça central da página
+     ============================================================ -->
+<section class="section calculadora" id="calculadora" x-data="calculatorApp()">
   <div class="wrap">
-    <div class="kicker">Investimento</div>
-    <h2 class="h-title">Um preço de entrada para validar o método na sua empresa</h2>
+    <div class="section__head" data-reveal>
+      <p class="section__eyebrow">Calculadora de precificação</p>
+      <h2 class="section__title">Qual é o preço mínimo do seu contrato?</h2>
+      <p class="section__sub">Preencha com os números do seu contrato. O resultado recalcula em tempo real — sem precisar clicar em nada.</p>
+    </div>
 
-    <div class="pricing-card">
-      <div class="badge">Oferta de lançamento</div>
-      <div class="price">R$ 97 <small>a R$ 147</small></div>
-      <div class="price-note">Pagamento único · planilha + ebook + curso · sem mensalidade</div>
+    <div class="calc-panel" data-reveal>
+      <div class="calc-panel__inputs">
+        <div class="field">
+          <label for="custoDireto">Custo direto mensal do contrato (R$)</label>
+          <div class="field__prefix">
+            <span>R$</span>
+            <input
+              type="number"
+              id="custoDireto"
+              inputmode="decimal"
+              min="0"
+              step="50"
+              placeholder="0,00"
+              x-model.number="custoDireto"
+              @input="calcular()">
+          </div>
+        </div>
 
-      <!--
-        LINK DE CHECKOUT KIWIFY — substituir href="#" pelo link real do produto
-        depois de cadastrado no Kiwify (ver checklist de preparação).
-      -->
-      <a href="#" class="btn btn-primary">Quero acessar o Volume 1 completo</a>
+        <div class="field field--slider">
+          <label for="impostos">% Impostos efetivos <span class="field__value" x-text="format1(impostos) + '%'"></span></label>
+          <input type="range" id="impostos" min="0" max="20" step="0.5" x-model.number="impostos" @input="calcular()">
+        </div>
 
-      <div class="guarantee">Garantia de 7 dias, conforme política a definir no cadastro do produto.</div>
+        <div class="field field--slider">
+          <label for="despesas">% Despesas fixas rateadas <span class="field__value" x-text="format1(despesas) + '%'"></span></label>
+          <input type="range" id="despesas" min="0" max="40" step="0.5" x-model.number="despesas" @input="calcular()">
+        </div>
+
+        <div class="field field--slider">
+          <label for="margem">% Margem desejada <span class="field__value" x-text="format1(margem) + '%'"></span></label>
+          <input type="range" id="margem" min="0" max="40" step="0.5" x-model.number="margem" @input="calcular()">
+        </div>
+      </div>
+
+      <div class="calc-panel__result">
+        <div x-show="!erro">
+          <p class="calc-result__label">Preço mínimo do contrato</p>
+          <p class="calc-result__number" id="resultadoNumero">R$ 0,00</p>
+          <div class="calc-result__meter" aria-hidden="true">
+            <div class="calc-result__meter-fill" :style="`width:${somaPercentuais}%`" :class="{ 'is-warning': somaPercentuais >= 80 }"></div>
+          </div>
+          <p class="calc-result__soma">Impostos + despesas + margem somam <strong x-text="format1(somaPercentuais) + '%'"></strong> do preço final.</p>
+        </div>
+
+        <div class="calc-error" role="alert" x-show="erro" x-cloak>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 9V13M12 17H12.01M10.29 3.86L1.82 18A2 2 0 0 0 3.54 21H20.46A2 2 0 0 0 22.18 18L13.71 3.86A2 2 0 0 0 10.29 3.86Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p>Esses percentuais somados não podem chegar a 100% — o preço tenderia ao infinito. Ajuste os valores acima.</p>
+        </div>
+
+        <p class="calc-result__note">Esse é o seu piso. Ele garante que o contrato não dá prejuízo — mas não diz se é o melhor preço possível.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 6. Captura de e-mail — isca (Guia Rápido) -->
-<section id="guia-gratis">
-  <div class="wrap">
-    <div class="lead-box">
-      <div class="kicker" style="margin-bottom:6px;">Antes de decidir</div>
-      <h2 class="h-title" style="font-size:22px;">Quer testar o método antes? Baixe o Guia Rápido de Precificação</h2>
-      <p class="lede" style="margin-bottom:0;">Um recorte gratuito com o framework central — a fórmula, os três modelos e as perguntas para escolher o modelo certo. Sem passo a passo completo, só o suficiente para você já sair pensando diferente sobre o preço dos seus contratos.</p>
+<!-- ============================================================
+     FORMULÁRIO DE CAPTURA — isca "Guia Rápido de Precificação"
+     ============================================================ -->
+<section class="section leadgen" id="guia-rapido">
+  <div class="wrap leadgen__grid" data-reveal>
+    <div class="leadgen__copy">
+      <p class="section__eyebrow section__eyebrow--light">Próximo passo</p>
+      <h2 class="leadgen__title">Esse preço está dentro do corredor competitivo do seu mercado?</h2>
+      <p class="leadgen__sub">O preço mínimo garante que você não opera no prejuízo. Mas ele não diz se está competitivo, nem se está deixando dinheiro na mesa. Baixe o <strong>Guia Rápido de Precificação</strong> e entenda o que vem depois do piso — grátis, em PDF.</p>
+      <ul class="leadgen__list">
+        <li>Como interpretar o corredor de mercado (mínimo, médio e ideal)</li>
+        <li>Os 4 níveis de diagnóstico de saúde de margem</li>
+        <li>Erros mais comuns de precificação em empresas do Anexo III</li>
+      </ul>
+    </div>
 
+    <div class="leadgen__form-card">
       <!--
         FORMULÁRIO DE CAPTURA — action="#" é placeholder.
-        Substituir pelo endpoint real (ex: formulário de captura do próprio Kiwify,
-        ou uma ferramenta de e-mail marketing) quando a integração estiver definida.
+        Substituir pelo endpoint real de captura (Kiwify, ferramenta de e-mail marketing
+        ou webhook próprio) assim que estiver definido. Ver validação client-side em js/calculator.js (leadForm()).
       -->
-      <form class="lead-form" action="#" method="POST">
-        <input type="text" name="nome" placeholder="Seu nome" required>
-        <input type="email" name="email" placeholder="Seu melhor e-mail" required>
-        <button type="submit">Quero o Guia Rápido</button>
+      <form id="lead-form" x-data="leadForm()" @submit="onSubmit" action="#" method="POST" novalidate>
+        <h3>Baixar Guia Rápido de Precificação</h3>
+
+        <div class="field">
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" name="nome" autocomplete="name" x-model="nome">
+        </div>
+
+        <div class="field">
+          <label for="telefone">Telefone <span class="req">*</span></label>
+          <input type="tel" id="telefone" name="telefone" autocomplete="tel" inputmode="tel" placeholder="(11) 91234-5678" required x-model="telefone" @input="maskPhone()" :class="{ 'is-invalid': touched.telefone && !telefoneValido }" @blur="touched.telefone = true">
+          <p class="field__error" x-show="touched.telefone && !telefoneValido" x-cloak>Informe um telefone válido com DDD.</p>
+        </div>
+
+        <div class="field">
+          <label for="email">E-mail <span class="req">*</span></label>
+          <input type="email" id="email" name="email" autocomplete="email" required x-model="email" :class="{ 'is-invalid': touched.email && !emailValido }" @blur="touched.email = true">
+          <p class="field__error" x-show="touched.email && !emailValido" x-cloak>Informe um e-mail válido.</p>
+        </div>
+
+        <button type="submit" class="btn btn--cta btn--block" :disabled="!formValido">Quero o Guia Rápido</button>
+        <p class="leadgen__privacy">Seus dados são usados apenas para envio do material. Sem spam.</p>
+
+        <template x-if="enviado">
+          <p class="leadgen__success" role="status">Recebido. O Guia Rápido chega no seu e-mail em instantes.</p>
+        </template>
       </form>
-      <div class="lead-microcopy">Enviamos o PDF direto no seu e-mail. Sem spam.</div>
     </div>
   </div>
 </section>
 
-<!-- 7. FAQ -->
-<section class="section-alt">
-  <div class="wrap" style="max-width: 780px;">
-    <div class="kicker">Perguntas frequentes</div>
-    <h2 class="h-title">Antes de você decidir</h2>
+<!-- ============================================================
+     A OFERTA — bento grid
+     ============================================================ -->
+<section class="section oferta" id="oferta">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="section__eyebrow">O que você recebe</p>
+      <h2 class="section__title">Um sistema completo de precificação, não só uma planilha</h2>
+    </div>
 
-    <details class="faq-item" open>
-      <summary>Funciona para o meu tipo de empresa de serviço?</summary>
-      <p>O material foi construído para empresas de serviço do Simples Nacional (Anexo III) com funcionários e contratos — como facilities, limpeza, apoio operacional, terceirização e serviços B2B recorrentes. Se sua empresa se enquadra nesse perfil, a lógica de custo e precificação se aplica diretamente.</p>
-    </details>
-    <details class="faq-item">
-      <summary>Preciso saber Excel ou Google Sheets avançado?</summary>
-      <p>Não. A planilha já vem com as fórmulas prontas — você preenche dados de funcionários, insumos e contratos, e o cálculo é automático. O curso em vídeo mostra exatamente onde clicar em cada etapa.</p>
-    </details>
-    <details class="faq-item">
-      <summary>Preciso entender de contabilidade para aplicar o método?</summary>
-      <p>Não é pré-requisito. O ebook explica cada conceito (custo, margem, markup, ponto de equilíbrio) antes de aplicá-lo — o objetivo é justamente dar autonomia técnica pra quem não tem formação em finanças.</p>
-    </details>
-    <details class="faq-item">
-      <summary>A planilha funciona no Excel ou só no Google Sheets?</summary>
-      <p>A versão incluída neste pacote é Google Sheets com Apps Script (mais recursos de automação). Existe também uma versão em Excel puro, sem macros — consulte a página do produto no Kiwify para detalhes de qual versão está incluída na oferta atual.</p>
-    </details>
-    <details class="faq-item">
-      <summary>Tem suporte incluso depois da compra?</summary>
-      <p>O produto é entregue como material de autoestudo (planilha + ebook + curso), sem suporte individual pós-venda incluso — o curso em vídeo e o ebook foram estruturados para que você consiga aplicar o método de forma independente.</p>
-    </details>
+    <div class="bento" data-reveal>
+      <div class="bento__item bento__item--lg">
+        <span class="bento__icon">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21M9 9V21" stroke="currentColor" stroke-width="1.8"/></svg>
+        </span>
+        <h3>Planilha Bússola de Precificação</h3>
+        <p>Google Sheets + Apps Script. Calcula o preço mínimo de cada contrato, posiciona o resultado num corredor de mercado e gera um diagnóstico automático de saúde de margem em 4 níveis — por contrato e para a carteira inteira.</p>
+      </div>
+
+      <div class="bento__item">
+        <span class="bento__icon">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4H16C17.1 4 18 4.9 18 6V20L11 17L4 20V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </span>
+        <h3>Ebook — 16 capítulos</h3>
+        <p>Do conceito de custo direto ao diagnóstico completo de carteira, com exemplos numéricos baseados no caso Vértice Serviços LTDA.</p>
+      </div>
+
+      <div class="bento__item">
+        <span class="bento__icon">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M10 9L15 12L10 15V9Z" fill="currentColor"/></svg>
+        </span>
+        <h3>Curso em vídeo — 13 aulas</h3>
+        <p>Aulas narradas mostrando a planilha em uso real, aula a aula, com o caso Vértice Serviços sendo resolvido do início ao fim.</p>
+      </div>
+    </div>
   </div>
 </section>
 
-<footer>
+<!-- ============================================================
+     ANTES x DEPOIS
+     ============================================================ -->
+<section class="section comparativo" id="comparativo">
   <div class="wrap">
-    <div class="brand">🧭 Bússola BPO Financeiro</div>
-    <div>Estruturação Financeira na Prática — Volume 1: Precificação</div>
+    <div class="section__head" data-reveal>
+      <p class="section__eyebrow">A diferença</p>
+      <h2 class="section__title">Precificar por feeling versus precificar com fórmula</h2>
+    </div>
 
-    <!--
-      WHATSAPP BUSINESS — ainda não configurado (Paulo vai colocar o número de WhatsApp
-      Business depois). Quando tiver o número, adicionar aqui um link
-      https://wa.me/55DDDNUMERO (E.164, sem espaços/símbolos) — pode ser o mesmo padrão
-      usado como botão flutuante/CTA se desejado.
-    -->
-    <div class="contact">
-      <a href="tel:+5567992061598">📞 (67) 99206-1598</a>
-      <a href="mailto:contato@bussolabpo.com.br">✉️ contato@bussolabpo.com.br</a>
+    <div class="compare" data-reveal>
+      <div class="compare__col compare__col--before">
+        <h3>Do jeito antigo</h3>
+        <ul>
+          <li>Preço decidido no feeling, olhando o que o concorrente cobra</li>
+          <li>Markup genérico aplicado sobre o custo, sem impostos reais embutidos</li>
+          <li>Margem real só aparece — se aparecer — no fechamento do mês</li>
+          <li>Contrato ruim descoberto tarde demais, quando trocar de preço já custa o cliente</li>
+        </ul>
+      </div>
+      <div class="compare__col compare__col--after">
+        <h3>Com a Bússola</h3>
+        <ul>
+          <li>Preço mínimo calculado com impostos, despesas fixas e margem embutidos na fórmula</li>
+          <li>Corredor de mercado mostra se o preço é competitivo, não só se é sustentável</li>
+          <li>Diagnóstico de saúde de margem em 4 níveis, contrato por contrato</li>
+          <li>Decisão de repactuar ou encerrar contrato tomada com números, não com sensação</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     AUTORIDADE
+     ============================================================ -->
+<section class="section autoridade" id="autoridade">
+  <div class="wrap autoridade__grid">
+    <div data-reveal>
+      <p class="section__eyebrow">Quem constrói a Bússola</p>
+      <h2 class="section__title">Autoridade técnica, não personalidade de vitrine</h2>
+      <p class="autoridade__text">A Bússola BPO Financeiro é formada por uma equipe técnica com formação em Contabilidade e Finanças Corporativas, com atuação como CFO fracionário em empresas de serviço do Simples Nacional. O método deste material não é teórico: foi construído a partir do diagnóstico e da reestruturação financeira de empresas reais do setor.</p>
+      <p class="autoridade__text">O caso que ilustra todo o conteúdo — <strong>Vértice Serviços LTDA</strong> — é uma empresa fictícia de facilities, Simples Nacional, Anexo III, usada para representar com números realistas o processo completo de precificação, do custo direto ao diagnóstico de carteira.</p>
+    </div>
+
+    <div class="testimonials" data-reveal x-data="{ current: 0, items: 1 }">
+      <!-- Estrutura de carrossel pronta para receber depoimentos reais.
+           Hoje contém apenas 1 placeholder — substituir por cards reais assim que
+           os primeiros depoimentos de clientes forem coletados. -->
+      <div class="testimonials__track">
+        <div class="testimonial-card testimonial-card--placeholder">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8H4V13C4 15 5.5 16.5 7.5 16.5V14.5C6.7 14.5 6 13.8 6 13V10H7C7.5 10 8 9.5 8 9V8.5C8 8.2 7.5 8 7 8Z" fill="currentColor"/><path d="M15 8H12V13C12 15 13.5 16.5 15.5 16.5V14.5C14.7 14.5 14 13.8 14 13V10H15C15.5 10 16 9.5 16 9V8.5C16 8.2 15.5 8 15 8Z" fill="currentColor"/></svg>
+          <p>Espaço reservado para depoimentos reais de clientes. Assim que os primeiros feedbacks forem coletados, este bloco será substituído por cards com nome, empresa e relato — mantendo a mesma estrutura de carrossel.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     DETALHAMENTO DOS 3 COMPONENTES
+     ============================================================ -->
+<section class="section detalhe" id="detalhes">
+  <div class="wrap">
+
+    <div class="detalhe-item" data-reveal>
+      <div class="detalhe-item__text">
+        <p class="section__eyebrow">Componente 1</p>
+        <h3>Planilha Bússola de Precificação</h3>
+        <p>Construída em Google Sheets com Apps Script — sem instalar nada, sem escrever fórmula. Você preenche o custo direto, os impostos efetivos, as despesas fixas rateadas e a margem desejada, e a planilha calcula:</p>
+        <ul class="check-list">
+          <li>O preço mínimo do contrato</li>
+          <li>O corredor de mercado (faixa mínima, média e ideal)</li>
+          <li>O diagnóstico de saúde de margem em 4 níveis — crítico, atenção, saudável e ótimo</li>
+          <li>A visão consolidada da carteira inteira de contratos</li>
+        </ul>
+      </div>
+      <div class="detalhe-item__visual">
+        <div class="mini-card">
+          <div class="mini-card__row"><span>Diagnóstico</span><strong class="tag tag--green">Saudável</strong></div>
+          <div class="mini-card__row"><span>Corredor de mercado</span><strong>R$ 9.200 – R$ 11.800</strong></div>
+          <div class="mini-card__row"><span>Preço atual</span><strong>R$ 10.450</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detalhe-item detalhe-item--reverse" data-reveal>
+      <div class="detalhe-item__text">
+        <p class="section__eyebrow">Componente 2</p>
+        <h3>Ebook — 16 capítulos</h3>
+        <p>Um guia completo, do conceito de custo direto ao diagnóstico de carteira, escrito para quem toma decisão — não para quem quer virar contador. Cada capítulo usa o caso Vértice Serviços LTDA para mostrar a fórmula em contexto, com números reais de um contrato de facilities.</p>
+        <ul class="check-list">
+          <li>Fundamentos: custo direto, despesas fixas e margem de contribuição</li>
+          <li>A fórmula do preço mínimo, passo a passo</li>
+          <li>Corredor de mercado e diagnóstico de saúde de margem</li>
+          <li>Precificação de contratos com terceirização e mão de obra intensiva</li>
+        </ul>
+      </div>
+      <div class="detalhe-item__visual">
+        <div class="mini-card mini-card--book">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4H16C17.1 4 18 4.9 18 6V20L11 17L4 20V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <p>16 capítulos · leitura aplicada, com exercícios numéricos</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="detalhe-item" data-reveal>
+      <div class="detalhe-item__text">
+        <p class="section__eyebrow">Componente 3</p>
+        <h3>Curso em vídeo — 13 aulas</h3>
+        <p>Aulas narradas, com a planilha na tela sendo preenchida e interpretada em tempo real. Você acompanha o caso Vértice Serviços do início ao fim: do lançamento dos custos até a leitura do diagnóstico de saúde de margem da carteira completa.</p>
+        <ul class="check-list">
+          <li>13 aulas curtas, direto ao ponto</li>
+          <li>Tela gravada mostrando a planilha em uso real</li>
+          <li>Mesmo caso do ebook, agora em vídeo</li>
+        </ul>
+      </div>
+      <div class="detalhe-item__visual">
+        <div class="mini-card mini-card--video">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M10 9L15 12L10 15V9Z" fill="currentColor"/></svg>
+          <p>13 aulas narradas · caso Vértice Serviços do início ao fim</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     PREÇO E CTA DE COMPRA
+     ============================================================ -->
+<section class="section preco" id="preco">
+  <div class="wrap">
+    <div class="price-card" data-reveal>
+      <div class="price-card__head">
+        <p class="section__eyebrow section__eyebrow--light">Estruturação Financeira na Prática</p>
+        <h2>Volume 1: Precificação</h2>
+        <p class="price-card__desc">Planilha + ebook + curso em vídeo. Pagamento único.</p>
+      </div>
+
+      <!-- Preço de lançamento: faixa definida no briefing é R$97–147. Ajustar o valor abaixo
+           conforme a precificação final definida para o lançamento no Kiwify. -->
+      <p class="price-card__value"><span>R$</span>127<span class="price-card__cents">,00</span></p>
+      <p class="price-card__installment">à vista, pagamento único — sem mensalidade</p>
+
+      <ul class="price-card__includes">
+        <li>Planilha Bússola de Precificação (Google Sheets + Apps Script)</li>
+        <li>Ebook completo — 16 capítulos</li>
+        <li>Curso em vídeo — 13 aulas narradas</li>
+        <li>Acesso imediato após a confirmação do pagamento</li>
+      </ul>
+
+      <!-- CTA de compra: href="#" é placeholder. Substituir pelo link real do checkout Kiwify assim que o produto estiver cadastrado. -->
+      <a href="#" class="btn btn--cta btn--lg btn--block" id="ctaComprar">Quero estruturar minha precificação</a>
+
+      <div class="price-card__guarantee">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2L3 6V11C3 16 6.7 20.6 12 22C17.3 20.6 21 16 21 11V6L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12L11 14L15.5 9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p>Garantia de 7 dias. Se não fizer sentido para sua empresa, o reembolso é integral e sem burocracia, conforme o Art. 49 do Código de Defesa do Consumidor.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FAQ
+     ============================================================ -->
+<section class="section faq" id="faq" x-data="{ open: 0 }">
+  <div class="wrap wrap--narrow">
+    <div class="section__head" data-reveal>
+      <p class="section__eyebrow">Perguntas frequentes</p>
+      <h2 class="section__title">Antes de decidir</h2>
+    </div>
+
+    <div class="accordion" data-reveal>
+      <div class="accordion__item">
+        <button class="accordion__trigger" @click="open = open === 0 ? null : 0" :aria-expanded="open === 0">
+          Funciona pro meu tipo de empresa?
+          <svg :class="{ 'is-open': open === 0 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="accordion__panel" x-show="open === 0" x-collapse x-cloak>
+          <p>A planilha e o método foram construídos para empresas de serviço do Simples Nacional, Anexo III, com funcionários e contratos recorrentes — facilities, limpeza, apoio operacional, terceirização e afins. Se sua empresa se encaixa nesse perfil, o cálculo se aplica diretamente. Fora desse regime tributário, a lógica da fórmula continua válida, mas os parâmetros de impostos precisam ser ajustados manualmente.</p>
+        </div>
+      </div>
+
+      <div class="accordion__item">
+        <button class="accordion__trigger" @click="open = open === 1 ? null : 1" :aria-expanded="open === 1">
+          Preciso saber Excel avançado?
+          <svg :class="{ 'is-open': open === 1 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="accordion__panel" x-show="open === 1" x-collapse x-cloak>
+          <p>Não. A planilha já vem com as fórmulas prontas em Google Sheets — você preenche os campos de custo, impostos, despesas e margem, e o Apps Script faz o resto. Não é necessário escrever fórmulas nem programar nada.</p>
+        </div>
+      </div>
+
+      <div class="accordion__item">
+        <button class="accordion__trigger" @click="open = open === 2 ? null : 2" :aria-expanded="open === 2">
+          Preciso entender de contabilidade?
+          <svg :class="{ 'is-open': open === 2 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="accordion__panel" x-show="open === 2" x-collapse x-cloak>
+          <p>Não é pré-requisito. O material foi escrito para donos de empresa, não para contadores — cada conceito (impostos efetivos, rateio de despesas fixas, margem de contribuição) é explicado em linguagem direta antes de aparecer na planilha.</p>
+        </div>
+      </div>
+
+      <div class="accordion__item">
+        <button class="accordion__trigger" @click="open = open === 3 ? null : 3" :aria-expanded="open === 3">
+          A planilha funciona no Excel?
+          <svg :class="{ 'is-open': open === 3 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="accordion__panel" x-show="open === 3" x-collapse x-cloak>
+          <p>A planilha foi construída em Google Sheets com Apps Script, e é essa a versão com todos os recursos (corredor de mercado, diagnóstico automático). Ela pode ser aberta em Excel, mas os scripts de automação não rodam fora do Google Sheets.</p>
+        </div>
+      </div>
+
+      <div class="accordion__item">
+        <button class="accordion__trigger" @click="open = open === 4 ? null : 4" :aria-expanded="open === 4">
+          Tem suporte incluso?
+          <svg :class="{ 'is-open': open === 4 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="accordion__panel" x-show="open === 4" x-collapse x-cloak>
+          <p>O pacote inclui o ebook e o curso em vídeo como suporte ao uso da planilha. Dúvidas pontuais podem ser enviadas para o e-mail de suporte informado no rodapé.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     RODAPÉ
+     ============================================================ -->
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <div class="footer__brand">
+      <div class="brandmark brandmark--footer">
+        <svg class="brandmark__icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="2.5"/>
+          <circle cx="24" cy="24" r="2.5" fill="currentColor"/>
+          <path d="M31 17L20.5 20.5L17 31L27.5 27.5L31 17Z" fill="var(--amber)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <span>BÚSSOLA <strong>BPO FINANCEIRO</strong></span>
+      </div>
+      <p>Estruturação financeira aplicada a empresas de serviço do Simples Nacional.</p>
+    </div>
+
+    <div class="footer__contact">
+      <h4>Contato</h4>
+      <p><a href="tel:+5567992061598">(67) 99206-1598</a></p>
+      <p><a href="mailto:contato@bussolabpo.com.br">contato@bussolabpo.com.br</a></p>
+      <!-- WhatsApp Business: link wa.me ainda não definido. Quando o número de WhatsApp
+           Business estiver ativo, adicionar aqui, ex: <a href="https://wa.me/5567XXXXXXXXX">WhatsApp</a> -->
+    </div>
+
+    <div class="footer__legal">
+      <p>&copy; <span id="anoAtual">2026</span> Bússola BPO Financeiro. Todos os direitos reservados.</p>
+      <p>Vértice Serviços LTDA é uma empresa fictícia, usada apenas como exemplo didático.</p>
     </div>
   </div>
 </footer>
 
+<!-- ============================================================
+     BARRA DE CTA FIXA (sticky)
+     ============================================================ -->
+<div class="sticky-cta" id="stickyCta">
+  <div class="wrap sticky-cta__inner">
+    <p class="sticky-cta__text"><strong>Estruturação Financeira na Prática</strong> — Volume 1: Precificação</p>
+    <a href="#preco" class="btn btn--cta">Quero estruturar minha precificação</a>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="js/animations.js"></script>
+<script src="js/calculator.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>
