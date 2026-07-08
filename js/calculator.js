@@ -71,7 +71,13 @@ document.addEventListener('alpine:init', function () {
       telefone: '',
       email: '',
       enviado: false,
+      enviando: false,
+      erroEnvio: false,
       touched: { telefone: false, email: false },
+
+      // Endpoint do Google Apps Script Web App (testado e funcionando) que recebe
+      // o lead e dispara o envio do Guia Rápido de Precificação por e-mail.
+      SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyG7IBJsF3nZUvG8SToD-o_cxdo6Q7h1r02wAB5L_iJKqNGEpNrPEc-lQL-thst0pl3/exec',
 
       maskPhone: function () {
         var digits = this.telefone.replace(/\D/g, '').slice(0, 11);
@@ -102,26 +108,38 @@ document.addEventListener('alpine:init', function () {
       },
 
       onSubmit: function (event) {
+        event.preventDefault();
+
         this.touched.telefone = true;
         this.touched.email = true;
 
-        if (!this.formValido) {
-          event.preventDefault();
+        if (!this.formValido || this.enviando) {
           return;
         }
 
-        // Formulário aponta para action="#" (placeholder). Enquanto o endpoint real de
-        // captura não estiver definido (Kiwify, e-mail marketing ou webhook próprio),
-        // impedimos o envio nativo e apenas simulamos a confirmação na tela.
-        // Remover este preventDefault + bloco abaixo assim que o endpoint real for configurado
-        // no atributo action do <form id="lead-form"> (ver index.html).
-        event.preventDefault();
-        this.enviado = true;
+        this.erroEnvio = false;
+        this.enviando = true;
 
-        // Ponto de disparo do evento de conversão "Lead" do Meta Pixel / Google Ads
-        // (ver comentários de instalação dos pixels em index.html <head>):
-        // if (typeof fbq === 'function') fbq('track', 'Lead');
-        // if (typeof gtag === 'function') gtag('event', 'conversion', { send_to: 'AW-XXXXXXXXX/XXXXXXXX' });
+        var formData = new FormData(event.target);
+        var self = this;
+
+        // mode: 'no-cors' é necessário porque o Web App do Apps Script não devolve
+        // cabeçalhos CORS — isso também significa que não dá pra ler o corpo da resposta,
+        // então tratamos a promise resolvida (fetch não rejeitado) como sucesso.
+        fetch(this.SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: formData })
+          .then(function () {
+            self.enviando = false;
+            self.enviado = true;
+
+            // Ponto de disparo do evento de conversão "Lead" do Meta Pixel / Google Ads
+            // (ver comentários de instalação dos pixels em index.html <head>):
+            // if (typeof fbq === 'function') fbq('track', 'Lead');
+            // if (typeof gtag === 'function') gtag('event', 'conversion', { send_to: 'AW-XXXXXXXXX/XXXXXXXX' });
+          })
+          .catch(function () {
+            self.enviando = false;
+            self.erroEnvio = true;
+          });
       }
     };
   });
