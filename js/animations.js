@@ -88,21 +88,31 @@
   function initHeroDemo() {
     var numberEl = document.getElementById('heroDemoNumber');
     var fillEl = document.getElementById('heroBarFill');
+    var card = document.getElementById('heroDashCard');
     if (!numberEl) return;
 
-    // Custo direto R$6.200 / (1 - (0.08 + 0.18 + 0.15)) = R$6.200 / 0.59
-    var demoResult = 6200 / (1 - (0.08 + 0.18 + 0.15));
+    // Exemplo por nicho: lê data-custo/data-impostos/data-despesas/data-margem do
+    // card do hero, se presentes; senão usa o exemplo padrão (Vértice Serviços).
+    var d = card ? card.dataset : {};
+    var custo = d.custo != null ? Number(d.custo) : 6200;
+    var impostos = (d.impostos != null ? Number(d.impostos) : 8) / 100;
+    var despesas = (d.despesas != null ? Number(d.despesas) : 18) / 100;
+    var margem = (d.margem != null ? Number(d.margem) : 15) / 100;
+
+    var soma = impostos + despesas + margem;
+    var demoResult = custo / (1 - soma);
+    var fillPct = Math.round(soma * 100) + '%';
 
     if (prefersReducedMotion || !hasGsap) {
       numberEl.textContent = formatBRL(demoResult);
-      if (fillEl) fillEl.style.width = '41%';
+      if (fillEl) fillEl.style.width = fillPct;
       return;
     }
 
     gsap.delayedCall(0.4, function () {
       animateOdometer(numberEl, demoResult, { duration: 1.4 });
       if (fillEl) {
-        gsap.to(fillEl, { width: '41%', duration: 1.4, ease: 'power1.out' });
+        gsap.to(fillEl, { width: fillPct, duration: 1.4, ease: 'power1.out' });
       }
     });
   }
