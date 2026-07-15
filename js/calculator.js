@@ -20,6 +20,16 @@ document.addEventListener('alpine:init', function () {
 
       init: function () {
         this.resultEl = this.$el.querySelector('#resultadoNumero');
+
+        // Exemplo por nicho: se a section da calculadora tiver data-custo/data-impostos/
+        // data-despesas/data-margem, esses valores substituem o exemplo padrão (Vértice
+        // Serviços) sem precisar de um calculator.js diferente por página.
+        var d = this.$el.dataset;
+        if (d.custo != null) this.custoDireto = Number(d.custo) || this.custoDireto;
+        if (d.impostos != null) this.impostos = Number(d.impostos);
+        if (d.despesas != null) this.despesas = Number(d.despesas);
+        if (d.margem != null) this.margem = Number(d.margem);
+
         this.calcular(true);
       },
 
