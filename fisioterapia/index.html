@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planilha de Precificação para Clínicas de Fisioterapia e Pilates | Bússola de Caixa</title>
+<meta name="description" content="Descubra o preço mínimo real de cada sessão do seu clínica de fisioterapia ou pilates. Planilha automatizada + vídeo tutorial para precificar com fórmula, não com feeling.">
+
+<!--
+  ============================================================
+  META PIXEL — instalar aqui, dentro do <head>, o mais alto possível.
+  Colar o código-base do Meta Pixel (Gerenciador de Eventos > Pixels > Configurar Pixel > Código Manual).
+  Eventos recomendados: "Lead" no envio do formulário de captura (#lead-form, ver js/calculator.js)
+  e "Purchase" na página de obrigado do Kiwify (fora deste arquivo).
+  ============================================================
+  <script>
+    !function(f,b,e,v,n,t,s){...}(window, document,'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'SEU_PIXEL_ID');
+    fbq('track', 'PageView');
+  </script>
+  ============================================================
+-->
+
+<!--
+  ============================================================
+  GOOGLE ADS — TAG DE CONVERSÃO (gtag.js) — instalar aqui, dentro do <head>.
+  Cole a tag gerada em Google Ads > Ferramentas > Conversões > Nova ação de conversão > Site.
+  Se a conta já usa GA4, o script base gtag.js pode ser compartilhado — não duplicar o carregamento.
+  ============================================================
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-XXXXXXXXX');
+  </script>
+  ============================================================
+-->
+
+<!--
+  ============================================================
+  CONVERSIONS API (CAPI) — NÃO é instalada aqui no front-end.
+  A CAPI roda no servidor (ex: webhook do Kiwify → endpoint próprio → envio do evento de Purchase
+  para a Meta em paralelo ao Pixel do navegador). Existe para recuperar conversões perdidas por
+  bloqueador de anúncios ou restrição de cookies de terceiros. Implementar depois que o Pixel
+  básico do front-end estiver validado em produção.
+  ============================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../css/styles.css">
+<noscript><style>[data-reveal]{opacity:1!important;transform:none!important;}</style></noscript>
+</head>
+<body>
+
+<!-- ============================================================
+     HERO — split screen. Sem menu de navegação: foco total na proposta.
+     ============================================================ -->
+<header class="hero" id="topo">
+  <div class="hero__inner wrap">
+    <div class="hero__text" data-reveal>
+      <div class="brandmark">
+        <svg class="brandmark__icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="2.5"/>
+          <circle cx="24" cy="24" r="2.5" fill="currentColor"/>
+          <path d="M31 17L20.5 20.5L17 31L27.5 27.5L31 17Z" fill="var(--amber)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <span>BÚSSOLA <strong>DE CAIXA</strong></span>
+      </div>
+
+      <p class="hero__kicker">Planilha de Precificação para Clínicas de Fisioterapia e Pilates — Bússola de Caixa</p>
+      <h1 class="hero__headline">Sua sessão de fisioterapia ou pilates tem preço de chute ou de cálculo?</h1>
+      <p class="hero__sub">Descubra o preço mínimo real de cada sessão — antes que aluguel, equipamento e mão de obra consumam sua margem sem você perceber.</p>
+
+      <a href="#calculadora" class="btn btn--cta btn--lg">
+        Calcular meu preço mínimo agora
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5V19M12 19L6 13M12 19L18 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <p class="hero__microcopy">Leva menos de 1 minuto. Sem cadastro para ver o resultado.</p>
+    </div>
+
+    <div class="hero__visual" data-reveal>
+      <div class="dash-card" id="heroDashCard" data-custo="40" data-impostos="6" data-despesas="20" data-margem="25">
+        <div class="dash-card__bar">
+          <span></span><span></span><span></span>
+          <p>bússola-precificação.xlsx</p>
+        </div>
+        <div class="dash-card__body">
+          <p class="dash-card__tag">Exemplo ilustrativo — Sessão Individual</p>
+
+          <div class="dash-row">
+            <span>Custo direto do sessão</span>
+            <strong>R$ 40,00</strong>
+          </div>
+          <div class="dash-row">
+            <span>Impostos efetivos</span>
+            <strong>6%</strong>
+          </div>
+          <div class="dash-row">
+            <span>Despesas fixas rateadas</span>
+            <strong>20%</strong>
+          </div>
+          <div class="dash-row">
+            <span>Margem desejada</span>
+            <strong>25%</strong>
+          </div>
+
+          <div class="dash-bar-track" aria-hidden="true">
+            <div class="dash-bar-fill" id="heroBarFill"></div>
+          </div>
+
+          <div class="dash-result">
+            <span>Preço mínimo do sessão</span>
+            <strong id="heroDemoNumber">R$ 0,00</strong>
+          </div>
+          <span class="dash-badge">Corredor de mercado: saudável</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     BARRA DE CONFIANÇA
+     ============================================================ -->
+<section class="trustbar" aria-label="Credenciais">
+  <div class="wrap trustbar__grid" data-reveal>
+    <div class="trustbar__item">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2L3 6V11C3 16 6.7 20.6 12 22C17.3 20.6 21 16 21 11V6L12 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12L11 14L15.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Equipe técnica em Contabilidade e Finanças Corporativas</span>
+    </div>
+    <div class="trustbar__item">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 20V10L9 6L15 10V4L21 8V20H3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 20H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>Atuação como CFO fracionário em empresas de serviço</span>
+    </div>
+    <div class="trustbar__item">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 9H17M7 13H14M7 17H11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>Método aplicado a empresas reais do Simples Nacional, Anexo III</span>
+    </div>
+    <div class="trustbar__item">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L14.5 9L21 9.5L16 14L17.5 21L12 17.5L6.5 21L8 14L3 9.5L9.5 9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span>Baseado no caso real de precificação Vértice Serviços LTDA</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CALCULADORA INTERATIVA — peça central da página
+     ============================================================ -->
+<section class="section calculadora" id="calculadora" x-data="calculatorApp()" data-custo="40" data-impostos="6" data-despesas="20" data-margem="25">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="section__eyebrow">Calculadora de precificação</p>
+      <h2 class="section__title">Qual é o preço mínimo do seu contrato?</h2>
+      <p class="section__sub">Preencha com os números do seu contrato. O resultado recalcula em tempo real — sem precisar clicar em nada.</p>
+    </div>
+
+    <div class="calc-panel" data-reveal>
+      <div class="calc-panel__inputs">
+        <div class="field">
+          <label for="custoDireto">Custo direto do sessão (R$)</label>
+          <div class="field__prefix">
+            <span>R$</span>
+            <input
+              type="number"
+              id="custoDireto"
+              inputmode="decimal"
+              min="0"
+              step="50"
+              placeholder="0,00"
+              x-model.number="custoDireto"
+              @input="calcular()">
+          </div>
+        </div>
+
+        <div class="field field--slider">
+          <label for="impostos">% Impostos efetivos <span class="field__value" x-text="format1(impostos) + '%'"></span></label>
+          <input type="range" id="impostos" min="0" max="20" step="0.5" x-model.number="impostos" @input="calcular()">
+        </div>
+
+        <div class="field field--slider">
+          <label for="despesas">% Despesas fixas rateadas <span class="field__value" x-text="format1(despesas) + '%'"></span></label>
+          <input type="range" id="despesas" min="0" max="40" step="0.5" x-model.number="despesas" @input="calcular()">
+        </div>
+
+        <div class="field field--slider">
+          <label for="margem">% Margem desejada <span class="field__value" x-text="format1(margem) + '%'"></span></label>
+          <input type="range" id="margem" min="0" max="40" step="0.5" x-model.number="margem" @input="calcular()">
+        </div>
+      </div>
+
+      <div class="calc-panel__result">
+        <div x-show="!erro">
+          <p class="calc-result__label">Preço mínimo do sessão</p>
+          <p class="calc-result__number" id="resultadoNumero">R$ 0,00</p>
+          <div class="calc-result__meter" aria-hidden="true">
+            <div class="calc-result__meter-fill" :style="`width:${somaPercentuais}%`" :class="{ 'is-warning': somaPercentuais >= 80 }"></div>
+          </div>
+          <p class="calc-result__soma">Impostos + despesas + margem somam <strong x-text="format1(somaPercentuais) + '%'"></strong> do preço final.</p>
+        </div>
+
+        <div class="calc-error" role="alert" x-show="erro" x-cloak>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 9V13M12 17H12.01M10.29 3.86L1.82 18A2 2 0 0 0 3.54 21H20.46A2 2 0 0 0 22.18 18L13.71 3.86A2 2 0 0 0 10.29 3.86Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p>Esses percentuais somados não podem chegar a 100% — o preço tenderia ao infinito. Ajuste os valores acima.</p>
+        </div>
+
+        <p class="calc-result__note">Esse é o seu piso. Ele garante que o contrato não dá prejuízo — mas não diz se é o melhor preço possível.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FORMULÁRIO DE CAPTURA — isca "Guia Rápido de Precificação"
+     ============================================================ -->
+<section class="section leadgen" id="guia-rapido">
+  <div class="wrap leadgen__grid" data-reveal>
+    <div class="leadgen__copy">
+      <p class="section__eyebrow section__eyebrow--light">Próximo passo</p>
+      <h2 class="leadgen__title">Esse preço está dentro do corredor competitivo do seu mercado?</h2>
+      <p class="leadgen__sub">O preço mínimo garante que você não opera no prejuízo. Mas ele não diz se está competitivo, nem se está deixando dinheiro na mesa. Baixe o <strong>Guia Rápido de Precificação</strong> e entenda o que vem depois do piso — grátis, em PDF.</p>
+      <ul class="leadgen__list">
+        <li>Como interpretar o corredor de mercado (mínimo, médio e ideal)</li>
+        <li>Os 4 níveis de diagnóstico de saúde de margem</li>
+        <li>Erros mais comuns de precificação em empresas do Anexo III</li>
+      </ul>
+    </div>
+
+    <div class="leadgen__form-card">
+      <!--
+        FORMULÁRIO DE CAPTURA — envio via fetch() para o Web App do Google Apps Script
+        (ver SCRIPT_URL em js/calculator.js, dentro de leadForm()). O atributo action="#"
+        fica apenas como fallback estático (não é usado — o submit é interceptado em JS).
+      -->
+      <form id="lead-form" x-data="leadForm()" @submit="onSubmit" action="#" method="POST" novalidate>
+        <h3>Baixar Guia Rápido de Precificação</h3>
+
+        <div x-show="!enviado">
+          <div class="field">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" autocomplete="name" x-model="nome">
+          </div>
+
+          <div class="field">
+            <label for="telefone">Telefone <span class="req">*</span></label>
+            <input type="tel" id="telefone" name="telefone" autocomplete="tel" inputmode="tel" placeholder="(11) 91234-5678" required x-model="telefone" @input="maskPhone()" :class="{ 'is-invalid': touched.telefone && !telefoneValido }" @blur="touched.telefone = true">
+            <p class="field__error" x-show="touched.telefone && !telefoneValido" x-cloak>Informe um telefone válido com DDD.</p>
+          </div>
+
+          <div class="field">
+            <label for="email">E-mail <span class="req">*</span></label>
+            <input type="email" id="email" name="email" autocomplete="email" required x-model="email" :class="{ 'is-invalid': touched.email && !emailValido }" @blur="touched.email = true">
+            <p class="field__error" x-show="touched.email && !emailValido" x-cloak>Informe um e-mail válido.</p>
+          </div>
+
+          <button type="submit" class="btn btn--cta btn--block" :disabled="!formValido || enviando" x-text="enviando ? 'Enviando...' : 'Quero o Guia Rápido'"></button>
+          <p class="leadgen__privacy">Seus dados são usados apenas para envio do material. Sem spam.</p>
+
+          <p class="leadgen__error" role="alert" x-show="erroEnvio" x-cloak>Não foi possível enviar agora. Tente de novo em instantes.</p>
+        </div>
+
+        <template x-if="enviado">
+          <p class="leadgen__success" role="status">Prontinho! Confere seu e-mail — o Guia Rápido chegou por lá.</p>
+        </template>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     A OFERTA — bento grid
+     ============================================================ -->
+<section class="section oferta" id="oferta">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="section__eyebrow">O que você recebe</p>
+      <h2 class="section__title">A planilha pronta e o vídeo mostrando como usar</h2>
+    </div>
+
+    <div class="bento" data-reveal>
+      <div class="bento__item bento__item--lg">
+        <span class="bento__icon">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21M9 9V21" stroke="currentColor" stroke-width="1.8"/></svg>
+        </span>
+        <h3>Planilha Bússola de Precificação</h3>
+        <p>Google Sheets + Apps Script. Calcula o preço mínimo, posiciona o resultado num corredor de mercado e gera um diagnóstico automático de saúde de margem em 4 níveis.</p>
+      </div>
+
+      <div class="bento__item">
+        <span class="bento__icon">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M10 9L15 12L10 15V9Z" fill="currentColor"/></svg>
+        </span>
+        <h3>Vídeo tutorial de uso</h3>
+        <p>Vídeo curto mostrando a planilha sendo preenchida do início ao fim, com um exemplo real do seu segmento — sem precisar descobrir sozinho.</p>
+      </div>
+    </div>
+
+    <p class="oferta__bonus">Bônus disponível no checkout: o <strong>Ebook completo de Precificação</strong> (16 capítulos), como item adicional opcional.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     ANTES x DEPOIS
+     ============================================================ -->
+<section class="section comparativo" id="comparativo">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="section__eyebrow">A diferença</p>
+      <h2 class="section__title">Precificar por feeling versus precificar com fórmula</h2>
+    </div>
+
+    <div class="compare" data-reveal>
+      <div class="compare__col compare__col--before">
+        <h3>Do jeito antigo</h3>
+        <ul>
+          <li>Preço decidido no feeling, olhando o que o concorrente cobra</li>
+          <li>Markup genérico aplicado sobre o custo, sem impostos reais embutidos</li>
+          <li>Margem real só aparece — se aparecer — no fechamento do mês</li>
+          <li>Contrato ruim descoberto tarde demais, quando trocar de preço já custa o cliente</li>
+        </ul>
+      </div>
+      <div class="compare__col compare__col--after">
+        <h3>Com a Bússola</h3>
+        <ul>
+          <li>Preço mínimo calculado com impostos, despesas fixas e margem embutidos na fórmula</li>
+          <li>Corredor de mercado mostra se o preço é competitivo, não só se é sustentável</li>
+          <li>Diagnóstico de saúde de margem em 4 níveis, contrato por contrato</li>
+          <li>Decisão de repactuar ou encerrar contrato tomada com números, não com sensação</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     AUTORIDADE
+     ============================================================ -->
+<section class="section autoridade" id="autoridade">
+  <div class="wrap autoridade__grid">
+    <div data-reveal>
+      <p class="section__eyebrow">Quem constrói a Bússola</p>
+      <h2 class="section__title">Autoridade técnica, não personalidade de vitrine</h2>
+      <p class="autoridade__text">A Bússola de Caixa é formada por uma equipe técnica com formação em Contabilidade e Finanças Corporativas, com atuação como CFO fracionário em empresas de serviço do Simples Nacional. O método deste material não é teórico: foi construído a partir do diagnóstico e da reestruturação financeira de empresas reais do setor.</p>
+      <p class="autoridade__text">O caso que ilustra todo o conteúdo — <strong>Vértice Serviços LTDA</strong> — é uma empresa fictícia de facilities, Simples Nacional, Anexo III, usada para representar com números realistas o processo completo de precificação, do custo direto ao diagnóstico de carteira.</p>
+    </div>
+
+    <div class="testimonials" data-reveal x-data="{ current: 0, items: 1 }">
+      <!-- Estrutura de carrossel pronta para receber depoimentos reais.
+           Hoje contém apenas 1 placeholder — substituir por cards reais assim que
+           os primeiros depoimentos de clientes forem coletados. -->
+      <div class="testimonials__track">
+        <div class="testimonial-card testimonial-card--real">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8H4V13C4 15 5.5 16.5 7.5 16.5V14.5C6.7 14.5 6 13.8 6 13V10H7C7.5 10 8 9.5 8 9V8.5C8 8.2 7.5 8 7 8Z" fill="currentColor"/><path d="M15 8H12V13C12 15 13.5 16.5 15.5 16.5V14.5C14.7 14.5 14 13.8 14 13V10H15C15.5 10 16 9.5 16 9V8.5C16 8.2 15.5 8 15 8Z" fill="currentColor"/></svg>
+          <p>"Eu vendia bem, trabalhava muito, mas nunca sabia exatamente pra onde ia o dinheiro nem se estava ganhando de verdade em cada peça ou serviço. Com o apoio na precificação, consegui colocar tudo no papel: quanto custa cada material, minha mão de obra, os custos fixos do negócio, os impostos. Hoje eu sei o preço mínimo de cada coisa que vendo, e isso mudou minha cabeça como empresária. Hoje eu precifico com segurança, sem medo de estar no prejuízo sem saber. Foi um divisor de águas pro meu negócio."</p>
+          <span class="testimonial-card__author">Marmorize Comercial — cliente da Bússola de Precificação</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     DETALHAMENTO DOS 3 COMPONENTES
+     ============================================================ -->
+<section class="section detalhe" id="detalhes">
+  <div class="wrap">
+
+    <div class="detalhe-item" data-reveal>
+      <div class="detalhe-item__text">
+        <p class="section__eyebrow">Componente 1</p>
+        <h3>Planilha Bússola de Precificação</h3>
+        <p>Construída em Google Sheets com Apps Script — sem instalar nada, sem escrever fórmula. Você preenche o custo direto, os impostos efetivos, as despesas fixas rateadas e a margem desejada, e a planilha calcula:</p>
+        <ul class="check-list">
+          <li>O preço mínimo do contrato</li>
+          <li>O corredor de mercado (faixa mínima, média e ideal)</li>
+          <li>O diagnóstico de saúde de margem em 4 níveis — crítico, atenção, saudável e ótimo</li>
+          <li>A visão consolidada da carteira inteira de contratos</li>
+        </ul>
+      </div>
+      <div class="detalhe-item__visual">
+        <div class="screenshot-card">
+          <img src="../imagens/planilha.png" alt="Planilha Bússola de Precificação aberta no Google Sheets, com o painel lateral mostrando Faturamento Projetado, Margem de Contribuição Média e Situação Geral">
+        </div>
+      </div>
+    </div>
+
+    <div class="detalhe-item detalhe-item--reverse" data-reveal>
+      <div class="detalhe-item__text">
+        <p class="section__eyebrow">Componente 2</p>
+        <h3>Vídeo tutorial de uso</h3>
+        <p>Um vídeo curto (5 a 10 minutos) mostrando a planilha sendo preenchida do início ao fim, com um exemplo numérico realista do seu segmento — para você preencher a sua sem depender de suporte.</p>
+        <ul class="check-list">
+          <li>Direto ao ponto, sem enrolação</li>
+          <li>Tela gravada mostrando a planilha em uso real</li>
+          <li>Exemplo pré-preenchido, pronto para você adaptar aos seus números</li>
+        </ul>
+      </div>
+      <div class="detalhe-item__visual">
+        <div class="screenshot-card">
+          <img src="../imagens/planilha2.png" alt="Planilha Bússola de Precificação aberta no Google Sheets, mostrando outra etapa do preenchimento — referência do vídeo tutorial">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     PREÇO E CTA DE COMPRA
+     ============================================================ -->
+<section class="section preco" id="preco">
+  <div class="wrap">
+    <div class="price-card" data-reveal>
+      <div class="price-card__head">
+        <p class="section__eyebrow section__eyebrow--light">Bússola de Caixa</p>
+        <h2>Planilha de Precificação</h2>
+        <p class="price-card__desc">Planilha + vídeo tutorial. Pagamento único.</p>
+      </div>
+
+      <!-- Preço do produto de entrada da esteira (Seção 14 das instruções V4): até R$47. -->
+      <p class="price-card__value"><span>R$</span>47<span class="price-card__cents">,00</span></p>
+      <p class="price-card__installment">à vista, pagamento único — sem mensalidade</p>
+
+      <ul class="price-card__includes">
+        <li>Planilha Bússola de Precificação (Google Sheets + Apps Script)</li>
+        <li>Vídeo tutorial de uso, com exemplo do seu segmento</li>
+        <li>Acesso imediato após a confirmação do pagamento</li>
+      </ul>
+      <p class="price-card__bonus">No checkout, você pode adicionar o Ebook completo de Precificação (16 capítulos) como item extra.</p>
+
+      <!-- CTA de compra: link real do checkout Kiwify. -->
+      <a href="https://pay.kiwify.com.br/PLACEHOLDER-FISIOTERAPIA" class="btn btn--cta btn--lg btn--block" id="ctaComprar">Quero estruturar minha precificação</a>
+
+      <div class="price-card__guarantee">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2L3 6V11C3 16 6.7 20.6 12 22C17.3 20.6 21 16 21 11V6L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12L11 14L15.5 9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p>Garantia de 7 dias. Se não fizer sentido para sua empresa, o reembolso é integral e sem burocracia, conforme o Art. 49 do Código de Defesa do Consumidor.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FAQ
+     ============================================================ -->
+<section class="section faq" id="faq" x-data="{ open: 0 }">
+  <div class="wrap wrap--narrow">
+    <div class="section__head" data-reveal>
+      <p class="section__eyebrow">Perguntas frequentes</p>
+      <h2 class="section__title">Antes de decidir</h2>
+    </div>
+
+    <div class="accordion" data-reveal>
+      <div class="accordion__item">
+        <button class="accordion__trigger" @click="open = open === 0 ? null : 0" :aria-expanded="open === 0">
+          Funciona pro meu tipo de empresa?
+          <svg :class="{ 'is-open': open === 0 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="accordion__panel" x-show="open === 0" x-collapse x-cloak>
+          <p>A planilha e o método foram construídos para donos de clínica de fisioterapia ou pilates do Simples Nacional — considerando mão de obra do profissional, equipamentos e despesas fixas da clínica. Se o seu negócio se encaixa nesse perfil, o cálculo se aplica diretamente. Fora desse regime tributário, a lógica da fórmula continua válida, mas os parâmetros de impostos precisam ser ajustados manualmente.</p>
+        </div>
+      </div>
+
+      <div class="accordion__item">
+        <button class="accordion__trigger" @click="open = open === 1 ? null : 1" :aria-expanded="open === 1">
+          Preciso saber Excel avançado?
+          <svg :class="{ 'is-open': open === 1 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="accordion__panel" x-show="open === 1" x-collapse x-cloak>
+          <p>Não. A planilha já vem com as fórmulas prontas em Google Sheets — você preenche os campos de custo, impostos, despesas e margem, e o Apps Script faz o resto. Não é necessário escrever fórmulas nem programar nada.</p>
+        </div>
+      </div>
+
+      <div class="accordion__item">
+        <button class="accordion__trigger" @click="open = open === 2 ? null : 2" :aria-expanded="open === 2">
+          Preciso entender de contabilidade?
+          <svg :class="{ 'is-open': open === 2 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="accordion__panel" x-show="open === 2" x-collapse x-cloak>
+          <p>Não é pré-requisito. O material foi escrito para donos de empresa, não para contadores — cada conceito (impostos efetivos, rateio de despesas fixas, margem de contribuição) é explicado em linguagem direta antes de aparecer na planilha.</p>
+        </div>
+      </div>
+
+      <div class="accordion__item">
+        <button class="accordion__trigger" @click="open = open === 3 ? null : 3" :aria-expanded="open === 3">
+          A planilha funciona no Excel?
+          <svg :class="{ 'is-open': open === 3 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="accordion__panel" x-show="open === 3" x-collapse x-cloak>
+          <p>A planilha foi construída em Google Sheets com Apps Script, e é essa a versão com todos os recursos (corredor de mercado, diagnóstico automático). Ela pode ser aberta em Excel, mas os scripts de automação não rodam fora do Google Sheets.</p>
+        </div>
+      </div>
+
+      <div class="accordion__item">
+        <button class="accordion__trigger" @click="open = open === 4 ? null : 4" :aria-expanded="open === 4">
+          Tem suporte incluso?
+          <svg :class="{ 'is-open': open === 4 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="accordion__panel" x-show="open === 4" x-collapse x-cloak>
+          <p>O produto inclui o vídeo tutorial mostrando como preencher a planilha. Dúvidas pontuais podem ser enviadas para o e-mail de suporte informado no rodapé.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     RODAPÉ
+     ============================================================ -->
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <div class="footer__brand">
+      <div class="brandmark brandmark--footer">
+        <svg class="brandmark__icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="2.5"/>
+          <circle cx="24" cy="24" r="2.5" fill="currentColor"/>
+          <path d="M31 17L20.5 20.5L17 31L27.5 27.5L31 17Z" fill="var(--amber)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <span>BÚSSOLA <strong>DE CAIXA</strong></span>
+      </div>
+      <p>Estruturação financeira aplicada a empresas de serviço do Simples Nacional.</p>
+    </div>
+
+    <div class="footer__contact">
+      <h4>Contato</h4>
+      <p><a href="mailto:contato@bussolabpo.com.br">contato@bussolabpo.com.br</a></p>
+      <!-- WhatsApp Business: link wa.me ainda não definido. Quando o número de WhatsApp
+           Business estiver ativo, adicionar aqui, ex: <a href="https://wa.me/5567XXXXXXXXX">WhatsApp</a> -->
+    </div>
+
+    <div class="footer__legal">
+      <p>&copy; <span id="anoAtual">2026</span> Bússola de Caixa. Todos os direitos reservados.</p>
+      <p>Vértice Serviços LTDA é uma empresa fictícia, usada apenas como exemplo didático.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     BARRA DE CTA FIXA (sticky)
+     ============================================================ -->
+<div class="sticky-cta" id="stickyCta">
+  <div class="wrap sticky-cta__inner">
+    <p class="sticky-cta__text"><strong>Bússola de Caixa</strong> — Planilha de Precificação por R$47</p>
+    <a href="#preco" class="btn btn--cta">Quero estruturar minha precificação</a>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="../js/animations.js"></script>
+<script src="../js/calculator.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
