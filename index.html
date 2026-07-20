@@ -196,6 +196,16 @@
   }
   .capture-card .field { margin-bottom: 16px; }
   .capture-card__optional { font-size: 11.5px; color: var(--gray-400); font-weight: 500; }
+  .field__hint {
+    font-size: 12.5px;
+    color: var(--green-dark);
+    background: #ECFDF5;
+    border: 1px solid #A7F3D0;
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
 
   /* ---------- Resultado ---------- */
   .result-card {
@@ -338,7 +348,7 @@
         <div class="capture-card">
           <p class="capture-card__eyebrow">Quase lá</p>
           <h2 class="capture-card__title">Pra onde eu mando seu resultado?</h2>
-          <p class="capture-card__sub">Preencha seus dados pra ver o diagnóstico personalizado.</p>
+          <p class="capture-card__sub">Preencha seus dados pra ver o diagnóstico personalizado — e deixe o e-mail pra ganhar de bônus o Ebook Como Precificar seu Serviço.</p>
 
           <form id="captureForm" novalidate>
             <div class="field">
@@ -351,8 +361,9 @@
               <p class="field__error" id="whatsappError" style="display:none;">Informe um WhatsApp válido com DDD.</p>
             </div>
             <div class="field">
-              <label for="inputEmail">E-mail <span class="capture-card__optional">(opcional — receba também um mini-guia de precificação por e-mail)</span></label>
-              <input type="email" id="inputEmail" name="email" autocomplete="email">
+              <label for="inputEmail">E-mail <span class="capture-card__optional">(opcional)</span></label>
+              <input type="email" id="inputEmail" name="email" autocomplete="email" placeholder="seu@email.com">
+              <p class="field__hint">🎁 Preenchendo o e-mail, você recebe de graça o <strong>Ebook Como Precificar seu Serviço</strong> — direto na sua caixa de entrada.</p>
               <p class="field__error" id="emailError" style="display:none;">Informe um e-mail válido, ou deixe em branco.</p>
             </div>
             <button type="submit" class="btn btn--cta btn--lg btn--block" id="btnCapture">Ver meu resultado</button>
