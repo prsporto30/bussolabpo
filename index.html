@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Diagnóstico Bússola BPO — descubra seu próximo passo financeiro</title>
-<meta name="description" content="Responda 3 perguntas rápidas e descubra o que faz mais sentido pro seu momento: renda extra, organizar o financeiro da empresa ou profissionalizar seu serviço.">
+<meta name="description" content="Responda algumas perguntas rápidas e descubra qual ferramenta da Bússola BPO faz mais sentido pra organizar o financeiro da sua empresa ou dos seus clientes: precificação ou gestão de tesouraria.">
 
 <!--
   ============================================================
@@ -262,6 +262,56 @@
   }
   .btn--whatsapp:hover { background: #22C55E; box-shadow: 0 14px 30px rgba(37, 211, 102, 0.42); }
 
+  .result-card__deliverables {
+    background: var(--gray-50, #F3F6FC);
+    border: 1px solid var(--gray-200, #E2E8F0);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    margin-bottom: 22px;
+    text-align: left;
+  }
+  .result-card__deliverables-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+  }
+  .result-card__deliverables-list { list-style: none; padding: 0; margin: 0; }
+  .result-card__deliverables-list li {
+    font-size: 14px;
+    color: var(--gray-800);
+    line-height: 1.5;
+    padding-left: 24px;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  .result-card__deliverables-list li:last-child { margin-bottom: 0; }
+  .result-card__deliverables-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--green-dark, #16A34A);
+    font-weight: 800;
+  }
+  .result-card__hire-link {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: none;
+    border: none;
+    color: var(--gray-500, #6B7280);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    margin-top: 14px;
+    text-decoration: underline;
+  }
+  .result-card__hire-link:hover { color: var(--navy); }
+
   .quiz-brandmark {
     display: flex;
     align-items: center;
@@ -329,7 +379,7 @@
       </section>
 
       <!-- ============================================================
-           TELA 2 — Perguntas dinâmicas do caminho (Q2, Q3, Q4)
+           TELA 2 — Perguntas dinâmicas do caminho (Q2 a Q6)
            ============================================================ -->
       <section class="screen" id="screen-path">
         <button type="button" class="quiz-back" id="btnBack">
@@ -348,7 +398,7 @@
         <div class="capture-card">
           <p class="capture-card__eyebrow">Quase lá</p>
           <h2 class="capture-card__title">Pra onde eu mando seu resultado?</h2>
-          <p class="capture-card__sub">Preencha seus dados pra ver o diagnóstico personalizado — e deixe o e-mail pra ganhar de bônus o Ebook Como Precificar seu Serviço.</p>
+          <p class="capture-card__sub">Preencha seus dados pra ver o diagnóstico personalizado — e deixe o e-mail pra ganhar de bônus um guia rápido em PDF.</p>
 
           <form id="captureForm" novalidate>
             <div class="field">
@@ -363,7 +413,7 @@
             <div class="field">
               <label for="inputEmail">E-mail <span class="capture-card__optional">(opcional)</span></label>
               <input type="email" id="inputEmail" name="email" autocomplete="email" placeholder="seu@email.com">
-              <p class="field__hint">🎁 Preenchendo o e-mail, você recebe de graça o <strong>Ebook Como Precificar seu Serviço</strong> — direto na sua caixa de entrada.</p>
+              <p class="field__hint" id="emailHint">🎁 Preenchendo o e-mail, você recebe de graça um <strong id="emailHintGuide">guia rápido em PDF</strong> — direto na sua caixa de entrada.</p>
               <p class="field__error" id="emailError" style="display:none;">Informe um e-mail válido, ou deixe em branco.</p>
             </div>
             <button type="submit" class="btn btn--cta btn--lg btn--block" id="btnCapture">Ver meu resultado</button>
@@ -380,7 +430,12 @@
           <span class="result-card__badge">Diagnóstico pronto</span>
           <h2 class="result-card__title" id="resultTitle"></h2>
           <p class="result-card__text" id="resultText"></p>
+          <div class="result-card__deliverables" id="resultDeliverablesWrap" style="display:none;">
+            <p class="result-card__deliverables-label">Você recebe:</p>
+            <ul class="result-card__deliverables-list" id="resultDeliverables"></ul>
+          </div>
           <div id="resultCtas"></div>
+          <button type="button" class="result-card__hire-link" id="btnHireSomeone">Prefiro contratar alguém de confiança pra cuidar disso →</button>
         </div>
       </section>
 
@@ -399,89 +454,153 @@
   // ============================================================
   var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyG7IBJsF3nZUvG8SToD-o_cxdo6Q7h1r02wAB5L_iJKqNGEpNrPEc-lQL-thst0pl3/exec';
   var WHATSAPP_NUMBER = '5521992067985'; // WhatsApp Business
-  var KIWIFY_LINK = 'https://pay.kiwify.com.br/SXCJilg';
-  var PRECIFICACAO_LP = 'precificacao/';
+  var TESOURARIA_LINK = 'https://pay.kiwify.com.br/d6YOGrl';
+  var PRECIFICACAO_LINK = 'https://pay.kiwify.com.br/SXCJilg';
+  var PRECIFICACAO_LP = 'precificacao/';          // página de vendas local (já existe)
+  var TESOURARIA_SALES_PAGE = 'https://kiwify.app/QoollUk'; // sales page da Kiwify (ainda não tem LP local)
 
   // ============================================================
   // DADOS DO QUIZ
+  // Q1 = perfil · Q2/Q3/Q5 = fixas · Q4/Q6 = variam conforme resposta anterior
   // ============================================================
   var Q1_OPTIONS = [
-    { key: 'A', text: 'Preciso contribuir com a renda de casa, mas não posso sair para trabalhar fora' },
-    { key: 'B', text: 'Estou cansado(a) de trabalhar CLT com salário fixo e baixo' },
-    { key: 'C', text: 'Tenho uma empresa e quero organizar/entender melhor minhas finanças' },
-    { key: 'D', text: 'Já presto serviço financeiro/contábil pra clientes e quero uma ferramenta melhor' }
+    { key: 'A', text: 'Sou dono(a) de uma empresa de serviço' },
+    { key: 'B', text: 'Sou profissional financeiro (contador, consultor, assistente) que atende clientes' },
+    { key: 'C', text: 'Quero começar a prestar esse tipo de serviço pra outras empresas' }
   ];
 
-  var PATH_QUESTIONS = {
-    A: [
-      { id: 'q2', text: 'O que mais te impede hoje de ter sua própria renda?', options: ['Não sei por onde começar', 'Medo de não saber números', 'Falta de tempo', 'Falta de dinheiro pra investir'] },
-      { id: 'q3', text: 'Quanto tempo por dia você consegue dedicar a um negócio próprio?', options: ['Menos de 1h', '1 a 2h', '2 a 4h', 'Mais de 4h'] },
-      { id: 'q4', text: 'Se você pudesse ganhar uma renda extra de casa hoje, qual valor mudaria sua rotina?', options: ['Até R$500', 'R$500 a R$1.500', 'R$1.500 a R$3.000', 'Acima de R$3.000'] }
-    ],
-    B: [
-      { id: 'q2', text: 'O que mais pesa na sua rotina de CLT hoje?', options: ['Salário baixo', 'Chefe ou ambiente ruim', 'Falta de tempo livre', 'Sem perspectiva de crescimento'] },
-      { id: 'q3', text: 'Você já pensou em empreender, mas não sabe por onde começar?', options: ['Penso nisso o tempo todo', 'Já tentei algo e não deu certo', 'Nunca levei a sério'] },
-      { id: 'q4', text: 'Quanto você precisaria ganhar por mês pra considerar ter seu próprio negócio?', options: ['Até R$500', 'R$500 a R$1.500', 'R$1.500 a R$3.000', 'Acima de R$3.000'] }
-    ],
-    C: [
-      { id: 'q2', text: 'Qual seu maior desafio financeiro na empresa hoje?', options: ['Não sei minha margem real', 'Extrato bagunçado, não concilio', 'Não tenho tempo de cuidar disso', 'Pago caro por contador que só cuida de imposto'] },
-      { id: 'q3', text: 'Você prefere resolver isso sozinho com uma ferramenta, ou prefere contratar alguém pra cuidar disso pra você?', options: ['Prefiro fazer sozinho, com uma ferramenta boa', 'Prefiro contratar alguém de confiança'], branch: true }
-    ],
-    D: [
-      { id: 'q2', text: 'O que mais te atrapalha no seu processo atual de conciliação/organização financeira de clientes?', options: ['Faço tudo manual no Excel', 'Uso uma ferramenta mas é cara ou complicada', 'Não tenho um sistema, é tudo solto'] }
-    ]
-  };
-
-  var RESULTS = {
-    A: {
-      title: 'Seu perfil combina com o método Bússola BPO',
-      text: 'A boa notícia: você não precisa saber Excel nem contabilidade — existe um caminho estruturado que faz o trabalho técnico mais pesado por você, e cabe no tempo que você tem disponível hoje.',
-      cta: 'whatsapp',
-      waNote: 'Quero entender como começar.'
-    },
-    B: {
-      title: 'Dá pra começar sem abrir mão da segurança',
-      text: 'Dá pra construir uma renda própria sem abrir mão da segurança agora — começando pequeno, nas horas vagas, até ter confiança pra decidir seu próximo passo.',
-      cta: 'whatsapp',
-      waNote: 'Quero entender como começar sem largar meu emprego agora.'
-    },
-    C1: {
-      title: 'Você não precisa de curso — precisa de ferramenta pronta',
-      text: 'Seu perfil combina com a Planilha de Precificação + Ebook: uma ferramenta pronta pra você organizar o financeiro e precificar com fórmula, não no feeling — com o passo a passo de como aplicar.',
-      cta: 'kiwify_dual'
-    },
-    C2: {
-      title: 'Você precisa de alguém de confiança cuidando disso',
-      text: 'Você não precisa aprender a fazer sozinho — precisa de alguém de confiança cuidando do seu financeiro pra você. Posso te contar como funciona meu serviço de BPO financeiro.',
-      cta: 'whatsapp',
-      waNote: 'Quero saber mais sobre contratar o serviço de BPO financeiro.'
-    },
-    D: {
-      title: 'Você já tem os clientes — falta a ferramenta certa',
-      text: 'Você já tem os clientes — só falta a ferramenta certa pra ganhar tempo e profissionalizar a entrega. Vamos conversar sobre o que já estou construindo.',
-      cta: 'whatsapp',
-      waNote: 'Já presto serviço financeiro/contábil e quero conhecer a ferramenta.'
-    }
-  };
-
   var Q1_LABELS = {
-    A: 'Renda extra de casa',
-    B: 'Migrar do CLT',
-    C: 'Organizar o financeiro da minha empresa',
-    D: 'Já presto serviço financeiro'
+    A: 'Dono(a) de empresa de serviço',
+    B: 'Profissional financeiro que atende clientes',
+    C: 'Quer começar a prestar o serviço'
+  };
+
+  var FERRAMENTA_LABELS = {
+    PRECIFICACAO: 'Bússola de Precificação',
+    TESOURARIA: 'Gestão de Tesouraria',
+    AMBOS: 'Precificação + Tesouraria'
+  };
+
+  var Q2 = {
+    id: 'q2',
+    text: 'Como você organiza o financeiro hoje?',
+    options: ['Não concilio nada, só olho o saldo do banco', 'Uso planilha própria, mas é manual e dá trabalho', 'Uso um sistema, mas não é bom o suficiente', 'Não tenho nenhum controle ainda']
+  };
+
+  var Q3 = {
+    id: 'q3',
+    text: 'Qual desses problemas pesa mais hoje?',
+    options: [
+      'Não sei se meu preço cobre os custos, não sei minha margem real',
+      'Extrato bagunçado, não concilio, não sei pra onde o dinheiro vai',
+      'Os dois, sinceramente'
+    ],
+    branch: true // define state.ferramenta
+  };
+
+  var Q5 = {
+    id: 'q5',
+    text: 'Há quanto tempo isso te incomoda?',
+    options: ['Menos de 3 meses', '3 a 12 meses', 'Mais de 1 ano']
+  };
+
+  var URGENCY_TAIL = {
+    'Menos de 3 meses': 'Pegar isso agora, no começo, evita que vire um problema maior.',
+    '3 a 12 meses': 'Isso já vem incomodando há alguns meses — dá pra resolver rápido com o processo certo.',
+    'Mais de 1 ano': 'Isso já dura mais de um ano — quanto antes organizar, menos vai custar consertar depois.'
+  };
+
+  function getQ4() {
+    if (state.ferramenta === 'PRECIFICACAO') {
+      return { id: 'q4', text: 'Você já perdeu dinheiro cobrando errado de algum contrato?', options: ['Sim, já aconteceu', 'Acho que sim, nunca calculei', 'Não sei dizer'] };
+    }
+    if (state.ferramenta === 'TESOURARIA') {
+      return { id: 'q4', text: 'Você sabe, sem abrir nenhuma planilha, quanto tem de caixa livre agora?', options: ['Sim, sei exatamente', 'Tenho uma ideia, sem certeza', 'Não sei'] };
+    }
+    return { id: 'q4', text: 'Se tivesse que resolver só um agora, qual seria?', options: ['Precificação — cobrar certo', 'Tesouraria — organizar o caixa', 'Não sei, preciso dos dois'], resolvesFerramenta: true };
+  }
+
+  function getQ6() {
+    if (state.caminho === 'A') {
+      return { id: 'q6', text: 'Quantos contratos/clientes sua empresa atende hoje?', options: ['Nenhum ainda / só eu', '1 a 5', '6 a 15', 'Mais de 15'] };
+    }
+    if (state.caminho === 'B') {
+      return { id: 'q6', text: 'Quantos clientes você atende hoje como profissional financeiro?', options: ['Nenhum ainda / começando', '1 a 5', '6 a 15', 'Mais de 15'] };
+    }
+    return { id: 'q6', text: 'Você já tem algum cliente pra esse serviço, ou está começando do zero?', options: ['Nenhum ainda, começando do zero', '1 a 2, começando', 'Já tenho uma base de clientes'] };
+  }
+
+  function getQuestionAt(index) {
+    switch (index) {
+      case 0: return Q2;
+      case 1: return Q3;
+      case 2: return getQ4();
+      case 3: return Q5;
+      case 4: return getQ6();
+      default: return null;
+    }
+  }
+
+  var TOTAL_PATH_STEPS = 5; // q2..q6
+
+  var RESULT_COPY = {
+    PRECIFICACAO: {
+      title: 'Seu perfil aponta pra Bússola de Precificação',
+      textFn: function () {
+        return 'Você marcou "' + state.respostas.q3 + '" — é exatamente o que a Bússola de Precificação resolve: ela calcula o preço mínimo de cada contrato, posiciona no corredor de mercado e gera o diagnóstico automático, pra você parar de precificar no escuro. ' + (URGENCY_TAIL[state.respostas.q5] || '');
+      },
+      deliverables: [
+        'Planilha Bússola de Precificação (Google Sheets + Apps Script)',
+        'Ebook tutorial — passo a passo de como usar',
+        'Ebook conceitual — fundamentos de precificação',
+        'Bônus: Guia Rápido de Tesouraria em PDF'
+      ],
+      checkoutLink: PRECIFICACAO_LINK,
+      checkoutLabel: 'Comprar Bússola de Precificação',
+      saberMaisLink: PRECIFICACAO_LP,
+      guiaBonus: 'Guia Rápido de Precificação'
+    },
+    TESOURARIA: {
+      title: 'Seu perfil aponta pra Gestão de Tesouraria',
+      textFn: function () {
+        return 'Você marcou "' + state.respostas.q3 + '" — é exatamente o que o Sistema de Gestão de Tesouraria resolve: ele importa seu extrato, categoriza automaticamente, concilia com o que era esperado e mostra o saldo real num dashboard, sem depender de planilha manual. ' + (URGENCY_TAIL[state.respostas.q5] || '');
+      },
+      deliverables: [
+        'Planilha Gestão de Tesouraria (Google Sheets + Apps Script)',
+        'Ebook tutorial — passo a passo de como usar',
+        'Ebook conceitual — conciliação bancária e regime de caixa',
+        'Bônus: Guia Rápido de Precificação em PDF'
+      ],
+      checkoutLink: TESOURARIA_LINK,
+      checkoutLabel: 'Comprar Gestão de Tesouraria',
+      saberMaisLink: TESOURARIA_SALES_PAGE,
+      guiaBonus: 'Guia Rápido de Tesouraria'
+    },
+    AMBOS: {
+      title: 'Seu perfil pede as duas frentes',
+      textFn: function () {
+        return 'Preço mal calculado e caixa bagunçado costumam andar juntos. Você pode começar por qualquer uma das duas — a outra já entra com condição especial na hora de fechar. ' + (URGENCY_TAIL[state.respostas.q5] || '');
+      },
+      deliverables: [
+        'A planilha que você escolher primeiro (Google Sheets + Apps Script)',
+        'Ebook tutorial + ebook conceitual da ferramenta escolhida',
+        'A segunda planilha com condição especial no checkout'
+      ],
+      dual: true,
+      guiaBonus: 'guia rápido em PDF'
+    }
   };
 
   // ============================================================
   // ESTADO
   // ============================================================
   var state = {
-    caminho: null,      // 'A' | 'B' | 'C' | 'D'
-    subCaminho: null,   // 'C1' | 'C2' (só pro caminho C)
-    pathStepIndex: 0,   // índice da pergunta atual dentro do caminho
-    respostas: {}        // { q1: 'texto', q2: 'texto', ... }
+    caminho: null,       // 'A' | 'B' | 'C'  (perfil da Q1)
+    ferramenta: null,    // 'PRECIFICACAO' | 'TESOURARIA' | 'AMBOS' (decidido na Q3, refinado na Q4)
+    pathStepIndex: 0,    // índice da pergunta atual (0..4 = q2..q6)
+    respostas: {}         // { q1: 'texto', q2: 'texto', ... }
   };
 
-  var totalStepsForPath = { A: 4, B: 4, C: 3, D: 2 }; // Q1 + perguntas do caminho
   var currentStepNumber = 0;
 
   // ============================================================
@@ -510,7 +629,7 @@
       return;
     }
     progressTrack.style.display = 'block';
-    var total = totalStepsForPath[state.caminho] + 1; // +1 pra tela de captura
+    var total = TOTAL_PATH_STEPS + 1; // +1 pra tela de captura
     var pct = Math.min(100, Math.round((currentStepNumber / total) * 100));
     progressFill.style.width = pct + '%';
   }
@@ -551,14 +670,19 @@
   var pathTitleEl = document.getElementById('pathTitle');
   var pathEyebrowEl = document.getElementById('pathEyebrow');
 
+  function updateEmailHint() {
+    var rc = RESULT_COPY[state.ferramenta] || RESULT_COPY.AMBOS;
+    var hintGuideEl = document.getElementById('emailHintGuide');
+    if (hintGuideEl) hintGuideEl.textContent = rc.guiaBonus;
+  }
+
   function renderPathQuestion() {
-    var questions = PATH_QUESTIONS[state.caminho];
-    var q = questions[state.pathStepIndex];
+    var q = getQuestionAt(state.pathStepIndex);
     pathEyebrowEl.textContent = 'Pergunta ' + (state.pathStepIndex + 2);
     pathTitleEl.textContent = q.text;
     pathOptionsEl.innerHTML = '';
 
-    q.options.forEach(function (optText) {
+    q.options.forEach(function (optText, optIndex) {
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'option-btn';
@@ -567,20 +691,27 @@
       btn.addEventListener('click', function () {
         state.respostas[q.id] = optText;
 
-        // Caminho C se ramifica na Q3
-        if (state.caminho === 'C' && q.branch) {
-          state.subCaminho = optText.indexOf('sozinho') > -1 ? 'C1' : 'C2';
+        // Q3 decide a ferramenta (branch principal)
+        if (q.id === 'q3' && q.branch) {
+          state.ferramenta = optIndex === 0 ? 'PRECIFICACAO' : (optIndex === 1 ? 'TESOURARIA' : 'AMBOS');
+        }
+        // Q4 (variante "Ambos") resolve o empate
+        if (q.resolvesFerramenta) {
+          if (optIndex === 0) state.ferramenta = 'PRECIFICACAO';
+          else if (optIndex === 1) state.ferramenta = 'TESOURARIA';
+          // optIndex 2 ("não sei, preciso dos dois") mantém AMBOS
         }
 
         currentStepNumber++;
         var nextIndex = state.pathStepIndex + 1;
-        if (nextIndex < questions.length) {
+        if (nextIndex < TOTAL_PATH_STEPS) {
           state.pathStepIndex = nextIndex;
           renderPathQuestion();
           updateProgress();
         } else {
           // acabaram as perguntas do caminho → captura
           currentStepNumber++;
+          updateEmailHint();
           showScreen('capture');
           updateProgress();
         }
@@ -648,7 +779,8 @@
     formData.append('nome', nome);
     formData.append('telefone', whatsapp);
     formData.append('email', email);
-    formData.append('caminho', state.subCaminho || state.caminho);
+    formData.append('caminho', state.caminho);
+    formData.append('ferramentaIndicada', state.ferramenta);
     formData.append('respostas', respostasResumo);
 
     fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: formData })
@@ -669,46 +801,64 @@
     }).join(', ');
     var texto = 'Olá! Fiz o diagnóstico da Bússola BPO.\n' +
       'Perfil: ' + Q1_LABELS[state.caminho] + '\n' +
+      'Ferramenta indicada: ' + (FERRAMENTA_LABELS[state.ferramenta] || '') + '\n' +
       'Nome: ' + state.nome + '\n' +
       'Respostas: ' + resumo + '\n' +
       (waNote || '');
     return 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(texto);
   }
 
-  function renderResult() {
-    var key = state.subCaminho || state.caminho;
-    var result = RESULTS[key];
+  function makeCheckoutButton(link, label) {
+    var buy = document.createElement('a');
+    buy.href = link;
+    buy.target = '_blank';
+    buy.rel = 'noopener';
+    buy.className = 'btn btn--cta btn--lg btn--block';
+    buy.textContent = label;
+    return buy;
+  }
 
-    document.getElementById('resultTitle').textContent = result.title;
-    document.getElementById('resultText').textContent = result.text;
+  function makeSaberMaisLink(link) {
+    var more = document.createElement('a');
+    more.href = link;
+    if (/^https?:\/\//.test(link)) { more.target = '_blank'; more.rel = 'noopener'; }
+    more.className = 'btn btn--outline btn--lg btn--block';
+    more.textContent = 'Saber mais antes de comprar';
+    return more;
+  }
+
+  function renderResult() {
+    var rc = RESULT_COPY[state.ferramenta] || RESULT_COPY.AMBOS;
+
+    document.getElementById('resultTitle').textContent = rc.title;
+    document.getElementById('resultText').textContent = rc.textFn ? rc.textFn() : rc.text;
+
+    var wrap = document.getElementById('resultDeliverablesWrap');
+    var list = document.getElementById('resultDeliverables');
+    list.innerHTML = '';
+    (rc.deliverables || []).forEach(function (item) {
+      var li = document.createElement('li');
+      li.textContent = item;
+      list.appendChild(li);
+    });
+    wrap.style.display = rc.deliverables && rc.deliverables.length ? 'block' : 'none';
 
     var ctasEl = document.getElementById('resultCtas');
     ctasEl.innerHTML = '';
 
-    if (result.cta === 'kiwify_dual') {
-      var buy = document.createElement('a');
-      buy.href = KIWIFY_LINK;
-      buy.target = '_blank';
-      buy.rel = 'noopener';
-      buy.className = 'btn btn--cta btn--lg btn--block';
-      buy.textContent = 'Comprar agora — R$47';
-      ctasEl.appendChild(buy);
-
-      var more = document.createElement('a');
-      more.href = PRECIFICACAO_LP;
-      more.className = 'btn btn--outline btn--lg btn--block';
-      more.textContent = 'Saber mais antes de comprar';
-      ctasEl.appendChild(more);
+    if (rc.dual) {
+      // Perfil "Ambos": mostra as duas ferramentas, o cliente escolhe por onde começar
+      ctasEl.appendChild(makeCheckoutButton(PRECIFICACAO_LINK, 'Começar pela ' + FERRAMENTA_LABELS.PRECIFICACAO));
+      ctasEl.appendChild(makeCheckoutButton(TESOURARIA_LINK, 'Começar pela ' + FERRAMENTA_LABELS.TESOURARIA));
     } else {
-      var wa = document.createElement('a');
-      wa.href = buildWaLink(result.waNote);
-      wa.target = '_blank';
-      wa.rel = 'noopener';
-      wa.className = 'btn btn--whatsapp btn--lg btn--block';
-      wa.textContent = 'Falar no WhatsApp';
-      ctasEl.appendChild(wa);
+      ctasEl.appendChild(makeCheckoutButton(rc.checkoutLink, rc.checkoutLabel));
+      ctasEl.appendChild(makeSaberMaisLink(rc.saberMaisLink));
     }
   }
+
+  document.getElementById('btnHireSomeone').addEventListener('click', function () {
+    window.open(buildWaLink('Prefiro contratar alguém de confiança para cuidar disso.'), '_blank');
+  });
 })();
 </script>
 </body>
