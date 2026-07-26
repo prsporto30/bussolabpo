@@ -461,21 +461,25 @@
 
   // ============================================================
   // DADOS DO QUIZ
-  // Q1 decide o caminho (FAMILIA ou EMPRESA) — cada caminho tem 3 perguntas próprias (Q2-Q4)
+  // Q1 decide o caminho (FAMILIA, DONO ou BPO) — cada caminho tem 3 perguntas próprias (Q2-Q4).
+  // DONO e BPO convergem pro mesmo produto (Gestão de Tesouraria / Agente BPO), mas com
+  // telas de resultado com copy diferente pro perfil de cada um.
   // ============================================================
   var Q1_OPTIONS = [
     { key: 'FAMILIA', text: 'Quero organizar as finanças da minha casa / família' },
-    { key: 'EMPRESA', text: 'Quero organizar as finanças da minha empresa / negócio' }
+    { key: 'DONO', text: 'Sou dono de empresa e quero organizar o financeiro do negócio' },
+    { key: 'BPO', text: 'Quero empreender prestando serviço de BPO Financeiro pra outras empresas' }
   ];
 
   var Q1_LABELS = {
     FAMILIA: 'Finanças da família',
-    EMPRESA: 'Finanças da empresa'
+    DONO: 'Dono de empresa',
+    BPO: 'Empreender no BPO Financeiro'
   };
 
   var FERRAMENTA_LABELS = {
     FAMILIA: 'Bússola Financeira Pessoal',
-    TESOURARIA: 'Gestão de Tesouraria'
+    TESOURARIA: 'Gestão de Tesouraria / Agente BPO'
   };
 
   var PERGUNTAS = {
@@ -496,7 +500,7 @@
         options: ['Menos de 3 meses', '3 a 12 meses', 'Mais de 1 ano']
       }
     ],
-    EMPRESA: [
+    DONO: [
       {
         id: 'q2',
         text: 'Como você organiza o financeiro da empresa hoje?',
@@ -510,6 +514,23 @@
       {
         id: 'q4',
         text: 'Há quanto tempo isso te incomoda?',
+        options: ['Menos de 3 meses', '3 a 12 meses', 'Mais de 1 ano']
+      }
+    ],
+    BPO: [
+      {
+        id: 'q2',
+        text: 'Qual é a sua situação hoje?',
+        options: ['Estou no CLT e penso em sair', 'Já sou autônomo(a) e quero uma renda mais estável', 'Já presto serviço financeiro pra alguém e quero profissionalizar', 'Estou procurando uma forma de trabalhar de casa']
+      },
+      {
+        id: 'q3',
+        text: 'O que mais te atrai em prestar serviço de BPO Financeiro?',
+        options: ['Trabalhar de casa, com horário flexível', 'Ter uma ferramenta pronta pra não depender só de mim', 'Cobrar recorrência de clientes fixos todo mês', 'Sair do CLT sem abrir mão de estabilidade']
+      },
+      {
+        id: 'q4',
+        text: 'Há quanto tempo você pensa nisso?',
         options: ['Menos de 3 meses', '3 a 12 meses', 'Mais de 1 ano']
       }
     ]
@@ -544,10 +565,10 @@
       saberMaisLink: FAMILIA_LP,
       guiaBonus: 'Guia Rápido de Educação Financeira Familiar'
     },
-    TESOURARIA: {
-      title: 'Seu perfil aponta pra Gestão de Tesouraria',
+    DONO: {
+      title: 'Seu perfil aponta pro Sistema de Gestão de Tesouraria',
       textFn: function () {
-        return 'Você marcou "' + state.respostas.q3 + '" — é exatamente o que o Sistema de Gestão de Tesouraria resolve: ele importa seu extrato, categoriza automaticamente, concilia com o que era esperado e mostra o saldo real num dashboard, sem depender de planilha manual. ' + (URGENCY_TAIL[state.respostas.q4] || '');
+        return 'Você marcou "' + state.respostas.q3 + '" — é exatamente o que o Sistema de Gestão de Tesouraria resolve: ele importa o extrato da empresa, concilia automaticamente com o que era esperado, e mostra o saldo real de caixa num Dashboard simples, sem depender de planilha manual. ' + (URGENCY_TAIL[state.respostas.q4] || '');
       },
       deliverables: [
         'Planilha Gestão de Tesouraria (Google Sheets + Apps Script)',
@@ -559,6 +580,22 @@
       checkoutLabel: 'Comprar Gestão de Tesouraria',
       saberMaisLink: TESOURARIA_SALES_PAGE,
       guiaBonus: 'Guia Rápido de Tesouraria'
+    },
+    BPO: {
+      title: 'Seu perfil aponta pro Agente BPO — a mesma ferramenta, pra você prestar o serviço',
+      textFn: function () {
+        return 'Você marcou "' + state.respostas.q3 + '" — pra isso, o caminho mais rápido não é aprender contabilidade do zero: é ter a ferramenta que já faz o trabalho técnico. O Sistema de Gestão de Tesouraria vem com o painel Agente BPO, que organiza a conciliação bancária e as contas a pagar/receber de qualquer cliente que você atender — dá pra prestar um serviço de nível profissional desde o primeiro cliente. ' + (URGENCY_TAIL[state.respostas.q4] || '');
+      },
+      deliverables: [
+        'Planilha Gestão de Tesouraria com painel Agente BPO (Google Sheets + Apps Script)',
+        'Ebook tutorial — passo a passo de como usar com cada cliente',
+        'Ebook conceitual — conciliação bancária e regime de caixa',
+        'Bônus no checkout: Bússola de Precificação, pra você já saber precificar seu serviço'
+      ],
+      checkoutLink: TESOURARIA_LINK,
+      checkoutLabel: 'Quero começar com o Agente BPO',
+      saberMaisLink: TESOURARIA_SALES_PAGE,
+      guiaBonus: 'Guia Rápido de Tesouraria'
     }
   };
 
@@ -566,7 +603,7 @@
   // ESTADO
   // ============================================================
   var state = {
-    caminho: null,        // 'FAMILIA' | 'EMPRESA'
+    caminho: null,        // 'FAMILIA' | 'DONO' | 'BPO'
     pathStepIndex: 0,     // índice da pergunta atual (0..2 = q2..q4)
     respostas: {}          // { q1: 'texto', q2: 'texto', ... }
   };
@@ -641,11 +678,11 @@
   var pathEyebrowEl = document.getElementById('pathEyebrow');
 
   function ferramentaAtual() {
-    return state.caminho === 'EMPRESA' ? 'TESOURARIA' : 'FAMILIA';
+    return (state.caminho === 'DONO' || state.caminho === 'BPO') ? 'TESOURARIA' : 'FAMILIA';
   }
 
   function updateEmailHint() {
-    var rc = RESULT_COPY[ferramentaAtual()];
+    var rc = RESULT_COPY[state.caminho];
     var hintGuideEl = document.getElementById('emailHintGuide');
     if (hintGuideEl) hintGuideEl.textContent = rc.guiaBonus;
   }
@@ -791,7 +828,7 @@
   }
 
   function renderResult() {
-    var rc = RESULT_COPY[ferramentaAtual()];
+    var rc = RESULT_COPY[state.caminho];
 
     document.getElementById('resultTitle').textContent = rc.title;
     document.getElementById('resultText').textContent = rc.textFn ? rc.textFn() : rc.text;
