@@ -648,11 +648,15 @@
         return 'Pelas suas respostas, faz mais sentido conversar direto — vamos entender o tamanho da sua operação hoje e desenhar juntos a estruturação (consultoria pontual) ou a terceirização recorrente do seu financeiro.';
       },
       deliverables: [
+        'Simulação do valor estimado do seu plano em 6 perguntas',
         'Diagnóstico rápido da sua operação financeira',
         'Proposta sob medida — consultoria ou BPO recorrente'
       ],
       checkoutLink: null,
       checkoutLabel: null,
+      simulatorLink: 'simulador/',
+      simulatorLabel: 'Simular meu plano agora',
+      hireLinkLabel: 'Prefiro falar direto no WhatsApp, sem simular →',
       waCta: 'Falar com a equipe agora',
       guiaBonus: null,
       ferramentaIndicada: 'CONSULTORIA_TIPO_E'
@@ -916,8 +920,7 @@
   function makeCheckoutButton(link, label) {
     var buy = document.createElement('a');
     buy.href = link;
-    buy.target = '_blank';
-    buy.rel = 'noopener';
+    if (/^https?:\/\//.test(link)) { buy.target = '_blank'; buy.rel = 'noopener'; }
     buy.className = 'btn btn--cta btn--lg btn--block';
     buy.textContent = label;
     return buy;
@@ -959,8 +962,12 @@
     var ctasEl = document.getElementById('resultCtas');
     ctasEl.innerHTML = '';
     var hireBtn = document.getElementById('btnHireSomeone');
+    hireBtn.textContent = rc.hireLinkLabel || 'Prefiro tirar dúvidas por WhatsApp antes →';
 
-    if (rc.checkoutLink) {
+    if (rc.simulatorLink) {
+      ctasEl.appendChild(makeCheckoutButton(rc.simulatorLink, rc.simulatorLabel || 'Simular meu plano agora'));
+      hireBtn.style.display = 'block';
+    } else if (rc.checkoutLink) {
       ctasEl.appendChild(makeCheckoutButton(rc.checkoutLink, rc.checkoutLabel));
       hireBtn.style.display = 'block';
     } else if (rc.waCta) {
@@ -970,7 +977,11 @@
   }
 
   document.getElementById('btnHireSomeone').addEventListener('click', function () {
-    window.open(buildWaLink('Prefiro tirar dúvidas por WhatsApp antes de decidir.'), '_blank');
+    var tipo = resolveTipo();
+    var note = tipo === 'E'
+      ? 'Prefiro falar direto, sem simular o plano antes.'
+      : 'Prefiro tirar dúvidas por WhatsApp antes de decidir.';
+    window.open(buildWaLink(note), '_blank');
   });
 })();
 </script>
