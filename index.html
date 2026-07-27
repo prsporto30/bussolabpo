@@ -461,13 +461,14 @@
   var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyG7IBJsF3nZUvG8SToD-o_cxdo6Q7h1r02wAB5L_iJKqNGEpNrPEc-lQL-thst0pl3/exec';
   var WHATSAPP_NUMBER = '5521992067985'; // WhatsApp Business
 
-  // Checkout único reaproveitado por A/C/D enquanto a planilha não é desdobrada
-  // em "Tesouraria" (donos) e "Agente BPO" (prestadores) — Paulo reajusta o preço
-  // pra R$47 direto no Kiwify. Quando os checkouts forem separados, é só trocar
-  // os valores de TIPO_A_LINK / TIPO_C_LINK abaixo.
+  // Checkouts definitivos (planilhas já desdobradas em "Agente BPO" e
+  // "Gestão de Tesouraria"). Tipo A e Tipo C (público que presta ou quer
+  // prestar serviço de BPO) vão pro Agente BPO; Tipo D (dono de empresa,
+  // self-service) vai pra Gestão de Tesouraria.
   var TESOURARIA_LINK = 'https://pay.kiwify.com.br/d6YOGrl';
-  var TIPO_A_LINK = TESOURARIA_LINK;
-  var TIPO_C_LINK = TESOURARIA_LINK;
+  var AGENTE_BPO_LINK = 'https://pay.kiwify.com.br/M5MyXsi';
+  var TIPO_A_LINK = AGENTE_BPO_LINK;
+  var TIPO_C_LINK = AGENTE_BPO_LINK;
   var TIPO_D_LINK = TESOURARIA_LINK;
 
   // ============================================================
@@ -597,14 +598,15 @@
       isSoon: true,
       title: 'Você já decidiu virar profissional de BPO Financeiro',
       textFn: function () {
-        return 'Isso é ótimo. O Curso Completo de Formação em BPO Financeiro está em produção — vai reunir o método completo, do operacional ao comercial, pra você sair do zero até o primeiro cliente pagante. Como você já deixou seus dados, te aviso em primeira mão assim que abrir.';
+        return 'Isso é ótimo. O Curso Completo de Formação em BPO Financeiro está sendo gravado agora — vai reunir o método completo, do operacional ao comercial, pra você sair do zero até o primeiro cliente pagante. Enquanto isso, você já recebe o ebook "Como Ser BPO Financeiro" em PDF pra começar a se preparar, e já está na lista de espera do curso: assim que ele ficar pronto, você é avisado(a) em primeira mão.';
       },
       deliverables: [
+        'Ebook "Como Ser BPO Financeiro" em PDF, liberado agora',
+        'Vaga garantida na lista de espera do curso completo',
         'Método completo: operação, precificação, prospecção e fechamento',
-        'Modelos de contrato e roteiros de venda prontos',
-        'Acompanhamento pra tirar dúvidas durante a formação'
+        'Aviso em primeira mão assim que o curso for lançado'
       ],
-      deliverablesLabel: 'O curso vai trazer:',
+      deliverablesLabel: 'O que você já recebe + o que o curso vai trazer:',
       checkoutLink: null,
       checkoutLabel: null,
       waCta: 'Falar no WhatsApp sobre o curso',
