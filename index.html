@@ -595,36 +595,34 @@
       ferramentaIndicada: 'AGENTE_BPO_TIPO_A'
     },
     B: {
-      isSoon: true,
       title: 'Você já decidiu virar profissional de BPO Financeiro',
       textFn: function () {
-        return 'Isso é ótimo. O Curso Completo de Formação em BPO Financeiro está sendo gravado agora — vai reunir o método completo, do operacional ao comercial, pra você sair do zero até o primeiro cliente pagante. Enquanto isso, você já recebe o ebook "Como Ser BPO Financeiro" em PDF pra começar a se preparar, e já está na lista de espera do curso: assim que ele ficar pronto, você é avisado(a) em primeira mão.';
+        return 'Você marcou "' + (state.respostas.q3 || '') + '" — enquanto o Curso Completo de Formação em BPO Financeiro não fica pronto (está sendo gravado agora, do operacional ao comercial), comece já operando de verdade com o Agente BPO: a mesma planilha completa de conciliação, contas a pagar/receber e dashboard. Assim que o curso for lançado, você já está na lista de espera e é avisado(a) em primeira mão. ' + (URGENCY_TAIL[state.respostas.q4] || '');
       },
       deliverables: [
-        'Ebook "Como Ser BPO Financeiro" em PDF, liberado agora',
-        'Vaga garantida na lista de espera do curso completo',
-        'Método completo: operação, precificação, prospecção e fechamento',
-        'Aviso em primeira mão assim que o curso for lançado'
+        'Planilha Agente BPO (Google Sheets + Apps Script)',
+        'Ebook "Como Ser BPO Financeiro"',
+        'Ebook tutorial — passo a passo de uso da planilha',
+        'Vaga garantida na lista de espera do Curso Completo de Formação'
       ],
-      deliverablesLabel: 'O que você já recebe + o que o curso vai trazer:',
-      checkoutLink: null,
-      checkoutLabel: null,
-      waCta: 'Falar no WhatsApp sobre o curso',
+      checkoutLink: AGENTE_BPO_LINK,
+      checkoutLabel: 'Quero começar agora por R$47',
       guiaBonus: null,
-      ferramentaIndicada: 'CURSO_EM_BREVE_TIPO_B'
+      ferramentaIndicada: 'AGENTE_BPO_TIPO_B'
     },
     C: {
-      title: 'Seu perfil aponta pra profissionalizar seu BPO',
+      title: 'Seu perfil aponta pra profissionalizar seu BPO com o Agente BPO',
       textFn: function () {
-        return 'Você marcou "' + (state.respostas.q3 || '') + '" — é hora de sair do operacional manual e ganhar processo profissional: planilha de Tesouraria/Precificação, tutorial de uso e o material de "Como Ser BPO" na versão avançada, pensado pra quem já atende clientes. ' + (URGENCY_TAIL[state.respostas.q4] || '');
+        return 'Você marcou "' + (state.respostas.q3 || '') + '" — é hora de sair do operacional manual e ganhar processo profissional com o Agente BPO: uma planilha completa (conciliação, contas a pagar/receber, dashboard) que substitui sistemas caros como Omie ou Conta Azul, sem mensalidade alta. Em breve lançamos também o Curso BPO Avançado (precificação, FP&A, controladoria) pra quem quer ir além do operacional. ' + (URGENCY_TAIL[state.respostas.q4] || '');
       },
       deliverables: [
-        'Planilha de Tesouraria/Precificação (Google Sheets + Apps Script)',
+        'Planilha Agente BPO (Google Sheets + Apps Script)',
         'Ebook tutorial de uso',
-        'Ebook "Como Ser BPO" — versão avançada'
+        'Ebook "Como Ser BPO" — versão avançada',
+        'Substitui sistemas caros (Omie, Conta Azul etc.) sem mensalidade'
       ],
       checkoutLink: TIPO_C_LINK,
-      checkoutLabel: 'Quero profissionalizar meu BPO',
+      checkoutLabel: 'Quero o Agente BPO por R$47',
       guiaBonus: null,
       ferramentaIndicada: 'AGENTE_BPO_TIPO_C'
     },
