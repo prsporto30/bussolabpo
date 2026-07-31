@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agente BPO — assista antes de decidir | Bússola BPO Financeiro</title>
+<meta name="description" content="Assista ao vídeo e descubra como o Agente BPO te coloca operando como profissional de BPO Financeiro, sem precisar de sistema caro.">
+
+<!--
+  ============================================================
+  META PIXEL / GOOGLE ADS — instalar aqui, dentro do <head>.
+  Esta página é o destino principal do tráfego pago (Meta Ads / Google Ads).
+  Eventos recomendados: "PageView" ao carregar, "Lead" se algum formulário for
+  adicionado no futuro, "InitiateCheckout" no clique do botão de compra (id="ctaComprar"
+  e "ctaComprarSticky").
+  ============================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../css/styles.css">
+<noscript><style>[data-reveal]{opacity:1!important;transform:none!important;} #restOfPage{display:block!important;opacity:1!important;}</style></noscript>
+
+<style>
+  /* ============================================================
+     LP COM VSL — estilos específicos desta página
+     (reaproveita os tokens de css/styles.css)
+     ============================================================ */
+  #restOfPage { opacity: 0; transition: opacity 0.6s ease; }
+  #restOfPage.is-visible { opacity: 1; }
+
+  .vsl-hero {
+    background: linear-gradient(165deg, var(--navy-3) 0%, var(--navy) 55%, var(--navy-2) 100%);
+    color: var(--white);
+    padding: 28px 0 40px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .vsl-hero__kicker {
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--amber);
+    margin-bottom: 10px;
+  }
+  .vsl-hero__title {
+    text-align: center;
+    font-size: clamp(22px, 5vw, 32px);
+    font-weight: 800;
+    line-height: 1.28;
+    max-width: 640px;
+    margin: 0 auto 26px;
+  }
+
+  .vsl-player {
+    position: relative;
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .vsl-player video { width: 100%; height: 100%; display: block; object-fit: cover; }
+
+  /* ---------- Modo simulação (sem vídeo real ainda) ---------- */
+  .vsl-mock {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    background: radial-gradient(circle at 50% 40%, rgba(245,158,11,0.12), transparent 60%), var(--navy-3);
+    padding: 20px;
+    text-align: center;
+  }
+  .vsl-mock__play {
+    width: 76px; height: 76px;
+    border-radius: 50%;
+    background: var(--amber);
+    color: var(--navy-3);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    box-shadow: 0 10px 30px rgba(245,158,11,0.4);
+    transition: transform 0.15s ease;
+  }
+  .vsl-mock__play:hover { transform: scale(1.06); }
+  .vsl-mock__label { font-size: 14px; font-weight: 700; color: var(--white); }
+  .vsl-mock__note { font-size: 12px; color: rgba(255,255,255,0.55); max-width: 380px; }
+  .vsl-mock__progress {
+    width: 100%; max-width: 320px;
+    height: 6px;
+    background: rgba(255,255,255,0.14);
+    border-radius: 999px;
+    overflow: hidden;
+    display: none;
+  }
+  .vsl-mock__progress.is-active { display: block; }
+  .vsl-mock__progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--amber), var(--green));
+    border-radius: 999px;
+    transition: width 0.3s linear;
+  }
+  .vsl-mock__time { font-size: 12px; color: rgba(255,255,255,0.7); display: none; }
+  .vsl-mock__time.is-active { display: block; }
+
+  .vsl-cta-wrap {
+    text-align: center;
+    margin-top: 26px;
+    animation: fadeUp 0.5s ease;
+  }
+  .vsl-cta-wrap__note { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 12px; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .vsl-scroll-hint {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.55);
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     VSL — único elemento visível ao carregar a página.
+     O restante da oferta (#restOfPage) fica oculto até o vídeo
+     atingir o timestamp configurado abaixo, ou terminar.
+     ============================================================ -->
+<header class="vsl-hero" id="vslHero">
+  <div class="wrap wrap--narrow">
+    <p class="vsl-hero__kicker">Antes de decidir, assista</p>
+    <h1 class="vsl-hero__title">Por que centenas de pessoas estão trocando o CLT pelo BPO Financeiro — e como começar por R$47</h1>
+  </div>
+
+  <div class="vsl-player" id="vslPlayer">
+    <!-- ============================================================
+         PLACEHOLDER DE PLAYER — trocar por aqui:
+         1) VTurb: colar o script/iframe de embed fornecido pelo painel VTurb.
+         2) Panda Vídeo (opção mais barata pra validar a estrutura antes do VTurb):
+            <iframe src="https://player-vz-SEU_ID.tv.pandavideo.com.br/embed/?v=SEU_VIDEO_ID"
+              style="border:none;position:absolute;top:0;left:0;width:100%;height:100%;"
+              allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture" allowfullscreen></iframe>
+         Se usar Panda Vídeo, troque o bloco de simulação abaixo (#vslMock) pela integração
+         real via Panda Player JS API (eventos de tempo), ou adapte o listener do <video>
+         nativo caso opte por hospedar o MP4 diretamente.
+         ============================================================ -->
+    <video id="vslVideo" playsinline style="display:none;">
+      <!-- <source src="SEU_VIDEO.mp4" type="video/mp4"> -->
+    </video>
+
+    <div class="vsl-mock" id="vslMock">
+      <button type="button" class="vsl-mock__play" id="vslMockPlay" aria-label="Assistir vídeo (modo simulação)">▶</button>
+      <p class="vsl-mock__label">Assistir agora</p>
+      <p class="vsl-mock__note" id="vslMockNote">Modo simulação — sem player real conectado ainda. Clique pra testar a lógica de "botão aparece no meio do vídeo" e "resto da página revela depois".</p>
+      <div class="vsl-mock__progress" id="vslMockProgress"><div class="vsl-mock__progress-fill" id="vslMockProgressFill"></div></div>
+      <p class="vsl-mock__time" id="vslMockTime">0:00</p>
+    </div>
+  </div>
+
+  <div class="vsl-cta-wrap" id="vslCtaWrap" style="display:none;">
+    <a href="https://pay.kiwify.com.br/M5MyXsi" target="_blank" rel="noopener" class="btn btn--cta btn--lg" id="ctaComprar">Quero começar por R$47</a>
+    <p class="vsl-cta-wrap__note">Vaga liberada — acesso imediato após a confirmação do pagamento.</p>
+  </div>
+
+  <p class="vsl-scroll-hint" id="vslScrollHint" style="display:none;">Role pra baixo pra ver todos os detalhes ↓</p>
+</header>
+
+<!-- ============================================================
+     RESTO DA OFERTA — oculto até o vídeo liberar (ver #restOfPage no <style> e o <script> no fim).
+     ============================================================ -->
+<div id="restOfPage" style="display:none;">
+
+  <section class="trustbar" aria-label="Credenciais">
+    <div class="wrap trustbar__grid" data-reveal>
+      <div class="trustbar__item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2L3 6V11C3 16 6.7 20.6 12 22C17.3 20.6 21 16 21 11V6L12 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12L11 14L15.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Planilha completa: conciliação, contas a pagar/receber e dashboard</span>
+      </div>
+      <div class="trustbar__item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 20V10L9 6L15 10V4L21 8V20H3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 20H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Sem mensalidade — pagamento único de R$47</span>
+      </div>
+      <div class="trustbar__item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 9H17M7 13H14M7 17H11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Acesso imediato após a confirmação do pagamento</span>
+      </div>
+      <div class="trustbar__item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L14.5 9L21 9.5L16 14L17.5 21L12 17.5L6.5 21L8 14L3 9.5L9.5 9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <span>Garantia de 7 dias, sem burocracia</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section oferta" id="oferta">
+    <div class="wrap">
+      <div class="section__head" data-reveal>
+        <p class="section__eyebrow">O que você recebe</p>
+        <h2 class="section__title">Tudo que você precisa pra começar a operar como BPO Financeiro</h2>
+      </div>
+
+      <div class="bento" data-reveal>
+        <div class="bento__item bento__item--lg">
+          <span class="bento__icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21M9 9V21" stroke="currentColor" stroke-width="1.8"/></svg>
+          </span>
+          <h3>Planilha Agente BPO</h3>
+          <p>Google Sheets + Apps Script. Conciliação bancária via OFX, Contas a Pagar/Receber, DRE simplificado e Dashboard — pra você operar de verdade com um cliente, sem precisar de sistema caro.</p>
+        </div>
+
+        <div class="bento__item">
+          <span class="bento__icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19.5V4.5C4 3.4 4.9 2.5 6 2.5H18C19.1 2.5 20 3.4 20 4.5V19.5" stroke="currentColor" stroke-width="1.8"/><path d="M4 19.5C4 20.6 4.9 21.5 6 21.5H18C19.1 21.5 20 20.6 20 19.5" stroke="currentColor" stroke-width="1.8"/></svg>
+          </span>
+          <h3>Ebook "Como Ser BPO Financeiro"</h3>
+          <p>O passo a passo de como estruturar seu serviço, do primeiro cliente à precificação — sem enrolação teórica.</p>
+        </div>
+
+        <div class="bento__item">
+          <span class="bento__icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M10 9L15 12L10 15V9Z" fill="currentColor"/></svg>
+          </span>
+          <h3>Ebook tutorial de uso</h3>
+          <p>Passo a passo de como preencher e operar a planilha, com exemplo real, pra você aprender sem depender de suporte.</p>
+        </div>
+
+        <div class="bento__item">
+          <span class="bento__icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21C12 21 4 15.5 4 9.5C4 6.5 6.5 4 9.5 4C11 4 12 5 12 5C12 5 13 4 14.5 4C17.5 4 20 6.5 20 9.5C20 15.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </span>
+          <h3>Bônus no checkout</h3>
+          <p>Planilha de Finanças Pessoais como item adicional, pra organizar seu próprio dinheiro enquanto estrutura o novo serviço.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section comparativo" id="comparativo">
+    <div class="wrap">
+      <div class="section__head" data-reveal>
+        <p class="section__eyebrow">A diferença</p>
+        <h2 class="section__title">Trabalhar CLT versus prestar serviço de BPO Financeiro</h2>
+      </div>
+
+      <div class="compare" data-reveal>
+        <div class="compare__col compare__col--before">
+          <h3>Do jeito antigo</h3>
+          <ul>
+            <li>Salário fixo, sem controle sobre quanto você pode crescer</li>
+            <li>Depende de vaga CLT disponível, muitas vezes mal remunerada</li>
+            <li>Precisa sair de casa, cumprir horário fixo, responder a chefe</li>
+            <li>Nenhum ativo profissional próprio — se sair do emprego, começa do zero</li>
+          </ul>
+        </div>
+        <div class="compare__col compare__col--after">
+          <h3>Com o Agente BPO</h3>
+          <ul>
+            <li>Você decide quantos clientes atender e quanto cobrar por cada um</li>
+            <li>Trabalha de casa, no seu horário, com uma planilha profissional pronta</li>
+            <li>Constrói uma carteira de clientes — um ativo que é seu, não da empresa</li>
+            <li>Começa por R$47, sem depender de curso caro pra testar se é pra você</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section detalhe" id="detalhes">
+    <div class="wrap">
+
+      <div class="detalhe-item" data-reveal>
+        <div class="detalhe-item__text">
+          <p class="section__eyebrow">Componente 1</p>
+          <h3>Planilha Agente BPO</h3>
+          <p>Construída em Google Sheets com Apps Script — sem instalar nada. Você importa o extrato (OFX) do seu cliente e a planilha organiza:</p>
+          <ul class="check-list">
+            <li>Conciliação bancária automática</li>
+            <li>Contas a Pagar e a Receber</li>
+            <li>DRE simplificado do negócio do cliente</li>
+            <li>Dashboard com a visão consolidada do mês</li>
+          </ul>
+        </div>
+        <div class="detalhe-item__visual">
+          <div class="dash-card">
+            <div class="dash-card__bar"><span></span><span></span><span></span><p>agente-bpo.xlsx</p></div>
+            <div class="dash-card__body">
+              <p class="dash-card__tag">Exemplo ilustrativo — cliente fictício</p>
+              <div class="dash-row"><span>Saldo conciliado</span><strong>R$ 18.420,00</strong></div>
+              <div class="dash-row"><span>Contas a pagar (mês)</span><strong>R$ 6.150,00</strong></div>
+              <div class="dash-row"><span>Contas a receber (mês)</span><strong>R$ 9.800,00</strong></div>
+              <div class="dash-bar-track"><div class="dash-bar-fill" style="width:72%"></div></div>
+              <div class="dash-result"><span>Resultado do mês</span><strong>R$ 3.650,00</strong></div>
+              <span class="dash-badge">Conciliação em dia</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detalhe-item detalhe-item--reverse" data-reveal>
+        <div class="detalhe-item__text">
+          <p class="section__eyebrow">Componente 2</p>
+          <h3>Ebook "Como Ser BPO Financeiro"</h3>
+          <p>O guia prático pra quem está começando: como conseguir o primeiro cliente, como se apresentar, como precificar seu serviço e como organizar sua rotina de trabalho remoto.</p>
+          <ul class="check-list">
+            <li>Direto ao ponto, sem enrolação teórica</li>
+            <li>Escrito pra quem nunca prestou esse tipo de serviço</li>
+            <li>Inclui roteiro de prospecção e abordagem de primeiro cliente</li>
+          </ul>
+        </div>
+        <div class="detalhe-item__visual">
+          <div class="mini-card mini-card--book">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19.5V4.5C4 3.4 4.9 2.5 6 2.5H18C19.1 2.5 20 3.4 20 4.5V19.5" stroke="currentColor" stroke-width="1.8"/><path d="M4 19.5C4 20.6 4.9 21.5 6 21.5H18C19.1 21.5 20 20.6 20 19.5" stroke="currentColor" stroke-width="1.8"/></svg>
+            <p>Ebook "Como Ser BPO Financeiro" — PDF, acesso imediato</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section preco" id="preco">
+    <div class="wrap">
+      <div class="price-card" data-reveal>
+        <div class="price-card__head">
+          <p class="section__eyebrow section__eyebrow--light">Agente BPO</p>
+          <h2>Comece a operar como BPO Financeiro</h2>
+          <p class="price-card__desc">Planilha + ebooks. Pagamento único.</p>
+        </div>
+
+        <p class="price-card__value"><span>R$</span>47<span class="price-card__cents">,00</span></p>
+        <p class="price-card__installment">à vista, pagamento único — sem mensalidade</p>
+
+        <ul class="price-card__includes">
+          <li>Planilha Agente BPO (Google Sheets + Apps Script)</li>
+          <li>Ebook "Como Ser BPO Financeiro"</li>
+          <li>Ebook tutorial — passo a passo de uso da planilha</li>
+          <li>Acesso imediato após a confirmação do pagamento</li>
+        </ul>
+        <p class="price-card__bonus">No checkout, você pode adicionar a Planilha de Finanças Pessoais como item extra.</p>
+
+        <a href="https://pay.kiwify.com.br/M5MyXsi" target="_blank" rel="noopener" class="btn btn--cta btn--lg btn--block" id="ctaComprar2">Quero começar por R$47</a>
+
+        <div class="price-card__guarantee">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2L3 6V11C3 16 6.7 20.6 12 22C17.3 20.6 21 16 21 11V6L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12L11 14L15.5 9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p>Garantia de 7 dias. Se não fizer sentido pra você, o reembolso é integral e sem burocracia, conforme o Art. 49 do Código de Defesa do Consumidor.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section faq" id="faq" x-data="{ open: 0 }">
+    <div class="wrap wrap--narrow">
+      <div class="section__head" data-reveal>
+        <p class="section__eyebrow">Perguntas frequentes</p>
+        <h2 class="section__title">Antes de decidir</h2>
+      </div>
+
+      <div class="accordion" data-reveal>
+        <div class="accordion__item">
+          <button class="accordion__trigger" @click="open = open === 0 ? null : 0" :aria-expanded="open === 0">
+            Preciso ter experiência em financeiro pra começar?
+            <svg :class="{ 'is-open': open === 0 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="accordion__panel" x-show="open === 0" x-collapse x-cloak>
+            <p>Não. O ebook "Como Ser BPO Financeiro" foi escrito pra quem está começando do zero — a planilha faz a parte técnica (conciliação, contas a pagar/receber, DRE), você aprende operando com um exemplo real.</p>
+          </div>
+        </div>
+
+        <div class="accordion__item">
+          <button class="accordion__trigger" @click="open = open === 1 ? null : 1" :aria-expanded="open === 1">
+            Preciso saber Excel avançado?
+            <svg :class="{ 'is-open': open === 1 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="accordion__panel" x-show="open === 1" x-collapse x-cloak>
+            <p>Não. A planilha já vem com as fórmulas e automações prontas em Google Sheets com Apps Script — você preenche os dados e importa o extrato, o sistema faz o resto.</p>
+          </div>
+        </div>
+
+        <div class="accordion__item">
+          <button class="accordion__trigger" @click="open = open === 2 ? null : 2" :aria-expanded="open === 2">
+            Quanto tempo leva pra conseguir o primeiro cliente?
+            <svg :class="{ 'is-open': open === 2 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="accordion__panel" x-show="open === 2" x-collapse x-cloak>
+            <p>Isso depende do seu ritmo de prospecção — o ebook traz um roteiro de abordagem, mas não é uma promessa de resultado. O objetivo do material é te dar a ferramenta e o processo pra você operar com qualidade assim que fechar o primeiro cliente.</p>
+          </div>
+        </div>
+
+        <div class="accordion__item">
+          <button class="accordion__trigger" @click="open = open === 3 ? null : 3" :aria-expanded="open === 3">
+            A planilha funciona no Excel?
+            <svg :class="{ 'is-open': open === 3 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="accordion__panel" x-show="open === 3" x-collapse x-cloak>
+            <p>A planilha foi construída em Google Sheets com Apps Script, e é essa a versão com todos os recursos (importação de OFX, automações). Ela pode ser aberta em Excel, mas os scripts de automação não rodam fora do Google Sheets.</p>
+          </div>
+        </div>
+
+        <div class="accordion__item">
+          <button class="accordion__trigger" @click="open = open === 4 ? null : 4" :aria-expanded="open === 4">
+            E se eu comprar e não for pra mim?
+            <svg :class="{ 'is-open': open === 4 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="accordion__panel" x-show="open === 4" x-collapse x-cloak>
+            <p>Você tem garantia de 7 dias — se não fizer sentido, é só pedir o reembolso, integral e sem burocracia.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="wrap footer__grid">
+      <div class="footer__brand">
+        <div class="brandmark brandmark--footer">
+          <svg class="brandmark__icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="2.5"/>
+            <circle cx="24" cy="24" r="2.5" fill="currentColor"/>
+            <path d="M31 17L20.5 20.5L17 31L27.5 27.5L31 17Z" fill="var(--amber)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          <span>BÚSSOLA <strong>BPO FINANCEIRO</strong></span>
+        </div>
+        <p>Ferramentas e conteúdo pra quem quer virar ou já é profissional de BPO Financeiro.</p>
+      </div>
+
+      <div class="footer__contact">
+        <h4>Contato</h4>
+        <p><a href="mailto:contato@bussolabpo.com.br">contato@bussolabpo.com.br</a></p>
+        <p><a href="https://wa.me/5521992067985" target="_blank" rel="noopener">WhatsApp</a></p>
+      </div>
+
+      <div class="footer__legal">
+        <p>&copy; <span id="anoAtual">2026</span> Bússola BPO Financeiro. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="sticky-cta" id="stickyCtaOferta">
+    <div class="wrap sticky-cta__inner">
+      <p class="sticky-cta__text"><strong>Agente BPO</strong> — comece por R$47</p>
+      <a href="https://pay.kiwify.com.br/M5MyXsi" target="_blank" rel="noopener" class="btn btn--cta" id="ctaComprarSticky">Quero começar agora</a>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="../js/animations.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  // ============================================================
+  // CONFIG — ajuste esses tempos conforme o roteiro real do vídeo.
+  // ============================================================
+  var SHOW_CTA_AT_SECONDS = 45;       // botão de compra aparece nesse timestamp
+  var REVEAL_CONTENT_AT_SECONDS = 90; // resto da página revela nesse timestamp (ou quando o vídeo termina, o que vier primeiro)
+  var MOCK_TOTAL_SECONDS = 120;       // duração fictícia do "vídeo" no modo simulação
+
+  var ctaShown = false;
+  var contentRevealed = false;
+
+  var video = document.getElementById('vslVideo');
+  var ctaWrap = document.getElementById('vslCtaWrap');
+  var scrollHint = document.getElementById('vslScrollHint');
+  var restOfPage = document.getElementById('restOfPage');
+
+  function showCta() {
+    if (ctaShown) return;
+    ctaShown = true;
+    ctaWrap.style.display = 'block';
+  }
+
+  function revealRestOfPage() {
+    if (contentRevealed) return;
+    contentRevealed = true;
+    restOfPage.style.display = 'block';
+    scrollHint.style.display = 'block';
+    requestAnimationFrame(function () {
+      restOfPage.classList.add('is-visible');
+      if (window.ScrollTrigger) { window.ScrollTrigger.refresh(); }
+    });
+  }
+
+  function onTimeUpdate(seconds) {
+    if (seconds >= SHOW_CTA_AT_SECONDS) showCta();
+    if (seconds >= REVEAL_CONTENT_AT_SECONDS) revealRestOfPage();
+  }
+
+  function onVideoEnded() {
+    showCta();
+    revealRestOfPage();
+  }
+
+  // ============================================================
+  // Player real (quando houver <source> configurado no <video>)
+  // ============================================================
+  var hasRealSource = !!(video.querySelector('source') && video.querySelector('source').getAttribute('src'));
+
+  if (hasRealSource) {
+    video.style.display = 'block';
+    document.getElementById('vslMock').style.display = 'none';
+    video.setAttribute('controls', 'controls');
+    video.addEventListener('timeupdate', function () { onTimeUpdate(video.currentTime); });
+    video.addEventListener('ended', onVideoEnded);
+  } else {
+    // ============================================================
+    // Modo simulação — sem player real ainda. Simula o avanço do
+    // vídeo com um timer, só pra validar a lógica de reveal.
+    // Trocar por integração real (Panda Vídeo / VTurb) quando o
+    // player estiver configurado — ver comentário no HTML acima.
+    // ============================================================
+    var mockPlay = document.getElementById('vslMockPlay');
+    var mockNote = document.getElementById('vslMockNote');
+    var mockProgress = document.getElementById('vslMockProgress');
+    var mockProgressFill = document.getElementById('vslMockProgressFill');
+    var mockTime = document.getElementById('vslMockTime');
+    var simSeconds = 0;
+    var timer = null;
+
+    function formatTime(s) {
+      var m = Math.floor(s / 60);
+      var r = Math.floor(s % 60);
+      return m + ':' + (r < 10 ? '0' : '') + r;
+    }
+
+    mockPlay.addEventListener('click', function () {
+      mockPlay.style.display = 'none';
+      mockNote.style.display = 'none';
+      mockProgress.classList.add('is-active');
+      mockTime.classList.add('is-active');
+
+      timer = setInterval(function () {
+        simSeconds++;
+        mockProgressFill.style.width = Math.min(100, (simSeconds / MOCK_TOTAL_SECONDS) * 100) + '%';
+        mockTime.textContent = formatTime(simSeconds) + ' (simulado)';
+        onTimeUpdate(simSeconds);
+
+        if (simSeconds >= MOCK_TOTAL_SECONDS) {
+          clearInterval(timer);
+          onVideoEnded();
+        }
+      }, 1000);
+    });
+  }
+})();
+</script>
+</body>
+</html>
