@@ -1,0 +1,709 @@
+<!-- ============================================================
+     VERSÃO B - ROLAGEM LIVRE (sem vídeo)
+     Teste A/B: comparar com oferta/index.html (VERSÃO A - VSL)
+     UTM do checkout: utm_campaign=livre
+     ============================================================ -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agente BPO — comece por R$47 | Bússola BPO Financeiro</title>
+<meta name="description" content="Descubra como o Agente BPO te coloca operando como profissional de BPO Financeiro, sem precisar de sistema caro.">
+
+<!--
+  ============================================================
+  META PIXEL / GOOGLE ADS — instalar aqui, dentro do <head>.
+  Esta página é o destino principal do tráfego pago (Meta Ads / Google Ads).
+  Eventos recomendados: "PageView" ao carregar, "Lead" se algum formulário for
+  adicionado no futuro, "InitiateCheckout" no clique do botão de compra (id="ctaComprar"
+  e "ctaComprarSticky").
+  ============================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../css/styles.css">
+<noscript><style>[data-reveal]{opacity:1!important;transform:none!important;}</style></noscript>
+
+<style>
+  /* ============================================================
+     LP SEM VSL — totalmente livre, sem nenhuma área de vídeo.
+     Botão de compra já visível no hero, desde o carregamento.
+     ============================================================ */
+  .livre-hero {
+    background: linear-gradient(165deg, var(--navy-3) 0%, var(--navy) 55%, var(--navy-2) 100%);
+    color: var(--white);
+    padding: 48px 0 56px;
+    text-align: center;
+  }
+  .livre-hero__kicker {
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--amber);
+    margin-bottom: 10px;
+  }
+  .livre-hero__title {
+    font-size: clamp(24px, 6vw, 38px);
+    font-weight: 800;
+    line-height: 1.24;
+    max-width: 680px;
+    margin: 0 auto 22px;
+  }
+  .livre-hero__note {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 12px;
+  }
+  .livre-hero__scroll {
+    text-align: center;
+    margin-top: 22px;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.55);
+  }
+
+  /* ---------- Prova social ---------- */
+  .prova-social__grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+  .prova-social__item {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+  }
+  .prova-social__quote {
+    font-size: 15px;
+    color: var(--gray-800);
+    font-style: italic;
+    line-height: 1.65;
+  }
+  .prova-social__quote-author {
+    display: block;
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    font-style: normal;
+    color: var(--navy);
+  }
+  .prova-social__item--quote { text-align: left; }
+  .prova-social__avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 14px;
+  }
+  .prova-social__avatar--logo { border-radius: var(--radius-sm); object-fit: contain; background: var(--white); padding: 4px; }
+  @media (min-width: 640px) {
+    .prova-social__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ---------- Apertar na ferida ---------- */
+  .ferida__list { display: flex; flex-direction: column; gap: 22px; }
+  .ferida__line {
+    font-size: clamp(17px, 3.6vw, 21px);
+    font-weight: 600;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.88);
+    text-align: center;
+  }
+  .ferida__line--strong {
+    color: var(--white);
+    font-weight: 800;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+  }
+
+  /* ---------- Diagnóstico ---------- */
+  .diagnostico__list { display: flex; flex-direction: column; gap: 16px; max-width: 720px; margin: 0 auto; }
+  .diagnostico__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+  }
+  .diagnostico__num {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--amber);
+    color: var(--navy-3);
+    font-size: 13px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .diagnostico__item p { font-size: 14.5px; color: var(--gray-800); line-height: 1.55; }
+  .diagnostico__transition {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-top: 30px;
+  }
+
+  /* ---------- Modo de preparo ---------- */
+  .modo-preparo__grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+  .modo-preparo__step { text-align: center; padding: 8px; }
+  .modo-preparo__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+  .modo-preparo__step h3 { font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+  .modo-preparo__step p { font-size: 13.5px; color: var(--gray-600); line-height: 1.5; }
+  @media (min-width: 640px) {
+    .modo-preparo__grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  /* ---------- Pra quem é ---------- */
+  .pra-quem-e__list { display: flex; flex-direction: column; gap: 14px; max-width: 640px; margin: 0 auto 36px; }
+  .pra-quem-e__list li {
+    font-size: 15px;
+    color: var(--gray-800);
+    padding-left: 30px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .pra-quem-e__list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0; top: 0;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #ECFDF5;
+    color: var(--green-dark);
+    font-size: 11px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ---------- Ancoragem de valor ---------- */
+  .ancoragem {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 26px;
+  }
+  .ancoragem__text { font-size: 14.5px; color: var(--gray-600); line-height: 1.6; margin-bottom: 14px; }
+  .ancoragem__disclaimer { display: block; font-size: 11.5px; color: var(--gray-400); margin-top: 6px; }
+  .ancoragem__highlight { font-size: 17px; font-weight: 800; color: var(--navy); }
+
+  /* ---------- Carta aberta ---------- */
+  .carta__card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px;
+  }
+  .carta__text { font-size: 15px; color: var(--gray-800); line-height: 1.75; margin-bottom: 16px; }
+  .carta__text:last-of-type { margin-bottom: 0; }
+  .carta__signature { margin-top: 18px; font-size: 13.5px; font-weight: 700; color: var(--navy); text-align: right; }
+
+  /* ---------- Autoridade ---------- */
+  .autoridade-bpo__card { text-align: center; }
+  .autoridade-bpo__logo { width: 130px; margin: 0 auto 22px; }
+  .autoridade-bpo__text { font-size: 14.5px; color: var(--gray-600); line-height: 1.65; margin: 14px auto 24px; max-width: 560px; }
+
+  /* ---------- CTA repetido no fim do FAQ ---------- */
+  .faq__cta { text-align: center; margin-top: 34px; }
+
+  /* ---------- Screenshots reais (Componentes 1 e 2) ---------- */
+  .screenshot-gallery { display: flex; flex-direction: column; gap: 14px; }
+  .ebook-cover { max-width: 280px; margin: 0 auto; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SEM VSL — hero só de texto, sem nenhuma área de vídeo.
+     Botão de compra já visível desde o carregamento.
+     ============================================================ -->
+<header class="livre-hero" id="livreHero">
+  <div class="wrap wrap--narrow">
+    <p class="livre-hero__kicker">Antes de decidir, veja como funciona</p>
+    <h1 class="livre-hero__title">Comece a faturar como profissional de BPO Financeiro em poucas semanas — sem sair de casa, sem curso caro, sem precisar já ter experiência</h1>
+    <a href="https://pay.kiwify.com.br/M5MyXsi?utm_source=lp&amp;utm_campaign=livre" target="_blank" rel="noopener" class="btn btn--cta btn--lg" id="ctaComprar">Quero começar por R$47</a>
+    <p class="livre-hero__note">Vaga liberada — acesso imediato após a confirmação do pagamento.</p>
+  </div>
+  <p class="livre-hero__scroll">Veja todos os detalhes abaixo ↓</p>
+</header>
+
+<div id="restOfPage">
+
+  <!-- ============================================================
+       DOBRA 2 — PROVA SOCIAL
+       Só 2 peças reais hoje (print + depoimento). Quando houver mais,
+       adicionar novos .prova-social__item aqui — o grid se adapta sozinho.
+       ============================================================ -->
+  <section class="section prova-social" id="prova-social">
+    <div class="wrap">
+      <div class="section__head" data-reveal>
+        <p class="section__eyebrow">Prova real</p>
+        <h2 class="section__title">Não é só teoria — é gente usando de verdade</h2>
+      </div>
+      <div class="prova-social__grid" data-reveal>
+        <div class="prova-social__item prova-social__item--quote">
+          <img src="../imagens/foto.jpg" alt="Glaciane Porto" class="prova-social__avatar">
+          <p class="prova-social__quote">"Eu sempre fui organizada, mas nunca tinha atuado como profissional de BPO financeiro antes. Com o sistema do Agente BPO, consegui estruturar todo o processo desde o primeiro cliente: a conciliação bancária, os relatórios, até a forma de me apresentar e fechar contrato. Hoje atendo com uma rotina profissional, sem depender de planilha solta ou improviso — e isso mudou completamente minha confiança pra atender outros clientes."</p>
+          <span class="prova-social__quote-author">Glaciane Porto — BPO da empresa Marmorize · 2 anos</span>
+        </div>
+        <div class="prova-social__item prova-social__item--quote">
+          <img src="../imagens/BRAND_MARMORIZE_CIR-02.png" alt="Marmorize" class="prova-social__avatar prova-social__avatar--logo">
+          <p class="prova-social__quote">"Antes eu não tinha clareza nenhuma do financeiro da marmoraria — sabia que vendia, mas não sabia se estava sobrando dinheiro de verdade no fim do mês. Desde que passei a ter um BPO cuidando disso, recebo um relatório organizado todo mês e sei exatamente quanto entra, quanto sai e onde posso melhorar. Foi um alívio enorme não precisar mais fazer isso sozinha."</p>
+          <span class="prova-social__quote-author">Marmorize Comercial — cliente atendido por um profissional de BPO Financeiro</span>
+        </div>
+        <!-- aguardando mais prova social -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       DOBRA 3 — APERTAR NA FERIDA
+       ============================================================ -->
+  <section class="section leadgen ferida" id="ferida">
+    <div class="wrap wrap--narrow">
+      <div class="ferida__list" data-reveal>
+        <p class="ferida__line">Você já pensou em pedir demissão numa sexta-feira, só de raiva do seu chefe?</p>
+        <p class="ferida__line">Cansado de trocar tempo com a família por um salário que não acompanha a inflação?</p>
+        <p class="ferida__line">Já perdeu aniversário, formatura, fim de semana, porque "não podia faltar"?</p>
+        <p class="ferida__line ferida__line--strong">E se, no fundo, você já soubesse que dá pra ganhar mais trabalhando de casa, no seu horário — só não sabe por onde começar?</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       DOBRA 4 — DIAGNÓSTICO
+       ============================================================ -->
+  <section class="section diagnostico" id="diagnostico">
+    <div class="wrap">
+      <div class="section__head" data-reveal>
+        <p class="section__eyebrow">Por que você ainda não migrou</p>
+        <h2 class="section__title">5 motivos que travam quem quer sair do CLT sozinho</h2>
+      </div>
+      <ul class="diagnostico__list" data-reveal>
+        <li class="diagnostico__item"><span class="diagnostico__num">1</span><p>Não sabe por onde começar — acha que precisa de um "plano perfeito" antes do primeiro passo</p></li>
+        <li class="diagnostico__item"><span class="diagnostico__num">2</span><p>Acredita que precisa de curso caro de contabilidade pra prestar esse serviço</p></li>
+        <li class="diagnostico__item"><span class="diagnostico__num">3</span><p>Não tem uma ferramenta profissional pra usar com o primeiro cliente — só planilha caseira ou nada</p></li>
+        <li class="diagnostico__item"><span class="diagnostico__num">4</span><p>Medo de cobrar errado: ou cobra tão pouco que não compensa, ou passa vergonha cobrando mais</p></li>
+        <li class="diagnostico__item"><span class="diagnostico__num">5</span><p>Não sabe como conseguir o primeiro cliente nem como se apresentar como profissional</p></li>
+      </ul>
+      <p class="diagnostico__transition" data-reveal>É exatamente isso que o Agente BPO resolve — veja como:</p>
+    </div>
+  </section>
+
+  <section class="trustbar" aria-label="Credenciais">
+    <div class="wrap trustbar__grid" data-reveal>
+      <div class="trustbar__item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2L3 6V11C3 16 6.7 20.6 12 22C17.3 20.6 21 16 21 11V6L12 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12L11 14L15.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Planilha completa: conciliação, contas a pagar/receber e dashboard</span>
+      </div>
+      <div class="trustbar__item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 20V10L9 6L15 10V4L21 8V20H3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 20H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Sem mensalidade — pagamento único de R$47</span>
+      </div>
+      <div class="trustbar__item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 9H17M7 13H14M7 17H11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Acesso imediato após a confirmação do pagamento</span>
+      </div>
+      <div class="trustbar__item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L14.5 9L21 9.5L16 14L17.5 21L12 17.5L6.5 21L8 14L3 9.5L9.5 9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <span>Garantia de 7 dias, sem burocracia</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       DOBRA 5 — MODO DE PREPARO
+       ============================================================ -->
+  <section class="section modo-preparo" id="modo-preparo">
+    <div class="wrap">
+      <div class="section__head" data-reveal>
+        <p class="section__eyebrow">Como funciona</p>
+        <h2 class="section__title">Simples assim — do zero ao primeiro relatório pronto</h2>
+      </div>
+      <div class="modo-preparo__grid" data-reveal>
+        <div class="modo-preparo__step">
+          <span class="modo-preparo__num">1</span>
+          <h3>Baixe a planilha</h3>
+          <p>Acesso imediato ao Agente BPO após a confirmação do pagamento.</p>
+        </div>
+        <div class="modo-preparo__step">
+          <span class="modo-preparo__num">2</span>
+          <h3>Cadastre o cliente</h3>
+          <p>Insira os dados do negócio que você vai atender.</p>
+        </div>
+        <div class="modo-preparo__step">
+          <span class="modo-preparo__num">3</span>
+          <h3>Importe o extrato (OFX)</h3>
+          <p>A planilha concilia automaticamente o extrato bancário.</p>
+        </div>
+        <div class="modo-preparo__step">
+          <span class="modo-preparo__num">4</span>
+          <h3>Veja o resultado pronto</h3>
+          <p>Conciliação, contas a pagar/receber e dashboard, sem esforço manual.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section oferta" id="oferta">
+    <div class="wrap">
+      <div class="section__head" data-reveal>
+        <p class="section__eyebrow">O que você recebe</p>
+        <h2 class="section__title">Tudo que você precisa pra começar a operar como BPO Financeiro</h2>
+      </div>
+
+      <div class="bento" data-reveal>
+        <div class="bento__item bento__item--lg">
+          <span class="bento__icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21M9 9V21" stroke="currentColor" stroke-width="1.8"/></svg>
+          </span>
+          <h3>Planilha Agente BPO</h3>
+          <p>Google Sheets + Apps Script. Conciliação bancária via OFX, Contas a Pagar/Receber, DRE simplificado e Dashboard — pra você operar de verdade com um cliente, sem precisar de sistema caro.</p>
+        </div>
+
+        <div class="bento__item">
+          <span class="bento__icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19.5V4.5C4 3.4 4.9 2.5 6 2.5H18C19.1 2.5 20 3.4 20 4.5V19.5" stroke="currentColor" stroke-width="1.8"/><path d="M4 19.5C4 20.6 4.9 21.5 6 21.5H18C19.1 21.5 20 20.6 20 19.5" stroke="currentColor" stroke-width="1.8"/></svg>
+          </span>
+          <h3>Ebook "Como Ser BPO Financeiro"</h3>
+          <p>O passo a passo de como estruturar seu serviço, do primeiro cliente à precificação — sem enrolação teórica.</p>
+        </div>
+
+        <div class="bento__item">
+          <span class="bento__icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M10 9L15 12L10 15V9Z" fill="currentColor"/></svg>
+          </span>
+          <h3>Ebook tutorial de uso</h3>
+          <p>Passo a passo de como preencher e operar a planilha, com exemplo real, pra você aprender sem depender de suporte.</p>
+        </div>
+
+        <div class="bento__item">
+          <span class="bento__icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21C12 21 4 15.5 4 9.5C4 6.5 6.5 4 9.5 4C11 4 12 5 12 5C12 5 13 4 14.5 4C17.5 4 20 6.5 20 9.5C20 15.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </span>
+          <h3>+ 5 bônus inclusos</h3>
+          <p>Guia Rápido, 3 Apresentações Profissionais Editáveis, Contrato de Prestação de Serviço Editável, Roteiros de Prospecção e Calculadora de Preço BPO — tudo incluso, sem custo extra.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section comparativo" id="comparativo">
+    <div class="wrap">
+      <div class="section__head" data-reveal>
+        <p class="section__eyebrow">A diferença</p>
+        <h2 class="section__title">Trabalhar CLT versus prestar serviço de BPO Financeiro</h2>
+      </div>
+
+      <div class="compare" data-reveal>
+        <div class="compare__col compare__col--before">
+          <h3>Do jeito antigo</h3>
+          <ul>
+            <li>Salário fixo, sem controle sobre quanto você pode crescer</li>
+            <li>Depende de vaga CLT disponível, muitas vezes mal remunerada</li>
+            <li>Precisa sair de casa, cumprir horário fixo, responder a chefe</li>
+            <li>Nenhum ativo profissional próprio — se sair do emprego, começa do zero</li>
+          </ul>
+        </div>
+        <div class="compare__col compare__col--after">
+          <h3>Com o Agente BPO</h3>
+          <ul>
+            <li>Você decide quantos clientes atender e quanto cobrar por cada um</li>
+            <li>Trabalha de casa, no seu horário, com uma planilha profissional pronta</li>
+            <li>Constrói uma carteira de clientes — um ativo que é seu, não da empresa</li>
+            <li>Começa por R$47, sem depender de curso caro pra testar se é pra você</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       DOBRA 7 — PRA QUEM É / DOBRA 8 — ANCORAGEM DE VALOR
+       ============================================================ -->
+  <section class="section pra-quem-e" id="pra-quem-e">
+    <div class="wrap">
+      <div class="section__head" data-reveal>
+        <p class="section__eyebrow">Pra quem é</p>
+        <h2 class="section__title">Esse produto é pra você se...</h2>
+      </div>
+      <ul class="pra-quem-e__list" data-reveal>
+        <li>Você já pensa em prestar serviço de BPO Financeiro, mas não tem ferramenta profissional</li>
+        <li>Você quer testar se gosta da área antes de investir em curso caro</li>
+        <li>Você já tem (ou está perto de fechar) um cliente e precisa de algo pronto pra usar amanhã</li>
+        <li>Você é CLT e quer uma alternativa de renda extra trabalhando de casa</li>
+        <li>Você já presta serviço financeiro, mas ainda faz tudo manual, sem processo</li>
+      </ul>
+
+      <div class="ancoragem" data-reveal>
+        <p class="ancoragem__text">Um sistema de gestão financeira profissional custa, em média, <strong>R$150 a R$300 por mês</strong> em mensalidade. Uma consultoria pra montar essa estrutura do zero custaria ainda mais.<span class="ancoragem__disclaimer">(comparação ilustrativa — não é preço de concorrente específico)</span></p>
+        <p class="ancoragem__highlight">O Agente BPO: pagamento único de <strong>R$47</strong>, sem mensalidade.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section detalhe" id="detalhes">
+    <div class="wrap">
+
+      <div class="detalhe-item" data-reveal>
+        <div class="detalhe-item__text">
+          <p class="section__eyebrow">Componente 1</p>
+          <h3>Planilha Agente BPO</h3>
+          <p>Construída em Google Sheets com Apps Script — sem instalar nada. Você importa o extrato (OFX) do seu cliente e a planilha organiza:</p>
+          <ul class="check-list">
+            <li>Conciliação bancária automática</li>
+            <li>Contas a Pagar e a Receber</li>
+            <li>DRE simplificado do negócio do cliente</li>
+            <li>Dashboard com a visão consolidada do mês</li>
+          </ul>
+        </div>
+        <div class="detalhe-item__visual">
+          <div class="screenshot-gallery">
+            <div class="screenshot-card">
+              <img src="../imagens/planilha-agente-bpo-1.png" alt="Painel do Agente BPO com saldo, entradas e saídas do mês">
+            </div>
+            <div class="screenshot-card">
+              <img src="../imagens/planilha-agente-bpo-2.png" alt="Importação de extrato bancário OFX no Agente BPO">
+            </div>
+            <div class="screenshot-card">
+              <img src="../imagens/planilha-agente-bpo-3.png" alt="Conciliação de transações pendentes no Agente BPO">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detalhe-item detalhe-item--reverse" data-reveal>
+        <div class="detalhe-item__text">
+          <p class="section__eyebrow">Componente 2</p>
+          <h3>Ebook "Como Ser BPO Financeiro"</h3>
+          <p>O guia prático pra quem está começando: como conseguir o primeiro cliente, como se apresentar, como precificar seu serviço e como organizar sua rotina de trabalho remoto.</p>
+          <ul class="check-list">
+            <li>Direto ao ponto, sem enrolação teórica</li>
+            <li>Escrito pra quem nunca prestou esse tipo de serviço</li>
+            <li>Inclui roteiro de prospecção e abordagem de primeiro cliente</li>
+          </ul>
+        </div>
+        <div class="detalhe-item__visual">
+          <div class="screenshot-card ebook-cover">
+            <img src="../imagens/ebook-como-ser-bpo.png" alt='Capa do e-book "Como Ser BPO Financeiro"'>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section preco" id="preco">
+    <div class="wrap">
+      <div class="price-card" data-reveal>
+        <div class="price-card__head">
+          <p class="section__eyebrow section__eyebrow--light">Agente BPO</p>
+          <h2>Comece a operar como BPO Financeiro</h2>
+          <p class="price-card__desc">Tudo isso, num pagamento único — sem a mensalidade de R$150 a R$300 de um sistema profissional.</p>
+        </div>
+
+        <p class="price-card__value"><span>R$</span>47<span class="price-card__cents">,00</span></p>
+        <p class="price-card__installment">à vista, pagamento único — sem mensalidade</p>
+
+        <ul class="price-card__includes">
+          <li>Planilha Agente BPO — conciliação bancária e gestão financeira completa</li>
+          <li>E-book Como Ser BPO</li>
+          <li>E-book Tutorial de Uso da Planilha</li>
+          <li>Guia Rápido — Agente BPO</li>
+          <li>Bônus: 3 Apresentações Profissionais Editáveis</li>
+          <li>Bônus: Contrato de Prestação de Serviço Editável</li>
+          <li>Bônus: Roteiros de Prospecção (Bairro, WhatsApp e Instagram)</li>
+          <li>Bônus: Calculadora de Preço BPO</li>
+          <li>Acesso imediato após a confirmação do pagamento</li>
+        </ul>
+
+        <a href="https://pay.kiwify.com.br/M5MyXsi?utm_source=lp&amp;utm_campaign=livre" target="_blank" rel="noopener" class="btn btn--cta btn--lg btn--block" id="ctaComprar2">Quero começar agora por R$47</a>
+
+        <div class="price-card__guarantee">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2L3 6V11C3 16 6.7 20.6 12 22C17.3 20.6 21 16 21 11V6L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12L11 14L15.5 9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p>Garantia de 7 dias. Se não fizer sentido pra você, o reembolso é integral e sem burocracia, conforme o Art. 49 do Código de Defesa do Consumidor.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       DOBRA 10 — CARTA ABERTA
+       ============================================================ -->
+  <section class="section carta" id="carta">
+    <div class="wrap wrap--narrow">
+      <div class="carta__card" data-reveal>
+        <p class="section__eyebrow">Uma palavra antes de você decidir</p>
+        <p class="carta__text">Eu trabalho com contabilidade e finanças há mais de 25 anos. Comecei como contador, no serviço público — e ao longo do caminho migrei pra uma atuação mais de gestão: fazendo, na prática, o que hoje se chama de BPO Financeiro pros meus clientes.</p>
+        <p class="carta__text">Hoje tenho uma equipe que cuida de toda a parte operacional dos meus clientes de BPO, e dedico boa parte do meu tempo a ensinar essa profissão pra outras pessoas. Não como curso de mentoria caro, não como diploma — como um método organizado e acessível, que qualquer pessoa disposta consegue aprender e aplicar.</p>
+        <p class="carta__text">Isso é uma missão pra mim: mostrar que dá pra ter liberdade financeira, liberdade de tempo e liberdade geográfica sem gastar uma fortuna em sistema caro, em mensalidade ou em curso de mentoria. O Agente BPO nasceu exatamente disso — organização e método, sem enrolação.</p>
+        <p class="carta__signature">— Fundador da Bússola BPO Financeiro</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       DOBRA 11 — AUTORIDADE
+       (os depoimentos reais já estão na Prova Social, dobra 2 —
+       não duplicados aqui pra não repetir a mesma prova social duas vezes)
+       ============================================================ -->
+  <section class="section autoridade-bpo" id="autoridade">
+    <div class="wrap wrap--narrow">
+      <div class="autoridade-bpo__card" data-reveal>
+        <img src="../imagens/logo-bussola-bpo.png" alt="Bússola BPO Financeiro" class="autoridade-bpo__logo">
+        <p class="section__eyebrow">Quem constrói o Agente BPO</p>
+        <h2 class="section__title">Mais de 25 anos de contabilidade e gestão financeira</h2>
+        <p class="autoridade-bpo__text">Contador de formação, migrado do serviço público pra uma atuação de gestão — hoje à frente de uma equipe que presta BPO Financeiro pra clientes reais, e dedicado a ensinar esse método pra quem quer trilhar o mesmo caminho.</p>
+        <a href="https://pay.kiwify.com.br/M5MyXsi?utm_source=lp&amp;utm_campaign=livre" target="_blank" rel="noopener" class="btn btn--cta btn--lg">Quero começar por R$47</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section faq" id="faq" x-data="{ open: 0 }">
+    <div class="wrap wrap--narrow">
+      <div class="section__head" data-reveal>
+        <p class="section__eyebrow">Perguntas frequentes</p>
+        <h2 class="section__title">Antes de decidir</h2>
+      </div>
+
+      <div class="accordion" data-reveal>
+        <div class="accordion__item">
+          <button class="accordion__trigger" @click="open = open === 0 ? null : 0" :aria-expanded="open === 0">
+            Preciso ter experiência em financeiro pra começar?
+            <svg :class="{ 'is-open': open === 0 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="accordion__panel" x-show="open === 0" x-collapse x-cloak>
+            <p>Não. O ebook "Como Ser BPO Financeiro" foi escrito pra quem está começando do zero — a planilha faz a parte técnica (conciliação, contas a pagar/receber, DRE), você aprende operando com um exemplo real.</p>
+          </div>
+        </div>
+
+        <div class="accordion__item">
+          <button class="accordion__trigger" @click="open = open === 1 ? null : 1" :aria-expanded="open === 1">
+            Preciso saber Excel avançado?
+            <svg :class="{ 'is-open': open === 1 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="accordion__panel" x-show="open === 1" x-collapse x-cloak>
+            <p>Não. A planilha já vem com as fórmulas e automações prontas em Google Sheets com Apps Script — você preenche os dados e importa o extrato, o sistema faz o resto.</p>
+          </div>
+        </div>
+
+        <div class="accordion__item">
+          <button class="accordion__trigger" @click="open = open === 2 ? null : 2" :aria-expanded="open === 2">
+            Quanto tempo leva pra conseguir o primeiro cliente?
+            <svg :class="{ 'is-open': open === 2 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="accordion__panel" x-show="open === 2" x-collapse x-cloak>
+            <p>Isso depende do seu ritmo de prospecção — o ebook traz um roteiro de abordagem, mas não é uma promessa de resultado. O objetivo do material é te dar a ferramenta e o processo pra você operar com qualidade assim que fechar o primeiro cliente.</p>
+          </div>
+        </div>
+
+        <div class="accordion__item">
+          <button class="accordion__trigger" @click="open = open === 3 ? null : 3" :aria-expanded="open === 3">
+            A planilha funciona no Excel?
+            <svg :class="{ 'is-open': open === 3 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="accordion__panel" x-show="open === 3" x-collapse x-cloak>
+            <p>A planilha foi construída em Google Sheets com Apps Script, e é essa a versão com todos os recursos (importação de OFX, automações). Ela pode ser aberta em Excel, mas os scripts de automação não rodam fora do Google Sheets.</p>
+          </div>
+        </div>
+
+        <div class="accordion__item">
+          <button class="accordion__trigger" @click="open = open === 4 ? null : 4" :aria-expanded="open === 4">
+            E se eu comprar e não for pra mim?
+            <svg :class="{ 'is-open': open === 4 }" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="accordion__panel" x-show="open === 4" x-collapse x-cloak>
+            <p>Você tem garantia de 7 dias — se não fizer sentido, é só pedir o reembolso, integral e sem burocracia.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq__cta" data-reveal>
+        <a href="https://pay.kiwify.com.br/M5MyXsi?utm_source=lp&amp;utm_campaign=livre" target="_blank" rel="noopener" class="btn btn--cta btn--lg">Quero começar por R$47</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="wrap footer__grid">
+      <div class="footer__brand">
+        <div class="brandmark brandmark--footer">
+          <svg class="brandmark__icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="2.5"/>
+            <circle cx="24" cy="24" r="2.5" fill="currentColor"/>
+            <path d="M31 17L20.5 20.5L17 31L27.5 27.5L31 17Z" fill="var(--amber)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          <span>BÚSSOLA <strong>BPO FINANCEIRO</strong></span>
+        </div>
+        <p>Ferramentas e conteúdo pra quem quer virar ou já é profissional de BPO Financeiro.</p>
+      </div>
+
+      <div class="footer__contact">
+        <h4>Contato</h4>
+        <p><a href="mailto:contato@bussolabpo.com.br">contato@bussolabpo.com.br</a></p>
+        <p><a href="https://wa.me/5521992067985" target="_blank" rel="noopener">WhatsApp</a></p>
+      </div>
+
+      <div class="footer__legal">
+        <p>&copy; <span id="anoAtual">2026</span> Bússola BPO Financeiro. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="sticky-cta" id="stickyCtaOferta">
+    <div class="wrap sticky-cta__inner">
+      <p class="sticky-cta__text"><strong>Agente BPO</strong> — comece por R$47</p>
+      <a href="https://pay.kiwify.com.br/M5MyXsi?utm_source=lp&amp;utm_campaign=livre" target="_blank" rel="noopener" class="btn btn--cta" id="ctaComprarSticky">Quero começar agora</a>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="../js/animations.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  // ============================================================
+  // Sticky CTA — aparece depois que a pessoa rola além do hero.
+  // ============================================================
+  var hero = document.getElementById('livreHero');
+  var sticky = document.getElementById('stickyCtaOferta');
+  if (hero && sticky && 'IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        sticky.classList.toggle('is-visible', !entry.isIntersecting);
+      });
+    }, { rootMargin: '0px 0px -60% 0px', threshold: 0 });
+    observer.observe(hero);
+  }
+})();
+</script>
+</body>
+</html>
+
