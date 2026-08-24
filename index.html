@@ -33,11 +33,6 @@
     .hero__inner { grid-template-columns: 1fr; }
   }
 
-  .depoimentos-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-  @media (min-width: 700px) {
-    .depoimentos-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-
   .contato-card { text-align: center; }
   .contato-card__email { margin-top: 16px; font-size: 14px; color: var(--gray-600); }
   .contato-card__email a { color: var(--navy); font-weight: 700; text-decoration: underline; }
@@ -116,37 +111,9 @@
   </div>
 </section>
 
-<!-- ============================================================
-     PROVA SOCIAL
-     Estrutura pronta pra receber depoimentos reais — hoje contém
-     apenas placeholders. Substituir cada card assim que houver
-     depoimentos de clientes pra publicar.
-     ============================================================ -->
-<section class="section prova-social" id="depoimentos">
-  <div class="wrap">
-    <div class="section__head" data-reveal>
-      <p class="section__eyebrow">Resultados reais</p>
-      <h2 class="section__title">O que dizem os clientes</h2>
-    </div>
-
-    <div class="depoimentos-grid" data-reveal>
-      <!-- PAULO: substituir por depoimento real — adicionar classe "testimonial-card--real",
-           trocar o texto e preencher testimonial-card__author (nome, empresa, tempo de atendimento) -->
-      <div class="testimonial-card">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8H4V13C4 15 5.5 16.5 7.5 16.5V14.5C6.7 14.5 6 13.8 6 13V10H7C7.5 10 8 9.5 8 9V8.5C8 8.2 7.5 8 7 8Z" fill="currentColor"/><path d="M15 8H12V13C12 15 13.5 16.5 15.5 16.5V14.5C14.7 14.5 14 13.8 14 13V10H15C15.5 10 16 9.5 16 9V8.5C16 8.2 15.5 8 15 8Z" fill="currentColor"/></svg>
-        <p>Aguardando depoimento real de cliente.</p>
-        <span class="testimonial-card__author">Nome do cliente — empresa</span>
-      </div>
-
-      <!-- PAULO: segundo depoimento real, mesma lógica do card acima -->
-      <div class="testimonial-card">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8H4V13C4 15 5.5 16.5 7.5 16.5V14.5C6.7 14.5 6 13.8 6 13V10H7C7.5 10 8 9.5 8 9V8.5C8 8.2 7.5 8 7 8Z" fill="currentColor"/><path d="M15 8H12V13C12 15 13.5 16.5 15.5 16.5V14.5C14.7 14.5 14 13.8 14 13V10H15C15.5 10 16 9.5 16 9V8.5C16 8.2 15.5 8 15 8Z" fill="currentColor"/></svg>
-        <p>Aguardando depoimento real de cliente.</p>
-        <span class="testimonial-card__author">Nome do cliente — empresa</span>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- PAULO: seção "Prova social" removida por enquanto — sem depoimentos reais ainda.
+     Quando tiver o que colocar, me avise que eu recrio a seção (estrutura .testimonial-card
+     já existe em css/styles.css, ver histórico desta página pro markup usado antes). -->
 
 <!-- ============================================================
      CONTATO
