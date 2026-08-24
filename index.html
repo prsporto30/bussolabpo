@@ -3,997 +3,199 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagnóstico Bússola BPO — descubra seu caminho em menos de 1 minuto</title>
-<meta name="description" content="Responda algumas perguntas rápidas e descubra qual caminho da Bússola BPO Financeiro faz mais sentido pra você agora — virar BPO, profissionalizar seu BPO, ou estruturar o financeiro da sua empresa.">
+<title>Bússola BPO Financeiro — Controladoria Fracionada para Empresas</title>
+<meta name="description" content="Controladoria fracionada e BPO financeiro recorrente para donos de empresa que não querem montar uma equipe interna: diagnóstico, DRE gerencial, precificação e execução da rotina financeira mensal.">
 
 <!--
   ============================================================
-  META PIXEL — instalar aqui, dentro do <head>, o mais alto possível.
-  Eventos recomendados: "Lead" no momento da captura (ver captureForm no <script> abaixo)
-  e "InitiateCheckout" no clique do botão Kiwify.
-  ============================================================
-  <script>
-    !function(f,b,e,v,n,t,s){...}(window, document,'script', 'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', 'SEU_PIXEL_ID');
-    fbq('track', 'PageView');
-  </script>
+  ANALYTICS / PIXEL — instalar aqui, dentro do <head>, se necessário.
   ============================================================
 -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="css/styles.css">
+<noscript><style>[data-reveal]{opacity:1!important;transform:none!important;}</style></noscript>
 
 <style>
   /* ============================================================
-     QUIZ DINÂMICO v5 — estilos específicos desta página
-     (reaproveita os tokens de css/styles.css: --navy, --amber, --green etc.)
+     PÁGINA INSTITUCIONAL — página única, sem funil de venda.
+     Reaproveita os componentes de css/styles.css; ajustes abaixo
+     são só pra variantes específicas desta página (hero sem
+     visual, grid de depoimentos).
      ============================================================ */
-  body { background: var(--navy-3); min-height: 100vh; }
-
-  .quiz-shell {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(165deg, var(--navy-3) 0%, var(--navy) 55%, var(--navy-2) 100%);
+  .hero__inner { grid-template-columns: 1fr; max-width: 720px; margin: 0 auto; text-align: center; }
+  .hero__inner .brandmark { justify-content: center; margin-bottom: 6px; }
+  .hero__sub { margin-left: auto; margin-right: auto; }
+  @media (min-width: 1024px) {
+    .hero__inner { grid-template-columns: 1fr; }
   }
 
-  .quiz-topbar {
-    padding: 18px 20px 10px;
-  }
-  .quiz-topbar__inner {
-    max-width: 640px;
-    margin: 0 auto;
-  }
-  .quiz-progress-track {
-    height: 6px;
-    background: rgba(255,255,255,0.14);
-    border-radius: 999px;
-    overflow: hidden;
-    margin-top: 14px;
-  }
-  .quiz-progress-fill {
-    height: 100%;
-    width: 8%;
-    background: linear-gradient(90deg, var(--amber), var(--green));
-    border-radius: 999px;
-    transition: width 0.35s ease;
+  .depoimentos-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 700px) {
+    .depoimentos-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
-  .quiz-main {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px 20px 60px;
-  }
-  .quiz-card {
-    width: 100%;
-    max-width: 560px;
-  }
-
-  .screen { display: none; }
-  .screen.is-active { display: block; animation: fadeUp 0.4s ease; }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(14px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ---------- Intro ---------- */
-  .intro { text-align: center; color: var(--white); }
-  .intro__eyebrow {
-    text-transform: uppercase;
-    letter-spacing: 1.6px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--amber);
-    margin-bottom: 14px;
-  }
-  .intro__title {
-    font-size: clamp(26px, 7vw, 36px);
-    font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: 14px;
-  }
-  .intro__sub {
-    font-size: 15.5px;
-    color: rgba(255,255,255,0.82);
-    max-width: 460px;
-    margin: 0 auto 30px;
-  }
-  .intro__microcopy { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 14px; }
-
-  /* ---------- Pergunta ---------- */
-  .question__eyebrow {
-    text-transform: uppercase;
-    letter-spacing: 1.4px;
-    font-size: 11.5px;
-    font-weight: 700;
-    color: var(--amber);
-    margin-bottom: 10px;
-    text-align: center;
-  }
-  .question__title {
-    font-size: clamp(20px, 5vw, 26px);
-    font-weight: 800;
-    color: var(--white);
-    line-height: 1.3;
-    text-align: center;
-    margin-bottom: 28px;
-  }
-  .option-list { display: flex; flex-direction: column; gap: 12px; }
-  .option-btn {
-    width: 100%;
-    text-align: left;
-    background: rgba(255,255,255,0.06);
-    border: 1.5px solid rgba(255,255,255,0.18);
-    color: var(--white);
-    border-radius: var(--radius-md);
-    padding: 16px 18px;
-    font-size: 15px;
-    font-weight: 600;
-    font-family: var(--font);
-    cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .option-btn:hover {
-    background: rgba(245,158,11,0.14);
-    border-color: var(--amber);
-    transform: translateY(-1px);
-  }
-  .option-btn__arrow { flex-shrink: 0; opacity: 0.6; }
-  .option-btn:hover .option-btn__arrow { opacity: 1; color: var(--amber); }
-
-  .quiz-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: none;
-    border: none;
-    color: rgba(255,255,255,0.65);
-    font-size: 13px;
-    font-weight: 600;
-    font-family: var(--font);
-    cursor: pointer;
-    margin-bottom: 18px;
-  }
-  .quiz-back:hover { color: var(--white); }
-
-  /* ---------- Resultado ---------- */
-  .result-card {
-    background: var(--white);
-    color: var(--gray-800);
-    border-radius: var(--radius-lg);
-    padding: 32px 26px;
-    box-shadow: var(--shadow-lg);
-    text-align: center;
-  }
-  .result-card__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--green-dark);
-    background: #ECFDF5;
-    padding: 6px 14px;
-    border-radius: 999px;
-    margin-bottom: 18px;
-  }
-  .result-card__badge::before {
-    content: '';
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--green);
-  }
-  .result-card__badge.is-soon {
-    color: var(--amber-dark, #B45309);
-    background: #FEF3C7;
-  }
-  .result-card__badge.is-soon::before { background: var(--amber); }
-  .result-card__title {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--navy);
-    margin-bottom: 14px;
-    line-height: 1.3;
-  }
-  .result-card__text {
-    font-size: 15px;
-    color: var(--gray-600);
-    line-height: 1.65;
-    margin-bottom: 26px;
-  }
-  .result-card .btn { margin-bottom: 12px; }
-  .result-card .btn:last-child { margin-bottom: 0; }
-  .btn--outline {
-    background: var(--white);
-    color: var(--navy);
-    border: 1.5px solid var(--gray-300);
-    box-shadow: none;
-  }
-  .btn--outline:hover { background: var(--gray-50); box-shadow: none; }
-  .btn--whatsapp {
-    background: #25D366;
-    color: var(--white);
-    box-shadow: 0 10px 24px rgba(37, 211, 102, 0.35);
-  }
-  .btn--whatsapp:hover { background: #22C55E; box-shadow: 0 14px 30px rgba(37, 211, 102, 0.42); }
-
-  .result-card__deliverables {
-    background: var(--gray-50, #F3F6FC);
-    border: 1px solid var(--gray-200, #E2E8F0);
-    border-radius: var(--radius-md);
-    padding: 16px 18px;
-    margin-bottom: 22px;
-    text-align: left;
-  }
-  .result-card__deliverables-label {
-    font-size: 11.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--gray-600);
-    margin-bottom: 10px;
-  }
-  .result-card__deliverables-list { list-style: none; padding: 0; margin: 0; }
-  .result-card__deliverables-list li {
-    font-size: 14px;
-    color: var(--gray-800);
-    line-height: 1.5;
-    padding-left: 24px;
-    position: relative;
-    margin-bottom: 8px;
-  }
-  .result-card__deliverables-list li:last-child { margin-bottom: 0; }
-  .result-card__deliverables-list li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    top: 0;
-    color: var(--green-dark, #16A34A);
-    font-weight: 800;
-  }
-  .result-card__hire-link {
-    display: block;
-    width: 100%;
-    text-align: center;
-    background: none;
-    border: none;
-    color: var(--gray-500, #6B7280);
-    font-size: 13px;
-    font-weight: 600;
-    font-family: var(--font);
-    cursor: pointer;
-    margin-top: 14px;
-    text-decoration: underline;
-  }
-  .result-card__hire-link:hover { color: var(--navy); }
-
-  .result-guia {
-    margin-top: 18px;
-    padding-top: 18px;
-    border-top: 1px dashed var(--gray-200);
-    text-align: left;
-  }
-  .result-guia__label {
-    font-size: 13.5px;
-    font-weight: 600;
-    color: var(--gray-800);
-    margin-bottom: 10px;
-    text-align: center;
-  }
-  .result-guia__row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .result-guia__row input[type="email"] {
-    flex: 1;
-    min-width: 160px;
-    padding: 12px 14px;
-    border: 1.5px solid var(--gray-300);
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-family: var(--font);
-  }
-  .result-guia__row input[type="email"]:focus {
-    outline: none;
-    border-color: var(--navy);
-    box-shadow: 0 0 0 3px rgba(15, 37, 87, 0.12);
-  }
-  .result-guia__row .btn {
-    white-space: nowrap;
-    padding: 12px 18px;
-    font-size: 13.5px;
-  }
-  .result-guia__success {
-    font-size: 13.5px;
-    color: var(--green-dark);
-    text-align: center;
-    font-weight: 600;
-    margin-top: 4px;
-  }
-
-  .quiz-brandmark {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    color: var(--white);
-    margin-bottom: 26px;
-  }
-  .quiz-brandmark svg { width: 30px; height: 30px; }
-  .quiz-brandmark span { font-size: 13px; letter-spacing: 0.5px; font-weight: 700; }
-  .quiz-brandmark strong { font-weight: 800; }
-
-  .quiz-footer {
-    text-align: center;
-    padding: 20px 20px 34px;
-    font-size: 12px;
-    color: rgba(255,255,255,0.5);
-  }
+  .contato-card { text-align: center; }
+  .contato-card__email { margin-top: 16px; font-size: 14px; color: var(--gray-600); }
+  .contato-card__email a { color: var(--navy); font-weight: 700; text-decoration: underline; }
 </style>
 </head>
 <body>
 
-<div class="quiz-shell">
-
-  <div class="quiz-topbar">
-    <div class="quiz-topbar__inner">
-      <div class="quiz-brandmark">
-        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<header class="hero" id="topo">
+  <div class="hero__inner wrap">
+    <div class="hero__text" data-reveal>
+      <div class="brandmark">
+        <svg class="brandmark__icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="2.5"/>
           <circle cx="24" cy="24" r="2.5" fill="currentColor"/>
           <path d="M31 17L20.5 20.5L17 31L27.5 27.5L31 17Z" fill="var(--amber)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
         </svg>
         <span>BÚSSOLA <strong>BPO FINANCEIRO</strong></span>
       </div>
-      <div class="quiz-progress-track" id="progressTrack" style="display:none;">
-        <div class="quiz-progress-fill" id="progressFill"></div>
+
+      <p class="hero__kicker">Controladoria financeira para donos de empresa</p>
+      <h1 class="hero__headline">Controladoria fracionada pra quem não quer (ou não precisa, ainda) montar uma equipe financeira interna</h1>
+      <p class="hero__sub">Diagnóstico, estruturação financeira e execução da rotina contábil-financeira do seu negócio, com a experiência de mais de 25 anos em controladoria — sem o custo de contratar um controller em tempo integral.</p>
+
+      <a href="https://wa.me/5521992067985" target="_blank" rel="noopener" class="btn btn--cta btn--lg">
+        Falar no WhatsApp
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5V19M12 19L6 13M12 19L18 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     SOBRE
+     ============================================================ -->
+<section class="section sobre" id="sobre">
+  <div class="wrap wrap--narrow">
+    <div class="section__head" data-reveal>
+      <p class="section__eyebrow">Quem cuida disso</p>
+      <h2 class="section__title">Mais de 25 anos de contabilidade e gestão financeira</h2>
+    </div>
+    <p class="autoridade__text" data-reveal>Quem está por trás da Bússola BPO Financeiro soma mais de 25 anos de experiência em contabilidade e gestão financeira: começou como contador no serviço público e, ao longo do caminho, migrou pra uma atuação mais voltada à gestão — o que hoje chamamos de controladoria financeira.</p>
+    <p class="autoridade__text" data-reveal>Hoje a empresa reúne uma equipe dedicada a cuidar da rotina financeira de negócios de portes variados, unindo diagnóstico estratégico e execução operacional num único serviço.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SERVIÇOS
+     ============================================================ -->
+<section class="section servicos" id="servicos">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="section__eyebrow">O que fazemos</p>
+      <h2 class="section__title">Dois jeitos de colocar ordem no financeiro da sua empresa</h2>
+    </div>
+
+    <div class="bento" data-reveal>
+      <div class="bento__item">
+        <span class="bento__icon">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2L3 6V11C3 16 6.7 20.6 12 22C17.3 20.6 21 16 21 11V6L12 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12L11 14L15.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h3>Controller Fracionado</h3>
+        <p>Diagnóstico da situação financeira atual, estruturação de processos, DRE gerencial, precificação e apoio à decisão estratégica — o olhar de um controller experiente, sem o custo de uma contratação em tempo integral.</p>
+      </div>
+
+      <div class="bento__item">
+        <span class="bento__icon">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9H21M9 9V21" stroke="currentColor" stroke-width="1.8"/></svg>
+        </span>
+        <h3>BPO Recorrente</h3>
+        <p>Execução mensal da rotina financeira: conciliação bancária, contas a pagar e a receber, e relatórios gerenciais entregues com regularidade, pra você decidir com números confiáveis em mãos.</p>
       </div>
     </div>
   </div>
+</section>
 
-  <main class="quiz-main">
-    <div class="quiz-card">
-
-      <!-- ============================================================
-           TELA 1 — Q1 (perfil amplo: desempregado / CLT / dono)
-           Já abre direto aqui — sem tela de intro/clique extra, pra reduzir atrito.
-           ============================================================ -->
-      <section class="screen is-active" id="screen-q1">
-        <p class="intro__eyebrow" style="text-align:center;">Diagnóstico rápido — Bússola BPO · leva menos de 1 minuto</p>
-        <p class="question__eyebrow">Pergunta 1</p>
-        <h2 class="question__title">Qual dessas frases mais combina com o seu momento hoje?</h2>
-        <div class="option-list" id="q1-options"></div>
-      </section>
-
-      <!-- ============================================================
-           TELA 1.5 — Q2 (subdivisão, existe pros 3 caminhos)
-           ============================================================ -->
-      <section class="screen" id="screen-q2">
-        <button type="button" class="quiz-back" id="btnBackQ2">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Voltar
-        </button>
-        <p class="question__eyebrow">Pergunta 2</p>
-        <h2 class="question__title" id="q2Title"></h2>
-        <div class="option-list" id="q2-options"></div>
-      </section>
-
-      <!-- ============================================================
-           TELA 2 — Perguntas de qualificação do grupo (Q3/Q4)
-           ============================================================ -->
-      <section class="screen" id="screen-path">
-        <button type="button" class="quiz-back" id="btnBack">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Voltar
-        </button>
-        <p class="question__eyebrow" id="pathEyebrow">Pergunta 3</p>
-        <h2 class="question__title" id="pathTitle"></h2>
-        <div class="option-list" id="path-options"></div>
-      </section>
-
-      <!-- ============================================================
-           TELA 3 — Resultado
-           O resultado (diagnóstico + oferta) aparece pra 100% de quem
-           termina o quiz — nada de formulário obrigatório antes disso.
-           ============================================================ -->
-      <section class="screen" id="screen-result">
-        <div class="result-card">
-          <span class="result-card__badge" id="resultBadge">Diagnóstico pronto</span>
-          <h2 class="result-card__title" id="resultTitle"></h2>
-          <p class="result-card__text" id="resultText"></p>
-          <div class="result-card__deliverables" id="resultDeliverablesWrap" style="display:none;">
-            <p class="result-card__deliverables-label" id="resultDeliverablesLabel">Você recebe:</p>
-            <ul class="result-card__deliverables-list" id="resultDeliverables"></ul>
-          </div>
-          <div id="resultCtas"></div>
-
-          <div class="result-guia" id="resultGuia" style="display:none;">
-            <p class="result-guia__label">🎁 Quer receber de graça o <strong id="resultGuiaNome">Guia Rápido de BPO Financeiro</strong>?</p>
-            <form id="guiaForm" novalidate>
-              <div class="result-guia__row">
-                <input type="email" id="inputGuiaEmail" placeholder="seu@email.com" required>
-                <button type="submit" class="btn btn--outline" id="btnGuia">Quero o guia grátis</button>
-              </div>
-              <p class="field__error" id="guiaEmailError" style="display:none;">Informe um e-mail válido.</p>
-            </form>
-            <p class="result-guia__success" id="guiaSuccess" style="display:none;">🎉 Prontinho! Confira sua caixa de entrada (e o spam) em alguns minutos.</p>
-          </div>
-
-          <button type="button" class="result-card__hire-link" id="btnHireSomeone" style="display:none;">Prefiro tirar dúvidas por WhatsApp antes →</button>
-        </div>
-      </section>
-
+<!-- ============================================================
+     PROVA SOCIAL
+     Estrutura pronta pra receber depoimentos reais — hoje contém
+     apenas placeholders. Substituir cada card assim que houver
+     depoimentos de clientes pra publicar.
+     ============================================================ -->
+<section class="section prova-social" id="depoimentos">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="section__eyebrow">Resultados reais</p>
+      <h2 class="section__title">O que dizem os clientes</h2>
     </div>
-  </main>
 
-  <p class="quiz-footer">Bússola BPO Financeiro — bussolabpo.com.br</p>
-</div>
+    <div class="depoimentos-grid" data-reveal>
+      <!-- PAULO: substituir por depoimento real — adicionar classe "testimonial-card--real",
+           trocar o texto e preencher testimonial-card__author (nome, empresa, tempo de atendimento) -->
+      <div class="testimonial-card">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8H4V13C4 15 5.5 16.5 7.5 16.5V14.5C6.7 14.5 6 13.8 6 13V10H7C7.5 10 8 9.5 8 9V8.5C8 8.2 7.5 8 7 8Z" fill="currentColor"/><path d="M15 8H12V13C12 15 13.5 16.5 15.5 16.5V14.5C14.7 14.5 14 13.8 14 13V10H15C15.5 10 16 9.5 16 9V8.5C16 8.2 15.5 8 15 8Z" fill="currentColor"/></svg>
+        <p>Aguardando depoimento real de cliente.</p>
+        <span class="testimonial-card__author">Nome do cliente — empresa</span>
+      </div>
 
-<script>
-(function () {
-  'use strict';
+      <!-- PAULO: segundo depoimento real, mesma lógica do card acima -->
+      <div class="testimonial-card">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8H4V13C4 15 5.5 16.5 7.5 16.5V14.5C6.7 14.5 6 13.8 6 13V10H7C7.5 10 8 9.5 8 9V8.5C8 8.2 7.5 8 7 8Z" fill="currentColor"/><path d="M15 8H12V13C12 15 13.5 16.5 15.5 16.5V14.5C14.7 14.5 14 13.8 14 13V10H15C15.5 10 16 9.5 16 9V8.5C16 8.2 15.5 8 15 8Z" fill="currentColor"/></svg>
+        <p>Aguardando depoimento real de cliente.</p>
+        <span class="testimonial-card__author">Nome do cliente — empresa</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-  // ============================================================
-  // CONFIG
-  // ============================================================
-  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyG7IBJsF3nZUvG8SToD-o_cxdo6Q7h1r02wAB5L_iJKqNGEpNrPEc-lQL-thst0pl3/exec';
-  var WHATSAPP_NUMBER = '5521992067985'; // WhatsApp Business
+<!-- ============================================================
+     CONTATO
+     ============================================================ -->
+<section class="section contato" id="contato">
+  <div class="wrap wrap--narrow">
+    <div class="contato-card" data-reveal>
+      <p class="section__eyebrow">Fale com a gente</p>
+      <h2 class="section__title">Vamos conversar sobre o financeiro da sua empresa?</h2>
+      <div style="margin-top: 28px;">
+        <a href="https://wa.me/5521992067985" target="_blank" rel="noopener" class="btn btn--cta btn--lg">
+          Falar no WhatsApp
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5V19M12 19L6 13M12 19L18 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <p class="contato-card__email">Ou, se preferir, escreva pra <a href="mailto:contato@bussolabpo.com.br">contato@bussolabpo.com.br</a></p>
+    </div>
+  </div>
+</section>
 
-  // Checkout definitivo pra quem quer ser ou já é BPO (Funil v5 — não vende mais
-  // Gestão de Tesouraria pelo quiz; esse produto continua à venda, só saiu da rota do quiz).
-  var AGENTE_BPO_LINK = 'https://pay.kiwify.com.br/M5MyXsi';
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <div class="footer__brand">
+      <div class="brandmark brandmark--footer">
+        <svg class="brandmark__icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="2.5"/>
+          <circle cx="24" cy="24" r="2.5" fill="currentColor"/>
+          <path d="M31 17L20.5 20.5L17 31L27.5 27.5L31 17Z" fill="var(--amber)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <span>BÚSSOLA <strong>BPO FINANCEIRO</strong></span>
+      </div>
+      <p>Controladoria fracionada e BPO financeiro recorrente para donos de empresa.</p>
+    </div>
 
-  // Guia Rápido oferecido de bônus por e-mail é sempre o mesmo, independente do caminho/tipo.
-  var GUIA_BONUS_PADRAO = 'Guia Rápido de BPO Financeiro';
+    <div class="footer__contact">
+      <h4>Contato</h4>
+      <p><a href="mailto:contato@bussolabpo.com.br">contato@bussolabpo.com.br</a></p>
+      <p><a href="https://wa.me/5521992067985" target="_blank" rel="noopener">WhatsApp</a></p>
+    </div>
 
-  // ============================================================
-  // DADOS DO QUIZ — arquitetura v5 (3 caminhos, subdivisão nas perguntas seguintes)
-  // ============================================================
+    <div class="footer__legal">
+      <p>&copy; <span id="anoAtual">2026</span> Bússola BPO Financeiro. Todos os direitos reservados.</p>
+    </div>
+  </div>
+</footer>
 
-  // Q1 — perfil amplo. Ordem: desempregado primeiro, depois CLT, depois dono.
-  var Q1_OPTIONS = [
-    { key: 'SEMRENDA', text: 'Estou sem emprego e preciso de uma renda de verdade, sem sair de casa nem me sujeitar a ganhar pouco' },
-    { key: 'CLT', text: 'Quero sair do CLT e virar profissional de BPO Financeiro' },
-    { key: 'DONO', text: 'Sou dono(a)/gestor(a) de empresa e quero organizar as finanças do negócio' }
-  ];
-
-  // Q2 — subdivisão. SEMRENDA e CLT compartilham as mesmas 3 opções (testar / já decidiu / já presta serviço),
-  // já que os dois caminhos vão pro mesmo produto. DONO mantém a divisão self-service vs terceirizar.
-  var Q2_BPO_OPTIONS = [
-    { key: 'A', text: 'Quero testar antes de decidir, ver se é pra mim' },
-    { key: 'B', text: 'Já decidi, quero me formar de verdade nisso' },
-    { key: 'C', text: 'Já presto (ou comecei a prestar) serviço de BPO Financeiro pra empresas' }
-  ];
-
-  var Q2_BY_CAMINHO = {
-    SEMRENDA: { title: 'Qual frase te representa melhor agora?', options: Q2_BPO_OPTIONS },
-    CLT: { title: 'Qual frase te representa melhor agora?', options: Q2_BPO_OPTIONS },
-    DONO: {
-      title: 'O que faz mais sentido pra você agora?',
-      options: [
-        { key: 'D', text: 'Quero aprender a estruturar sozinho(a), com uma ferramenta' },
-        { key: 'E', text: 'Já sei que quero contratar/terceirizar isso' }
-      ]
-    }
-  };
-
-  // Com Q2 sempre presente nos 3 caminhos, o subTipo já É o tipo final (A/B/C/D/E).
-  function resolveTipo() {
-    return state.subTipo;
-  }
-
-  // Perguntas de qualificação (Q3/Q4), por caminho (texto adaptado à persona de cada um)
-  var PERGUNTAS = {
-    SEMRENDA: [
-      {
-        id: 'q3',
-        text: 'Qual desses te descreve melhor hoje?',
-        options: [
-          'Estou desempregado(a) e preciso de uma renda o quanto antes',
-          'Só encontro vaga CLT com salário baixo, não compensa',
-          'Não posso ou não quero sair de casa pra trabalhar',
-          'Já pesquisei sobre BPO Financeiro e quero começar'
-        ]
-      },
-      {
-        id: 'q4',
-        text: 'Há quanto tempo você está nessa situação?',
-        options: ['Menos de 3 meses', '3 a 12 meses', 'Mais de 1 ano, só nunca dei o primeiro passo']
-      }
-    ],
-    CLT: [
-      {
-        id: 'q3',
-        text: 'Qual desses te descreve melhor hoje?',
-        options: [
-          'Estou cansado(a) de trabalhar CLT com salário fixo e baixo',
-          'Sem perspectiva de crescimento no emprego atual',
-          'Quero ter meu próprio negócio, trabalhando de casa',
-          'Já pesquisei sobre BPO Financeiro e quero começar'
-        ]
-      },
-      {
-        id: 'q4',
-        text: 'Há quanto tempo você pensa nisso?',
-        options: ['Menos de 3 meses', '3 a 12 meses', 'Mais de 1 ano, só nunca dei o primeiro passo']
-      }
-    ],
-    DONO: [
-      {
-        id: 'q3',
-        text: 'Qual desses problemas pesa mais hoje?',
-        options: [
-          'Extrato bagunçado, não concilio, não sei pra onde o dinheiro vai',
-          'Não sei se meu preço cobre os custos, não sei minha margem real',
-          'Os dois, sinceramente'
-        ]
-      },
-      {
-        id: 'q4',
-        text: 'Há quanto tempo isso te incomoda?',
-        options: ['Menos de 3 meses', '3 a 12 meses', 'Mais de 1 ano']
-      }
-    ]
-  };
-
-  var URGENCY_TAIL = {
-    'Menos de 3 meses': 'Pegar isso agora, no começo, evita que vire um problema maior.',
-    '3 a 12 meses': 'Isso já vem incomodando há alguns meses — dá pra resolver rápido com o processo certo.',
-    'Mais de 1 ano': 'Isso já dura mais de um ano — quanto antes organizar, menos vai custar consertar depois.',
-    'Mais de 1 ano, só nunca dei o primeiro passo': 'Isso já dura mais de um ano — o primeiro passo é sempre o mais difícil, e é exatamente onde este material entra.'
-  };
-
-  var TOTAL_PATH_STEPS = 2; // q3..q4
-
-  function getQuestionAt(index) {
-    var lista = PERGUNTAS[state.caminho] || [];
-    return lista[index] || null;
-  }
-
-  // ============================================================
-  // RESULTADOS por tipo final (A, B, C, D, E)
-  // ============================================================
-  var RESULT_COPY = {
-    A: {
-      title: 'Seu perfil aponta pro Agente BPO — comece testando',
-      textFn: function () {
-        return 'Você marcou "' + (state.respostas.q3 || '') + '" — é exatamente pra isso que o Agente BPO existe: uma planilha completa (conciliação, contas a pagar/receber, dashboard) pra você aprender operando de verdade, sem precisar de sistema caro. ' + (URGENCY_TAIL[state.respostas.q4] || '');
-      },
-      deliverables: [
-        'Planilha Agente BPO — conciliação bancária e gestão financeira completa',
-        'E-book Como Ser BPO',
-        'E-book Tutorial de Uso da Planilha',
-        'Guia Rápido — Agente BPO',
-        'Bônus: 3 Apresentações Profissionais Editáveis',
-        'Bônus: Contrato de Prestação de Serviço Editável',
-        'Bônus: Roteiros de Prospecção (Bairro, WhatsApp e Instagram)',
-        'Bônus: Calculadora de Preço BPO — pra você usar com seus próprios clientes'
-      ],
-      checkoutLink: AGENTE_BPO_LINK,
-      checkoutLabel: 'Quero começar por R$47',
-      saibaMaisLink: 'oferta-livre/',
-      saibaMaisLabel: 'Saiba mais antes de decidir',
-      ferramentaIndicada: 'AGENTE_BPO_TIPO_A'
-    },
-    B: {
-      title: 'Você já decidiu virar profissional de BPO Financeiro',
-      textFn: function () {
-        return 'Você marcou "' + (state.respostas.q3 || '') + '" — enquanto o Curso Completo de Formação em BPO Financeiro não fica pronto (está sendo gravado agora, do operacional ao comercial), comece já operando de verdade com o Agente BPO: a mesma planilha completa de conciliação, contas a pagar/receber e dashboard. Assim que comprar, você já entra no grupo exclusivo de WhatsApp da turma, garante sua vaga na lista de espera do curso completo e recebe desconto no 1º lote de lançamento. ' + (URGENCY_TAIL[state.respostas.q4] || '');
-      },
-      deliverables: [
-        'Planilha Agente BPO — conciliação bancária e gestão financeira completa',
-        'E-book Como Ser BPO',
-        'E-book Tutorial de Uso da Planilha',
-        'Guia Rápido — Agente BPO',
-        'Bônus: 3 Apresentações Profissionais Editáveis',
-        'Bônus: Contrato de Prestação de Serviço Editável',
-        'Bônus: Roteiros de Prospecção (Bairro, WhatsApp e Instagram)',
-        'Bônus: Calculadora de Preço BPO — pra você usar com seus próprios clientes',
-        'Grupo de WhatsApp exclusivo + vaga na lista de espera + desconto no 1º lote do Curso Completo'
-      ],
-      checkoutLink: AGENTE_BPO_LINK,
-      checkoutLabel: 'Quero começar agora por R$47',
-      saibaMaisLink: 'oferta-livre/',
-      saibaMaisLabel: 'Saiba mais antes de decidir',
-      ferramentaIndicada: 'AGENTE_BPO_TIPO_B'
-    },
-    C: {
-      title: 'Seu perfil aponta pra profissionalizar seu BPO com o Agente BPO',
-      textFn: function () {
-        return 'Você marcou "' + (state.respostas.q3 || '') + '" — é hora de sair do operacional manual e ganhar processo profissional com o Agente BPO: uma planilha completa (conciliação, contas a pagar/receber, dashboard) que substitui sistemas caros como Omie ou Conta Azul, sem mensalidade alta. Assim que comprar, você já entra no grupo exclusivo de WhatsApp, garante vaga na lista de espera do Curso BPO Avançado (precificação, FP&A, controladoria) e desconto no 1º lote quando lançar. ' + (URGENCY_TAIL[state.respostas.q4] || '');
-      },
-      deliverables: [
-        'Planilha Agente BPO — conciliação bancária e gestão financeira completa',
-        'E-book Como Ser BPO',
-        'E-book Tutorial de Uso da Planilha',
-        'Guia Rápido — Agente BPO',
-        'Bônus: 3 Apresentações Profissionais Editáveis',
-        'Bônus: Contrato de Prestação de Serviço Editável',
-        'Bônus: Roteiros de Prospecção (Bairro, WhatsApp e Instagram)',
-        'Bônus: Calculadora de Preço BPO — pra você usar com seus próprios clientes',
-        'Grupo de WhatsApp exclusivo + vaga na lista de espera + desconto no 1º lote do Curso BPO Avançado'
-      ],
-      checkoutLink: AGENTE_BPO_LINK,
-      checkoutLabel: 'Quero o Agente BPO por R$47',
-      saibaMaisLink: 'oferta-livre/',
-      saibaMaisLabel: 'Saiba mais antes de decidir',
-      ferramentaIndicada: 'AGENTE_BPO_TIPO_C'
-    },
-    D: {
-      title: 'Vamos estruturar o financeiro da sua empresa',
-      textFn: function () {
-        return 'Você marcou "' + (state.respostas.q3 || '') + '" — antes de decidir entre aprender sozinho(a) ou contratar, simule quanto custaria ter um profissional cuidando disso, ou fale direto com a equipe pra entender o melhor caminho pro tamanho do seu negócio hoje. ' + (URGENCY_TAIL[state.respostas.q4] || '');
-      },
-      deliverables: [
-        'Simulação do valor estimado do seu plano em 6 perguntas',
-        'Diagnóstico rápido da sua operação financeira',
-        'Proposta sob medida — consultoria ou BPO recorrente'
-      ],
-      simulatorLink: 'simulador/',
-      simulatorLabel: 'Simular meu plano agora',
-      hireLinkLabel: 'Prefiro falar direto no WhatsApp, sem simular →',
-      waCta: 'Falar com a equipe agora',
-      ferramentaIndicada: 'CONSULTORIA_TIPO_D'
-    },
-    E: {
-      title: 'Você já quer terceirizar seu financeiro',
-      textFn: function () {
-        return 'Pelas suas respostas, faz mais sentido conversar direto — vamos entender o tamanho da sua operação hoje e desenhar juntos a estruturação (consultoria pontual) ou a terceirização recorrente do seu financeiro.';
-      },
-      deliverables: [
-        'Simulação do valor estimado do seu plano em 6 perguntas',
-        'Diagnóstico rápido da sua operação financeira',
-        'Proposta sob medida — consultoria ou BPO recorrente'
-      ],
-      simulatorLink: 'simulador/',
-      simulatorLabel: 'Simular meu plano agora',
-      hireLinkLabel: 'Prefiro falar direto no WhatsApp, sem simular →',
-      waCta: 'Falar com a equipe agora',
-      ferramentaIndicada: 'CONSULTORIA_TIPO_E'
-    }
-  };
-
-  // ============================================================
-  // ESTADO
-  // ============================================================
-  var state = {
-    caminho: null,        // 'SEMRENDA' | 'CLT' | 'DONO'
-    subTipo: null,        // 'A' | 'B' | 'C' | 'D' | 'E'
-    pathStepIndex: 0,     // índice da pergunta atual (0..1 = q3..q4)
-    respostas: {}          // { q1: 'texto', q2: 'texto', q3: ..., q4: ... }
-  };
-
-  var currentStepNumber = 0;
-  var TOTAL_STEPS_ESTIMATE = 4; // q1 + q2 + q3 + q4, só pra barra de progresso
-
-  // ============================================================
-  // ELEMENTOS
-  // ============================================================
-  var screens = {
-    q1: document.getElementById('screen-q1'),
-    q2: document.getElementById('screen-q2'),
-    path: document.getElementById('screen-path'),
-    result: document.getElementById('screen-result')
-  };
-  var progressTrack = document.getElementById('progressTrack');
-  var progressFill = document.getElementById('progressFill');
-
-  function showScreen(name) {
-    Object.keys(screens).forEach(function (key) {
-      screens[key].classList.toggle('is-active', key === name);
-    });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function updateProgress() {
-    if (!state.caminho) {
-      progressTrack.style.display = 'none';
-      return;
-    }
-    progressTrack.style.display = 'block';
-    var pct = Math.min(100, Math.round((currentStepNumber / TOTAL_STEPS_ESTIMATE) * 100));
-    progressFill.style.width = pct + '%';
-  }
-
-  // ============================================================
-  // TELA 0 → 1 (Q1)
-  // ============================================================
-  var q1OptionsEl = document.getElementById('q1-options');
-  Q1_OPTIONS.forEach(function (opt) {
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'option-btn';
-    btn.innerHTML = '<span>' + opt.text + '</span>' +
-      '<svg class="option-btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    btn.addEventListener('click', function () {
-      state.caminho = opt.key;
-      state.respostas.q1 = opt.text;
-      state.subTipo = null;
-      currentStepNumber = 1;
-      renderQ2();
-      showScreen('q2');
-      updateProgress();
-    });
-    q1OptionsEl.appendChild(btn);
-  });
-
-  // Quiz já abre direto na Pergunta 1 (sem tela de intro/clique extra).
-  currentStepNumber = 0;
-  updateProgress();
-  progressTrack.style.display = 'block';
-
-  // ============================================================
-  // Q2 — subdivisão (existe pros 3 caminhos)
-  // ============================================================
-  var q2OptionsEl = document.getElementById('q2-options');
-  var q2TitleEl = document.getElementById('q2Title');
-
-  function renderQ2() {
-    var cfg = Q2_BY_CAMINHO[state.caminho];
-    q2TitleEl.textContent = cfg.title;
-    q2OptionsEl.innerHTML = '';
-    cfg.options.forEach(function (opt) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'option-btn';
-      btn.innerHTML = '<span>' + opt.text + '</span>' +
-        '<svg class="option-btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-      btn.addEventListener('click', function () {
-        state.subTipo = opt.key;
-        state.respostas.q2 = opt.text;
-        currentStepNumber = 2;
-        state.pathStepIndex = 0;
-        renderPathQuestion();
-        showScreen('path');
-        updateProgress();
-      });
-      q2OptionsEl.appendChild(btn);
-    });
-  }
-
-  document.getElementById('btnBackQ2').addEventListener('click', function () {
-    state.caminho = null;
-    state.subTipo = null;
-    currentStepNumber = 0;
-    showScreen('q1');
-    updateProgress();
-  });
-
-  // ============================================================
-  // PERGUNTAS DE QUALIFICAÇÃO (Q3/Q4, dinâmicas por caminho)
-  // ============================================================
-  var pathOptionsEl = document.getElementById('path-options');
-  var pathTitleEl = document.getElementById('pathTitle');
-  var pathEyebrowEl = document.getElementById('pathEyebrow');
-
-  function renderPathQuestion() {
-    var q = getQuestionAt(state.pathStepIndex);
-    pathEyebrowEl.textContent = 'Pergunta ' + (state.pathStepIndex + 3);
-    pathTitleEl.textContent = q.text;
-    pathOptionsEl.innerHTML = '';
-
-    q.options.forEach(function (optText) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'option-btn';
-      btn.innerHTML = '<span>' + optText + '</span>' +
-        '<svg class="option-btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-      btn.addEventListener('click', function () {
-        state.respostas[q.id] = optText;
-
-        currentStepNumber++;
-        var nextIndex = state.pathStepIndex + 1;
-        if (nextIndex < TOTAL_PATH_STEPS) {
-          state.pathStepIndex = nextIndex;
-          renderPathQuestion();
-          updateProgress();
-        } else {
-          logQuizCompletion();
-          renderResult();
-          showScreen('result');
-          progressTrack.style.display = 'none';
-        }
-      });
-      pathOptionsEl.appendChild(btn);
-    });
-  }
-
-  document.getElementById('btnBack').addEventListener('click', function () {
-    if (state.pathStepIndex > 0) {
-      state.pathStepIndex--;
-      currentStepNumber--;
-      renderPathQuestion();
-      updateProgress();
-    } else {
-      currentStepNumber--;
-      renderQ2();
-      showScreen('q2');
-      updateProgress();
-    }
-  });
-
-  // ============================================================
-  // REGISTRO NA PLANILHA DE LEADS
-  // O resultado nunca fica travado esperando isso — é sempre silencioso
-  // e disparado em paralelo (fire-and-forget).
-  // ============================================================
-  function isValidEmail(v) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v || '').trim());
-  }
-
-  function respostasResumo() {
-    return Object.keys(state.respostas).map(function (k) {
-      return k + ': ' + state.respostas[k];
-    }).join(' | ');
-  }
-
-  function enviarParaPlanilha(nome, email) {
-    var tipo = resolveTipo();
-    var rc = RESULT_COPY[tipo];
-
-    var formData = new FormData();
-    formData.append('nome', nome || '');
-    formData.append('telefone', '');
-    formData.append('email', email || '');
-    formData.append('caminho', state.caminho + '_' + state.subTipo);
-    formData.append('ferramentaIndicada', rc.ferramentaIndicada);
-    formData.append('respostas', respostasResumo());
-
-    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: formData })
-      .catch(function () { /* silencioso — não bloqueia o funil */ });
-  }
-
-  function logQuizCompletion() {
-    enviarParaPlanilha('', '');
-  }
-
-  // ============================================================
-  // GUIA GRÁTIS (opcional) — só pede e-mail, nunca bloqueia o resultado
-  // ============================================================
-  var guiaForm = document.getElementById('guiaForm');
-  var guiaEmailError = document.getElementById('guiaEmailError');
-  var guiaSuccess = document.getElementById('guiaSuccess');
-
-  guiaForm.addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    var email = document.getElementById('inputGuiaEmail').value.trim();
-
-    if (!isValidEmail(email)) {
-      guiaEmailError.style.display = 'block';
-      return;
-    }
-    guiaEmailError.style.display = 'none';
-
-    var btn = document.getElementById('btnGuia');
-    btn.disabled = true;
-    btn.textContent = 'Enviando...';
-
-    enviarParaPlanilha('', email);
-
-    guiaForm.style.display = 'none';
-    guiaSuccess.style.display = 'block';
-  });
-
-  // ============================================================
-  // RESULTADO
-  // ============================================================
-  function buildWaLink(waNote) {
-    var resumo = Object.keys(state.respostas).map(function (k) {
-      return state.respostas[k];
-    }).join(', ');
-    var tipo = resolveTipo();
-    var texto = 'Olá! Fiz o diagnóstico da Bússola BPO.\n' +
-      'Caminho: ' + state.caminho + ' (Tipo ' + tipo + ')\n' +
-      'Respostas: ' + resumo + '\n' +
-      (waNote || '');
-    return 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(texto);
-  }
-
-  function makeCheckoutButton(link, label) {
-    var buy = document.createElement('a');
-    buy.href = link;
-    if (/^https?:\/\//.test(link)) { buy.target = '_blank'; buy.rel = 'noopener'; }
-    buy.className = 'btn btn--cta btn--lg btn--block';
-    buy.textContent = label;
-    return buy;
-  }
-
-  function makeSaibaMaisButton(link, label) {
-    var a = document.createElement('a');
-    a.href = link;
-    if (/^https?:\/\//.test(link)) { a.target = '_blank'; a.rel = 'noopener'; }
-    a.className = 'btn btn--outline btn--lg btn--block';
-    a.textContent = label;
-    return a;
-  }
-
-  function makeWaButton(label, note) {
-    var buy = document.createElement('a');
-    buy.href = buildWaLink(note);
-    buy.target = '_blank';
-    buy.rel = 'noopener';
-    buy.className = 'btn btn--whatsapp btn--lg btn--block';
-    buy.textContent = label;
-    return buy;
-  }
-
-  function renderResult() {
-    var tipo = resolveTipo();
-    var rc = RESULT_COPY[tipo];
-
-    var badge = document.getElementById('resultBadge');
-    badge.textContent = rc.isSoon ? 'Em breve' : 'Diagnóstico pronto';
-    badge.classList.toggle('is-soon', !!rc.isSoon);
-
-    document.getElementById('resultTitle').textContent = rc.title;
-    document.getElementById('resultText').textContent = rc.textFn ? rc.textFn() : (rc.text || '');
-
-    var wrap = document.getElementById('resultDeliverablesWrap');
-    var label = document.getElementById('resultDeliverablesLabel');
-    var list = document.getElementById('resultDeliverables');
-    label.textContent = rc.deliverablesLabel || 'Você recebe:';
-    list.innerHTML = '';
-    (rc.deliverables || []).forEach(function (item) {
-      var li = document.createElement('li');
-      li.textContent = item;
-      list.appendChild(li);
-    });
-    wrap.style.display = rc.deliverables && rc.deliverables.length ? 'block' : 'none';
-
-    var ctasEl = document.getElementById('resultCtas');
-    ctasEl.innerHTML = '';
-    var hireBtn = document.getElementById('btnHireSomeone');
-    hireBtn.textContent = rc.hireLinkLabel || 'Prefiro tirar dúvidas por WhatsApp antes →';
-
-    if (rc.simulatorLink) {
-      ctasEl.appendChild(makeCheckoutButton(rc.simulatorLink, rc.simulatorLabel || 'Simular meu plano agora'));
-      hireBtn.style.display = 'block';
-    } else if (rc.checkoutLink) {
-      ctasEl.appendChild(makeCheckoutButton(rc.checkoutLink, rc.checkoutLabel));
-      if (rc.saibaMaisLink) {
-        ctasEl.appendChild(makeSaibaMaisButton(rc.saibaMaisLink, rc.saibaMaisLabel || 'Saiba mais'));
-      }
-      hireBtn.style.display = 'block';
-    } else if (rc.waCta) {
-      ctasEl.appendChild(makeWaButton(rc.waCta, 'Quero conversar sobre estruturar/terceirizar meu financeiro.'));
-      hireBtn.style.display = 'none';
-    }
-
-    // Guia grátis (opcional) só faz sentido pra quem tem checkout de planilha (A/B/C) —
-    // o caminho do dono (D/E) não vende esse ebook.
-    var guiaWrap = document.getElementById('resultGuia');
-    if (rc.checkoutLink) {
-      document.getElementById('resultGuiaNome').textContent = GUIA_BONUS_PADRAO;
-      guiaForm.style.display = 'block';
-      guiaForm.reset();
-      guiaEmailError.style.display = 'none';
-      guiaSuccess.style.display = 'none';
-      var btnGuia = document.getElementById('btnGuia');
-      btnGuia.disabled = false;
-      btnGuia.textContent = 'Quero o guia grátis';
-      guiaWrap.style.display = 'block';
-    } else {
-      guiaWrap.style.display = 'none';
-    }
-  }
-
-  document.getElementById('btnHireSomeone').addEventListener('click', function () {
-    var tipo = resolveTipo();
-    var note = (tipo === 'D' || tipo === 'E')
-      ? 'Prefiro falar direto, sem simular o plano antes.'
-      : 'Prefiro tirar dúvidas por WhatsApp antes de decidir.';
-    window.open(buildWaLink(note), '_blank');
-  });
-})();
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="js/animations.js"></script>
+<script>document.getElementById('anoAtual').textContent = new Date().getFullYear();</script>
 </body>
 </html>
-
