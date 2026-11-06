@@ -1,5 +1,5 @@
 :root{
-  --navy:#0f2a4a; --navy-2:#1b3a60; --sage:#8da58b; --sage-dark:#4a6549; --sage-soft:#eef2ee;
+  --navy:#08243d; --navy-2:#143a5c; --sage:#6b8369; --sage-dark:#4a614a; --sage-soft:#eef2ee;
   --ink:#1c2430; --muted:#55606e; --line:#dfe4e0; --bg:#ffffff; --bg-alt:#f5f7f5;
   --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
   --sans:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
@@ -114,3 +114,30 @@ p{margin:0 0 14px}
   .compare--stack td::before{content:attr(data-l);display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--sage-dark);font-weight:600}
 }
 section[id]{scroll-margin-top:64px}
+
+/* método */
+.chips,.levels{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.chips{grid-template-columns:1fr}
+.chips li,.levels li{background:#fff;border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:flex;align-items:center;gap:12px;font-size:16px}
+.chip__n{flex:none;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:14px;font-weight:600}
+.levels{margin-top:10px}
+@media(min-width:640px){.chips{grid-template-columns:1fr 1fr}.levels{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:960px){.chips{grid-template-columns:repeat(4,1fr)}}
+.dims{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+@media(min-width:760px){.dims{grid-template-columns:1fr 1fr}}
+.dims li{background:#fff;border:1px solid var(--line);border-left:3px solid var(--sage);border-radius:6px;padding:14px 16px}
+.dims strong{display:block;color:var(--navy);font-family:var(--serif);font-size:18px;margin-bottom:4px}
+.dims span{color:var(--muted);font-size:16px}
+.matrix{width:100%;border-collapse:collapse;table-layout:fixed;background:#fff;border:1px solid var(--line)}
+.matrix th,.matrix td{border-bottom:1px solid var(--line);padding:8px 4px;text-align:center;font-size:14px}
+.matrix thead th{font-family:var(--serif);color:var(--navy);background:var(--sage-soft)}
+.matrix th[scope=row]{text-align:left;padding-left:10px;font-weight:600;color:var(--navy);font-size:13px;line-height:1.3;overflow-wrap:break-word}
+.matrix thead th:first-child{width:40%;text-align:left;padding-left:10px}
+.matrix .mk{padding:2px 4px}
+.matrix abbr{text-decoration:none}
+.mk{display:inline-block;padding:2px 6px;border-radius:3px;font-size:12px;font-weight:600}
+.mk--hoje{background:var(--navy);color:#fff}
+.mk--alvo{border:1.5px dashed var(--sage-dark);color:var(--sage-dark)}
+.faq details{border-bottom:1px solid var(--line);padding:14px 0}
+.faq summary{cursor:pointer;font-weight:600;color:var(--navy);list-style-position:outside}
+.faq p{margin:10px 0 0;color:var(--muted)}

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /portfolio/
+Sitemap: https://bussolabpo.com.br/sitemap.xml
